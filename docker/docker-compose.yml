@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  shippingrecorder-api:
+    container_name: shippingrecorderservice
+    image: davewalker5/shippingrecorderapisqlite:latest
+    restart: always
+    ports:
+      - "8093:80"
+    volumes:
+      - /path/to/database/folder:/var/opt/shippingrecorder.api/
+    networks:
+      - shippingrecorder-network
+
+networks:
+  flightrecorder-network:
+    driver: bridge

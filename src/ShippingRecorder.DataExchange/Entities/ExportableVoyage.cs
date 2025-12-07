@@ -1,0 +1,49 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using ShippingRecorder.BusinessLogic.Extensions;
+using ShippingRecorder.DataExchange.Attributes;
+
+namespace ShippingRecorder.DataExchange.Entities
+{
+    [ExcludeFromCodeCoverage]
+    public class ExportableVoyage : ExportableEntityBase
+    {
+        /// <summary>
+        /// Operator
+        /// Number
+        /// Event Type
+        /// Port UN/LOCODE
+        /// Date
+        /// </summary>
+        public const string CsvRecordPattern = @"^(?:""(?!\s*"")[\s\S]*"",){3}""[A-Za-z]{2}[A-Za-z0-9]{3}"",""[0-9]{2}-[A-Za-z]{3}-[0-9]{4}"".?$";
+
+        [Export("Operator", 1)]
+        public string Operator { get; set; }
+
+        [Export("Number", 2)]
+        public string Number { get; set; }
+
+        [Export("Event Type", 3)]
+        public string EventType { get; set; }
+
+        [Export("Callsign", 4)]
+        public string Port { get; set; }
+
+        [Export("Date", 5)]
+        public string Date { get; set; }
+
+        public static ExportableVoyage FromCsv(string record)
+        {
+            string[] words = record.Split(["\",\""], StringSplitOptions.None);
+            return new ExportableVoyage
+            {
+                Operator = words[0].Replace("\"", "").Trim().TitleCase(),
+                Number = words[1].Replace("\"", "").Trim().CleanCode(),
+                EventType = words[2].Replace("\"", "").Trim(),
+                Port = words[3].Replace("\"", "").Trim().CleanCode(),
+                Date = words[4].Replace("\"", "").Trim()
+            };
+        }
+    }
+}
