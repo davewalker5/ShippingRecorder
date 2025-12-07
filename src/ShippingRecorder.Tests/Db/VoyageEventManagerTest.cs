@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
 using System;
-using ShippingRecorder.Entities.Logging;
 
 namespace ShippingRecorder.Tests.Db
 {

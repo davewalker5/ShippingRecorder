@@ -10,22 +10,21 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
-using System;
 
 namespace ShippingRecorder.Tests.Client
 {
     [TestClass]
-    public class PortClientTest
+    public class VoyageEventClientTest
     {
         private readonly string ApiToken = "An API Token";
         private readonly MockShippingRecorderHttpClient _httpClient = new();
-        private IPortClient _client;
+        private IVoyageEventClient _client;
 
         private readonly ShippingRecorderApplicationSettings _settings = new()
         {
             ApiUrl = "http://server/",
             ApiRoutes = [
-                new() { Name = "Port", Route = "/ports" }
+                new() { Name = "VoyageEvent", Route = "/voyageevents" }
             ]
         };
 
@@ -34,39 +33,47 @@ namespace ShippingRecorder.Tests.Client
         {
             var provider = new Mock<IAuthenticationTokenProvider>();
             provider.Setup(x => x.GetToken()).Returns(ApiToken);
-            var logger = new Mock<ILogger<PortClient>>();
-            _client = new PortClient(_httpClient, _settings, provider.Object, logger.Object);
+            var logger = new Mock<ILogger<VoyageEventClient>>();
+            _client = new VoyageEventClient(_httpClient, _settings, provider.Object, logger.Object);
         }
 
         [TestMethod]
         public async Task AddTest()
         {
-            var port = DataGenerator.CreatePort();
-            var json = JsonSerializer.Serialize(new { port.CountryId, port.Code, port.Name });
+            var voyageEvent = DataGenerator.CreateVoyageEvent();
+            var json = JsonSerializer.Serialize(
+                new
+                {
+                    voyageEvent.VoyageId,
+                    voyageEvent.EventType,
+                    voyageEvent.PortId,
+                    voyageEvent.Date
+                });
             _httpClient.AddResponse(json);
 
-            var added = await _client.AddAsync(port.CountryId, port.Code, port.Name);
+            var added = await _client.AddAsync(voyageEvent.VoyageId, voyageEvent.EventType, voyageEvent.PortId, voyageEvent.Date);
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
             Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
 
-            Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(added);
-            Assert.AreEqual(port.CountryId, added.CountryId);
-            Assert.AreEqual(port.Code, added.Code);
-            Assert.AreEqual(port.Name, added.Name);
+            Assert.AreEqual(voyageEvent.VoyageId, added.VoyageId);
+            Assert.AreEqual(voyageEvent.EventType, added.EventType);
+            Assert.AreEqual(voyageEvent.PortId, added.PortId);
+            Assert.AreEqual(voyageEvent.Date, added.Date);
         }
 
         [TestMethod]
         public async Task UpdateTest()
         {
-            var port = DataGenerator.CreatePort();
-            var json = JsonSerializer.Serialize(port);
+            var voyageEvent = DataGenerator.CreateVoyageEvent();
+            var json = JsonSerializer.Serialize(voyageEvent);
             _httpClient.AddResponse(json);
 
-            var updated = await _client.UpdateAsync(port.Id, port.CountryId, port.Code, port.Name);
+            var updated = await _client.UpdateAsync(voyageEvent.Id, voyageEvent.VoyageId, voyageEvent.EventType, voyageEvent.PortId, voyageEvent.Date);
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -75,10 +82,11 @@ namespace ShippingRecorder.Tests.Client
 
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(updated);
-            Assert.AreEqual(port.Id, updated.Id);
-            Assert.AreEqual(port.CountryId, updated.CountryId);
-            Assert.AreEqual(port.Code, updated.Code);
-            Assert.AreEqual(port.Name, updated.Name);
+            Assert.AreEqual(voyageEvent.Id, updated.Id);
+            Assert.AreEqual(voyageEvent.VoyageId, updated.VoyageId);
+            Assert.AreEqual(voyageEvent.EventType, updated.EventType);
+            Assert.AreEqual(voyageEvent.PortId, updated.PortId);
+            Assert.AreEqual(voyageEvent.Date, updated.Date);
         }
 
         [TestMethod]
@@ -98,12 +106,12 @@ namespace ShippingRecorder.Tests.Client
         [TestMethod]
         public async Task ListTest()
         {
-            var port = DataGenerator.CreatePort();
-            var json = JsonSerializer.Serialize<List<Port>>([port]);
+            var voyageEvent = DataGenerator.CreateVoyageEvent();
+            var json = JsonSerializer.Serialize<List<VoyageEvent>>([voyageEvent]);
             _httpClient.AddResponse(json);
 
-            var ports = await _client.ListAsync(port.CountryId, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{port.CountryId}/1/{int.MaxValue}";
+            var voyageEvents = await _client.ListAsync(voyageEvent.VoyageId, 1, int.MaxValue);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{voyageEvent.VoyageId}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -111,11 +119,13 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
-            Assert.IsNotNull(ports);
-            Assert.HasCount(1, ports);
-            Assert.AreEqual(port.Id, ports[0].Id);
-            Assert.AreEqual(port.Code, ports[0].Code);
-            Assert.AreEqual(port.Name, ports[0].Name);
+            Assert.IsNotNull(voyageEvents);
+            Assert.HasCount(1, voyageEvents);
+            Assert.AreEqual(voyageEvent.Id, voyageEvents[0].Id);
+            Assert.AreEqual(voyageEvent.VoyageId, voyageEvents[0].VoyageId);
+            Assert.AreEqual(voyageEvent.EventType, voyageEvents[0].EventType);
+            Assert.AreEqual(voyageEvent.PortId, voyageEvents[0].PortId);
+            Assert.AreEqual(voyageEvent.Date, voyageEvents[0].Date);
         }
     }
 }

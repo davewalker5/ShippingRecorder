@@ -99,5 +99,38 @@ namespace ShippingRecorder.Tests.Mocks
         /// <returns></returns>
         public static Voyage CreateVoyage()
             => new() { Id = RandomId(), OperatorId = RandomId(), Number = RandomWord() };
+
+        /// <summary>
+        /// Return a random voyage
+        /// </summary>
+        /// <returns></returns>
+        public static VoyageEvent CreateVoyageEvent()
+            => new()
+            {
+                Id = RandomId(),
+                VoyageId = RandomId(),
+                EventType = RandomInt(0, 100) < 50 ? VoyageEventType.Depart : VoyageEventType.Arrive,
+                PortId = RandomId(),
+                Date = DateTime.Now
+            };
+
+        /// <summary>
+        /// Create a random vessel registration history
+        /// </summary>
+        /// <returns></returns>
+        public static RegistrationHistory CreateRegistrationHistory()
+            => new()
+            {
+                VesselId = RandomId(),
+                VesselTypeId = RandomId(),
+                FlagId = RandomId(),
+                OperatorId = RandomId(),
+                Date = DateTime.Now,
+                Name = RandomWord(),
+                Callsign = RandomWord(),
+                MMSI = RandomWord(9, 9),
+                Tonnage = RandomInt(40000, 80000),
+                Crew = RandomInt(500, 1000),
+            };
     }
 }

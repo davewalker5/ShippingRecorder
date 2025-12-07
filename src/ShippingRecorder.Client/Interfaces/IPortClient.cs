@@ -8,7 +8,7 @@ namespace ShippingRecorder.Client.Interfaces
     {
         Task<Port> AddAsync(long countryId, string code, string name);
         Task DeleteAsync(long id);
-        Task<List<Port>> ListAsync(int pageNumber, int pageSize);
+        Task<List<Port>> ListAsync(long countryId, int pageNumber, int pageSize);
         Task<Port> UpdateAsync(long id, long countryId, string code, string name);
     }
 }

@@ -1,4 +1,4 @@
-namespace ShippingRecorder.Entities.Logging
+namespace ShippingRecorder.Entities.Db
 {
     public enum VoyageEventType
     {

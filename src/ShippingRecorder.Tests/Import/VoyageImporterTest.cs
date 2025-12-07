@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Frozen;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +8,8 @@ using ShippingRecorder.Data;
 using ShippingRecorder.DataExchange.Entities;
 using ShippingRecorder.DataExchange.Exceptions;
 using ShippingRecorder.DataExchange.Import;
+using ShippingRecorder.Entities.Db;
 using ShippingRecorder.Entities.Interfaces;
-using ShippingRecorder.Entities.Logging;
 using ShippingRecorder.Tests.Mocks;
 
 namespace ShippingRecorder.Tests.Import

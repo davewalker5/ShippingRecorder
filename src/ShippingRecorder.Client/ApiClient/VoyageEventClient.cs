@@ -6,69 +6,78 @@ using ShippingRecorder.Entities.Db;
 using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace ShippingRecorder.Client.ApiClient
 {
-    public class VoyageClient : ShippingRecorderClientBase, IVoyageClient
+    public class VoyageEventClient : ShippingRecorderClientBase, IVoyageEventClient
     {
-        private const string RouteKey = "Voyage";
+        private const string RouteKey = "VoyageEvent";
 
-        public VoyageClient(
+        public VoyageEventClient(
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
             IAuthenticationTokenProvider tokenProvider,
-            ILogger<VoyageClient> logger)
+            ILogger<VoyageEventClient> logger)
             : base(client, settings, tokenProvider, logger)
         {
         }
 
         /// <summary>
-        /// Add a new voyage to the database
+        /// Add a new voyage event to the database
         /// </summary>
         /// <param
-        /// <param name="operatorId"></param>
-        /// <param name="number"></param>
+        /// <param name="voyageId"></param>
+        /// <param name="eventType"></param>
+        /// <param name="portId"></param>
+        /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<Voyage> AddAsync(long operatorId, string number)
+        public async Task<VoyageEvent> AddAsync(long voyageId, VoyageEventType eventType, long portId, DateTime date)
         {
             dynamic template = new
             {
-                OperatorId = operatorId,
-                Number = number
+                VoyageId = voyageId,
+                EventType = eventType,
+                PortId = portId,
+                Date = date
             };
 
             var data = Serialize(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            var voyage = Deserialize<Voyage>(json);
+            var voyageevent = Deserialize<VoyageEvent>(json);
 
-            return voyage;
+            return voyageevent;
         }
 
         /// <summary>
-        /// Update an existing voyage
+        /// Update an existing voyage event
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="code"></param>
-        /// <param name="name"></param>
+        /// <param name="voyageId"></param>
+        /// <param name="eventType"></param>
+        /// <param name="portId"></param>
+        /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<Voyage> UpdateAsync(long id, long operatorId, string number)
+        public async Task<VoyageEvent> UpdateAsync(long id, long voyageId, VoyageEventType eventType, long portId, DateTime date)
         {
             dynamic template = new
             {
                 Id = id,
-                OperatorId = operatorId,
-                Number = number
+                VoyageId = voyageId,
+                EventType = eventType,
+                PortId = portId,
+                Date = date
             };
 
             var data = Serialize(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
-            var voyage = Deserialize<Voyage>(json);
+            var voyageevent = Deserialize<VoyageEvent>(json);
 
-            return voyage;
+            return voyageevent;
         }
 
         /// <summary>
-        /// Delete a voyage from the database
+        /// Delete a voyage event from the database
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -80,20 +89,21 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
-        /// Return a list of voyages
+        /// Return a list of voyage events
         /// </summary>
+        /// <param name="voyageId"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Voyage>> ListAsync(int pageNumber, int pageSize)
+        public async Task<List<VoyageEvent>> ListAsync(long voyageId, int pageNumber, int pageSize)
         {
-            // Request a list of voyages
+            // Request a list of voyage events
             string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
-            var route = $"{baseRoute}/{pageNumber}/{pageSize}";
+            var route = $"{baseRoute}/{voyageId}/{pageNumber}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
 
-            // The returned JSON will be empty if there are no voyages in the database
-            List<Voyage> countries = Deserialize<List<Voyage>>(json);
+            // The returned JSON will be empty if there are no voyage events in the database
+            List<VoyageEvent> countries = Deserialize<List<VoyageEvent>>(json);
             return countries;
         }
     }

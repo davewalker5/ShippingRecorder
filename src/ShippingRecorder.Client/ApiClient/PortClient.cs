@@ -84,16 +84,17 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
-        /// Return a list of countries
+        /// Return a list of ports
         /// </summary>
+        /// <param name="countryId"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Port>> ListAsync(int pageNumber, int pageSize)
+        public async Task<List<Port>> ListAsync(long countryId, int pageNumber, int pageSize)
         {
             // Request a list of countries
             string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
-            var route = $"{baseRoute}/{pageNumber}/{pageSize}";
+            var route = $"{baseRoute}/{countryId}/{pageNumber}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
 
             // The returned JSON will be empty if there are no countries in the database
