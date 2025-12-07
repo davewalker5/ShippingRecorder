@@ -1,0 +1,100 @@
+using ShippingRecorder.Client.Interfaces;
+using ShippingRecorder.Entities.Interfaces;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using ShippingRecorder.Entities.Db;
+using System.Net.Http;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace ShippingRecorder.Client.ApiClient
+{
+    public class VoyageClient : ShippingRecorderClientBase, IVoyageClient
+    {
+        private const string RouteKey = "Voyage";
+
+        public VoyageClient(
+            IShippingRecorderHttpClient client,
+            IShippingRecorderApplicationSettings settings,
+            IAuthenticationTokenProvider tokenProvider,
+            ILogger<VoyageClient> logger)
+            : base(client, settings, tokenProvider, logger)
+        {
+        }
+
+        /// <summary>
+        /// Add a new voyage to the database
+        /// </summary>
+        /// <param
+        /// <param name="operatorId"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public async Task<Voyage> AddAsync(long operatorId, string number)
+        {
+            dynamic template = new
+            {
+                OperatorId = operatorId,
+                Number = number
+            };
+
+            var data = Serialize(template);
+            string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
+            var voyage = Deserialize<Voyage>(json);
+
+            return voyage;
+        }
+
+        /// <summary>
+        /// Update an existing voyage
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="code"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task<Voyage> UpdateAsync(long id, long operatorId, string number)
+        {
+            dynamic template = new
+            {
+                Id = id,
+                OperatorId = operatorId,
+                Number = number
+            };
+
+            var data = Serialize(template);
+            string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
+            var voyage = Deserialize<Voyage>(json);
+
+            return voyage;
+        }
+
+        /// <summary>
+        /// Delete a voyage from the database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task DeleteAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
+        }
+
+        /// <summary>
+        /// Return a list of countries
+        /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<Voyage>> ListAsync(int pageNumber, int pageSize)
+        {
+            // Request a list of voyages
+            string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
+            var route = $"{baseRoute}/{pageNumber}/{pageSize}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+
+            // The returned JSON will be empty if there are no voyages in the database
+            List<Voyage> countries = Deserialize<List<Voyage>>(json);
+            return countries;
+        }
+    }
+}

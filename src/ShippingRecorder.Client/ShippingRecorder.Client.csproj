@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <PackageId>ShippingRecorder.DataExchange</PackageId>
+    <PackageId>ShippingRecorder.Client</PackageId>
     <PackageVersion>1.0.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2025</Copyright>
     <Owners>Dave Walker</Owners>
-    <Summary>Shiping Recorder Data Exchange</Summary>
-    <PackageTags>ShippingRecorder data exchange import export</PackageTags>
-    <Title>Shiping Recorder Data Exchange</Title>
-    <Description>ShippingRecorder Data Exchange</Description>
+    <Summary>Shiping Recorder API Client</Summary>
+    <PackageTags>ShippingRecorder rest api client</PackageTags>
+    <Title>Shiping Recorder API Client</Title>
+    <Description>ShippingRecorder API Client</Description>
     <PackOnBuild>true</PackOnBuild>
     <PackageProjectUrl>https://github.com/davewalker5/ShippingRecorder</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -20,11 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ShippingRecorder.BusinessLogic\ShippingRecorder.BusinessLogic.csproj" />
     <ProjectReference Include="..\ShippingRecorder.Entities\ShippingRecorder.Entities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.104.2" />
   </ItemGroup>
 </Project>

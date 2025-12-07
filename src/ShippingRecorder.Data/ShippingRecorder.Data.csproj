@@ -7,10 +7,10 @@
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2025</Copyright>
     <Owners>Dave Walker</Owners>
-    <Summary>Shiping Recorder Domain Models</Summary>
-    <PackageTags>ShippingRecorder domain models entities</PackageTags>
-    <Title>Shiping Recorder Domain Models</Title>
-    <Description>ShippingRecorder Domain Models</Description>
+    <Summary>Shiping Recorder Data Layer</Summary>
+    <PackageTags>ShippingRecorder ef database data</PackageTags>
+    <Title>Shiping Recorder Data Layer</Title>
+    <Description>ShippingRecorder Data Layer</Description>
     <PackOnBuild>true</PackOnBuild>
     <PackageProjectUrl>https://github.com/davewalker5/ShippingRecorder</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
