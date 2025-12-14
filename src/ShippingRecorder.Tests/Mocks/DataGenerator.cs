@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using DocumentFormat.OpenXml.Wordprocessing;
 using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Tests.Mocks
@@ -27,6 +28,22 @@ namespace ShippingRecorder.Tests.Mocks
         /// <returns></returns>
         public static long RandomId()
             => RandomInt(1, int.MaxValue);
+
+        /// <summary>
+        /// Return a random decimal in the range 0.0 < d < 1.0
+        /// </summary>
+        /// <returns></returns>
+        private static decimal NextDecimal()
+            => (decimal)_generator.NextSingle();
+
+        /// <summary>
+        /// Return a random integer in the specified range
+        /// </summary>
+        /// <param name="minimum"></param>
+        /// <param name="maximum"></param>
+        /// <returns></returns>
+        public static decimal RandomDecimal(decimal minimum, decimal maximum)
+            => minimum + NextDecimal() * (maximum - minimum);
 
         /// <summary>
         /// Generate a random alphanumeric word of the specified length
@@ -131,6 +148,20 @@ namespace ShippingRecorder.Tests.Mocks
                 MMSI = RandomWord(9, 9),
                 Tonnage = RandomInt(40000, 80000),
                 Crew = RandomInt(500, 1000),
+            };
+
+        /// <summary>
+        /// Create a random vessel
+        /// </summary>
+        /// <returns></returns>
+        public static Vessel CreateVessel()
+            => new()
+            {
+                IMO = RandomInt(0, 9999999).ToString(),
+                Built = 1950 + RandomInt(0, DateTime.Today.Year - 1950),
+                Draught = RandomDecimal(0.5M, 10M),
+                Length = RandomInt(30, 300),
+                Beam = RandomInt(1, 35)
             };
     }
 }
