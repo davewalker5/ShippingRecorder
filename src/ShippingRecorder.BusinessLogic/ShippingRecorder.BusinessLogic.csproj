@@ -7,10 +7,10 @@
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2025</Copyright>
     <Owners>Dave Walker</Owners>
-    <Summary>Shiping Recorder Domain Models</Summary>
-    <PackageTags>ShippingRecorder domain models entities</PackageTags>
-    <Title>Shiping Recorder Domain Models</Title>
-    <Description>ShippingRecorder Domain Models</Description>
+    <Summary>Shiping Recorder Business Logic</Summary>
+    <PackageTags>ShippingRecorder business logic</PackageTags>
+    <Title>Shiping Recorder Business Logic</Title>
+    <Description>ShippingRecorder Business Logic</Description>
     <PackOnBuild>true</PackOnBuild>
     <PackageProjectUrl>https://github.com/davewalker5/ShippingRecorder</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ShippingRecorder.Entities.Db;
-using ShippingRecorder.Entities.Logging;
 
 namespace ShippingRecorder.Entities.Interfaces
 {

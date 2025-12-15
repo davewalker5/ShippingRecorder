@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingRecorder.Manager", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingRecorder.Api", "ShippingRecorder.Api\ShippingRecorder.Api.csproj", "{1C748BC5-3800-4E02-816B-7283711D0165}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingRecorder.Client", "ShippingRecorder.Client\ShippingRecorder.Client.csproj", "{1B116852-541F-4300-9E79-D70B129F270B}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{923DA9BB-E48D-44B5-AB5D-FBB6D7297FB1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -55,6 +57,10 @@ Global
 		{1C748BC5-3800-4E02-816B-7283711D0165}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C748BC5-3800-4E02-816B-7283711D0165}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C748BC5-3800-4E02-816B-7283711D0165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B116852-541F-4300-9E79-D70B129F270B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B116852-541F-4300-9E79-D70B129F270B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B116852-541F-4300-9E79-D70B129F270B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B116852-541F-4300-9E79-D70B129F270B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -42,6 +42,7 @@
     <ProjectReference Include="..\ShippingRecorder.Data\ShippingRecorder.Data.csproj" />
     <ProjectReference Include="..\ShippingRecorder.Entities\ShippingRecorder.Entities.csproj" />
     <ProjectReference Include="..\ShippingRecorder.BusinessLogic\ShippingRecorder.BusinessLogic.csproj" />
+    <ProjectReference Include="..\ShippingRecorder.Client\ShippingRecorder.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>
