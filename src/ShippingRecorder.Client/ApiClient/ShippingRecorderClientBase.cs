@@ -150,5 +150,62 @@ namespace ShippingRecorder.Client.ApiClient
         /// <returns></returns>
         protected T Deserialize<T>(string json) where T : class
             => !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<T>(json, _serializerOptions) : null;
+
+        /// <summary>
+        /// Calculate a from and to date range from two dates, either or both of which may be null
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        protected (DateTime fromDate, DateTime toDate) CalculateDateRange(DateTime? from, DateTime? to)
+        {
+            DateTime fromDate;
+            DateTime toDate;
+
+            if ((from == null) && (to == null))
+            {
+                // End of then range is now and the start is the default time period ago
+                toDate = DateTime.Now;
+                fromDate = toDate.AddDays(-Settings.DefaultTimePeriodDays);
+            }
+            else if ((from == null) && (to != null))
+            {
+                // End of then range is the specified date and the start is the default time period earlier
+                toDate = to.Value;
+                fromDate = toDate.AddDays(-Settings.DefaultTimePeriodDays);
+            }
+            else if ((from != null) && (to == null))
+            {
+                // The from date is the specified date and the end date is now
+                fromDate = from.Value;
+                toDate = DateTime.Now;
+            }
+            else
+            {
+                fromDate = from.Value;
+                toDate = to.Value;
+            }
+
+            return (fromDate, toDate);
+        }
+
+        /// <summary>
+        /// Calculate a from and to date range from two dates, either or both of which may be null, and return
+        /// the URL encoded result
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        protected (string encodedFromDate, string encodedToDate) CalculateEncodedDateRange(DateTime? from, DateTime? to)
+        {
+            // Determine the date range
+            (DateTime fromDate, DateTime toDate) = CalculateDateRange(from, to);
+
+            // Encode the dates
+            var encodedFromDate = HttpUtility.UrlEncode(fromDate.ToString(DateTimeFormat));
+            var encodedToDate = HttpUtility.UrlEncode(toDate.ToString(DateTimeFormat));
+
+            return (encodedFromDate, encodedToDate);
+        }
     }
 }

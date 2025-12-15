@@ -12,5 +12,6 @@ namespace ShippingRecorder.Entities.Interfaces
         List<ApiRoute> ApiRoutes { get; set; }
         string LogFile { get; set; }
         Severity MinimumLogLevel { get; set; }
+        int DefaultTimePeriodDays { get; set; }
     }
 }

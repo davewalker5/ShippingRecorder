@@ -138,6 +138,7 @@ namespace ShippingRecorder.Tests.Mocks
         public static RegistrationHistory CreateRegistrationHistory()
             => new()
             {
+                Id = RandomId(),
                 VesselId = RandomId(),
                 VesselTypeId = RandomId(),
                 FlagId = RandomId(),
@@ -157,11 +158,27 @@ namespace ShippingRecorder.Tests.Mocks
         public static Vessel CreateVessel()
             => new()
             {
+                Id = RandomId(),
                 IMO = RandomInt(0, 9999999).ToString(),
                 Built = 1950 + RandomInt(0, DateTime.Today.Year - 1950),
                 Draught = RandomDecimal(0.5M, 10M),
                 Length = RandomInt(30, 300),
                 Beam = RandomInt(1, 35)
+            };
+
+        /// <summary>
+        /// Create a random sighting
+        /// </summary>
+        /// <returns></returns>
+        public static Sighting CreateSighting()
+            => new()
+            {
+                Id = RandomId(),
+                LocationId = RandomId(),
+                VoyageId = RandomId(),
+                VesselId = RandomId(),
+                Date = DateTime.Now,
+                IsMyVoyage = RandomInt(0, 100) > 50
             };
     }
 }
