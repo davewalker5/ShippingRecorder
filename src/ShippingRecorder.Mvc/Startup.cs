@@ -1,0 +1,203 @@
+using ShippingRecorder.Mvc.Controllers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using ShippingRecorder.Mvc.Api;
+using ShippingRecorder.Entities.Config;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using ShippingRecorder.Mvc.Interfaces;
+using ShippingRecorder.Mvc.Services;
+using ShippingRecorder.Client.Interfaces;
+using ShippingRecorder.Client.ApiClient;
+using ShippingRecorder.Entities.Attributes;
+using ShippingRecorder.Entities.Interfaces;
+
+namespace ShippingRecorder.Mvc
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // Define the supported cultures
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-GB"),
+                new CultureInfo("en-US")
+            };
+
+            // Register request localization options
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture("en-GB"); // fallback
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+
+                // Use Accept-Language first (browser), then cookie, then query if you add it
+                options.RequestCultureProviders = new IRequestCultureProvider[]
+                {
+                    new AcceptLanguageHeaderRequestCultureProvider(), // browser header
+                    new CookieRequestCultureProvider(),               // optional cookie
+                    new QueryStringRequestCultureProvider()           // optional ?culture=en-GB
+                };
+            });
+
+            services.AddControllersWithViews();
+
+            // Configure automapper
+            services.AddAutoMapper(typeof(Startup));
+
+            // Set up the configuration reader
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            // Read the application settings section
+            IConfigurationSection section = configuration.GetSection("ApplicationSettings");
+            var settings = section.Get<ShippingRecorderApplicationSettings>();
+            services.AddSingleton<IShippingRecorderApplicationSettings>(settings);
+
+            // The authentication token provider needs to access session via the context
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAuthenticationTokenProvider, AuthenticationTokenProvider>();
+
+            // Configure the cache
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheWrapper>(s => new CacheWrapper(new MemoryCacheOptions()));
+            
+            // Configure the client APIs
+            services.AddSingleton<IShippingRecorderHttpClient>(provider => ShippingRecorderHttpClient.Instance);
+            services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
+            services.AddSingleton<ICountryClient, CountryClient>();
+            services.AddSingleton<ILocationClient, LocationClient>();
+            services.AddSingleton<IOperatorClient, OperatorClient>();
+            services.AddSingleton<IPortClient, PortClient>();
+            services.AddSingleton<IRegistrationHistoryClient, RegistrationHistoryClient>();
+            services.AddSingleton<ISightingClient, SightingClient>();
+            services.AddSingleton<IVesselClient, VesselClient>();
+            services.AddSingleton<IVoyageClient, VoyageClient>();
+            services.AddSingleton<IVoyageEventClient, VoyageEventClient>();
+
+            // Modal dialog support
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddScoped<IPartialViewToStringRenderer, PartialViewToStringRenderer>();
+
+            // Configure session state for token storage
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            // Configure JWT
+            byte[] key = Encoding.ASCII.GetBytes(settings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            // This pulls the request localisation options configured in ConfigureServices and registers
+            // the middleware early, which is crucial
+            var options = app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(options);
+
+            if (env.IsDevelopment())
+            {
+                // Resolve the settings singleton to see whether we should use the custom error page, even in
+                // the development environment
+                var settings = app.ApplicationServices.GetService<ShippingRecorderApplicationSettings>();
+                bool useCustomErrorPage = settings?.UseCustomErrorPageInDevelopment ?? false;
+
+                if (useCustomErrorPage)
+                {
+                    app.UseExceptionHandler("/Home/Error");
+                    app.UseHsts();
+                }
+                else
+                {
+                    app.UseDeveloperExceptionPage();
+                }      
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseSession();
+
+            // Set up a class that provides classes that are not managed by the DI container (Attributes)
+            // with access to the instances of the cache and HTTP clients that are registered in the
+            // ConfigureServices() method
+            ServiceAccessor.SetProvider(app.ApplicationServices);
+
+            // JWT authentication with the service is used to authenticate in the UI, so the user data
+            // is held in one place (the service database). The login page authenticates with the service
+            // and, if successful, stores the JWT token in session. This code segment injects the stored
+            // token (if present) into an incoming request
+            app.Use(async (context, next) =>
+            {
+                string token = context.Session.GetString(AuthenticationTokenProvider.TokenSessionKey);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Request.Headers.Append("Authorization", "Bearer " + token);
+                }
+                await next();
+            });
+
+            // Await completion of the pipeline. Once it's done, check the status code and, if it's a
+            // 401 Unauthorized, redirect to the login page
+            app.Use(async (context, previous) =>
+            {
+                await previous();
+                if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+                {
+                    context.Response.Redirect(LoginController.LoginPath);
+                }
+            });
+
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+    }
+}

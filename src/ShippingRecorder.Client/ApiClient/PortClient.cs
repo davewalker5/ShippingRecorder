@@ -17,8 +17,9 @@ namespace ShippingRecorder.Client.ApiClient
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
             IAuthenticationTokenProvider tokenProvider,
+            ICacheWrapper cache,
             ILogger<PortClient> logger)
-            : base(client, settings, tokenProvider, logger)
+            : base(client, settings, tokenProvider, cache, logger)
         {
         }
 

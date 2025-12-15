@@ -29,7 +29,8 @@ namespace ShippingRecorder.Api
 
             // Read the configuration file
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .Build();
 
             // Configure strongly typed application settings
@@ -48,7 +49,7 @@ namespace ShippingRecorder.Api
             // Get the version number and application title
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo info = FileVersionInfo.GetVersionInfo(assembly.Location);
-            var title = $"Flight Recorder API v{info.FileVersion}";
+            var title = $"Shipping Recorder API v{info.FileVersion}";
 
             // Create the file logger and log the startup messages
             var logger = new FileLogger();

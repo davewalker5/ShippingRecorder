@@ -34,7 +34,8 @@ namespace ShippingRecorder.Tests.Client
             var provider = new Mock<IAuthenticationTokenProvider>();
             provider.Setup(x => x.GetToken()).Returns(ApiToken);
             var logger = new Mock<ILogger<VesselClient>>();
-            _client = new VesselClient(_httpClient, _settings, provider.Object, logger.Object);
+            var cache = new Mock<ICacheWrapper>();
+            _client = new VesselClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
         }
 
         [TestMethod]
