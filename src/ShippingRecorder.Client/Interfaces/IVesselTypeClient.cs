@@ -6,6 +6,7 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface IVesselTypeClient
     {
+        Task<VesselType> GetAsync(long id);
         Task<VesselType> AddAsync(string name);
         Task DeleteAsync(long id);
         Task<List<VesselType>> ListAsync(int pageNumber, int pageSize);

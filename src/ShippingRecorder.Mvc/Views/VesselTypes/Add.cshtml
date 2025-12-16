@@ -1,0 +1,29 @@
+﻿@model ShippingRecorder.Mvc.Models.AddVesselTypeViewModel
+
+@{
+    ViewData["Title"] = "Add Vessel Type";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Add Vessel Type</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="row">
+                <div class="col-md">
+                    <span>@Html.Raw(Model.Message)</span>
+                </div>
+            </div>
+            <br />
+        }
+
+        @await Html.PartialAsync("VesselType", Model);
+    }
+</div>

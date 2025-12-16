@@ -13,7 +13,7 @@
         /// Set the "previous/next" button enabled flags according to the
         /// following logic, where SZ is the page size:
         ///
-        /// Flight  Page    Previous    Next
+        /// Entity  Page    Previous    Next
         /// Count   Number  Enabled     Enabled
         ///
         /// 0       -       No          No

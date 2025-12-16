@@ -32,7 +32,12 @@ namespace ShippingRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var countries = await _client.ListAsync(1, _settings.SearchPageSize);
+            // Get the list of current countries
+            var countries = await _client.ListAsync(1, _settings.SearchPageSize) ?? [];
+            var plural = countries.Count == 1 ? "country" : "countries";
+            _logger.LogDebug($"{countries.Count} {plural} loaded via the service");
+
+            // Construct the view model and serve the page
             var model = new CountryListViewModel();
             model.SetCountries(countries, 1, _settings.SearchPageSize);
             return View(model);
@@ -100,6 +105,7 @@ namespace ShippingRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
+                _logger.LogDebug($"Adding country: Code = {model.Code}, Name = {model.Name}");
                 Country country = await _client.AddAsync(model.Code, model.Name);
                 ModelState.Clear();
                 model.Clear();
@@ -138,6 +144,7 @@ namespace ShippingRecorder.Mvc.Controllers
 
             if (ModelState.IsValid)
             {
+                _logger.LogDebug($"Updating country: ID = {model.Id}, Code = {model.Code}, Name = {model.Name}");
                 await _client.UpdateAsync(model.Id, model.Code, model.Name);
                 result = RedirectToAction("Index");
             }

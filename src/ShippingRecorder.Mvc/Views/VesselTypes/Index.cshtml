@@ -1,15 +1,15 @@
 ﻿@using ShippingRecorder.Mvc.Entities
-@model ShippingRecorder.Mvc.Models.LocationListViewModel
+@model ShippingRecorder.Mvc.Models.VesselTypeListViewModel
 
 @{
-    ViewData["Title"] = "Locations";
+    ViewData["Title"] = "Vessel Types";
     string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
     string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
 }
 
 <p class="text-center font-weight-bold">
     <span style="font-size: 1.2rem">
-        Recording Locations
+        Vessel Types
     </span>
     <br />
     <small class="text-muted">
@@ -30,12 +30,12 @@
                 <th>Name</th>
                 <th />
             </tr>
-            @foreach (var location in Model.Locations)
+            @foreach (var location in Model.VesselTypes)
             {
                 <tr>
                     <td valign="center">@location.Name</td>
                     <td valign="center">
-                        <a class="btn btn-lg" asp-area="" asp-controller="Locations" asp-action="Edit" asp-route-id="@location.Id">
+                        <a class="btn btn-lg" asp-area="" asp-controller="VesselTypes" asp-action="Edit" asp-route-id="@location.Id">
                             <i class="fas fa-edit"></i>
                         </a>
                     </td>
@@ -46,7 +46,7 @@
         <p class="text-right">
             <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
             <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
-            <a class="btn btn-primary" href="/Locations/Add" role="button">Add</a>
+            <a class="btn btn-primary" href="/VesselTypes/Add" role="button">Add</a>
         </p>
     }
 </div>

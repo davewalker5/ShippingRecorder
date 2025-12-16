@@ -33,7 +33,7 @@ namespace ShippingRecorder.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             // Get the list of current locations
-            List<Location> locations = await _client.ListAsync(1, _settings.SearchPageSize);
+            List<Location> locations = await _client.ListAsync(1, _settings.SearchPageSize) ?? [];
             var plural = locations.Count == 1 ? "" : "s";
             _logger.LogDebug($"{locations.Count} location{plural} loaded via the service");
 
