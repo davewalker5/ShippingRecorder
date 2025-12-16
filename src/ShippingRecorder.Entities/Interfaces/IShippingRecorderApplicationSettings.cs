@@ -14,5 +14,6 @@ namespace ShippingRecorder.Entities.Interfaces
         Severity MinimumLogLevel { get; set; }
         int DefaultTimePeriodDays { get; set; }
         bool UseCustomErrorPageInDevelopment { get; set; }
+        int SearchPageSize { get; set; }
     }
 }
