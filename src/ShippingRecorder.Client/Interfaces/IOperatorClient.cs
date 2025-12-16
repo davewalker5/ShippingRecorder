@@ -6,6 +6,7 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface IOperatorClient
     {
+        Task<Operator> GetAsync(long id);
         Task<Operator> AddAsync(string name);
         Task DeleteAsync(long id);
         Task<List<Operator>> ListAsync(int pageNumber, int pageSize);
