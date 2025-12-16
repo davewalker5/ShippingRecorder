@@ -6,6 +6,7 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface ILocationClient
     {
+        Task<Location> GetAsync(long id);
         Task<Location> AddAsync(string name);
         Task DeleteAsync(long id);
         Task<List<Location>> ListAsync(int pageNumber, int pageSize);

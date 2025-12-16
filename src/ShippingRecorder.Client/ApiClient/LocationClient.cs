@@ -24,6 +24,20 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the location with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<Location> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var location = Deserialize<Location>(json);
+            return location;
+        }
+
+        /// <summary>
         /// Add a new location to the database
         /// </summary>
         /// <param
