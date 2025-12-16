@@ -9,6 +9,7 @@ namespace ShippingRecorder.Mvc.Models
         public void Clear()
         {
             Id = 0;
+            Code = "";
             Name = "";
             Message = "";
         }
