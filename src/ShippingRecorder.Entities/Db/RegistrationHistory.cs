@@ -32,6 +32,7 @@ namespace ShippingRecorder.Entities.Db
         public long OperatorId { get; set; }
 
         [DisplayName("From")]
+        [UIHint("DatePicker")]
         [Required(ErrorMessage = "You must provide a date")]
         public DateTime Date { get; set; }
 
