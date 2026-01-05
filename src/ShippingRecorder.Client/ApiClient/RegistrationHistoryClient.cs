@@ -25,6 +25,20 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the current active registration history for a vessel
+        /// </summary>
+        /// <param name="vesselId"></param>
+        /// <returns></returns>
+        public async Task<RegistrationHistory> GetActiveRegistrationForVesselAsync(long vesselId)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/vessel/{vesselId}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var registration = Deserialize<RegistrationHistory>(json);
+            return registration;
+        }
+
+        /// <summary>
         /// Add a new registration history to the database
         /// </summary>
         /// <param name="vesselId"></param>
@@ -75,9 +89,9 @@ namespace ShippingRecorder.Client.ApiClient
 
             var data = Serialize(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            var location = Deserialize<RegistrationHistory>(json);
+            var registration = Deserialize<RegistrationHistory>(json);
 
-            return location;
+            return registration;
         }
 
         /// <summary>
@@ -107,8 +121,8 @@ namespace ShippingRecorder.Client.ApiClient
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
 
             // The returned JSON will be empty if there are no registration histories in the database
-            List<RegistrationHistory> locations = Deserialize<List<RegistrationHistory>>(json);
-            return locations;
+            List<RegistrationHistory> registrations = Deserialize<List<RegistrationHistory>>(json);
+            return registrations;
         }
     }
 }

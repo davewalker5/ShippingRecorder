@@ -7,7 +7,13 @@
     <div class="col-md">
         <strong>@Html.LabelFor(m => m.Code)</strong>
         <div class="input-group">
-            @Html.EditorFor(m => m.Code, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Code, new {
+                        @class = "form-control",
+                        type = "text",
+                        inputmode = "text",
+                        pattern = "[A-Za-z]*",
+                        oninput = "this.value = this.value.replace(/[^A-Za-z]/g, '')"
+                    })
         </div>
         <span>@Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })</span>
     </div>

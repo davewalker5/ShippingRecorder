@@ -15,6 +15,7 @@ using ShippingRecorder.Client.Interfaces;
 using ShippingRecorder.Client.ApiClient;
 using ShippingRecorder.Entities.Attributes;
 using ShippingRecorder.Entities.Interfaces;
+using HealthTracker.Mvc.Helpers;
 
 namespace ShippingRecorder.Mvc
 {
@@ -95,6 +96,11 @@ namespace ShippingRecorder.Mvc
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IPartialViewToStringRenderer, PartialViewToStringRenderer>();
 
+            // Helpers
+            services.AddScoped<ICountryListGenerator, CountryListGenerator>();
+            services.AddScoped<IOperatorListGenerator, OperatorListGenerator>();
+            services.AddScoped<IVesselTypeListGenerator, VesselTypeListGenerator>();
+
             // Configure session state for token storage
             services.AddSession(options =>
             {
@@ -136,9 +142,8 @@ namespace ShippingRecorder.Mvc
             {
                 // Resolve the settings singleton to see whether we should use the custom error page, even in
                 // the development environment
-                var settings = app.ApplicationServices.GetService<ShippingRecorderApplicationSettings>();
+                var settings = app.ApplicationServices.GetService<IShippingRecorderApplicationSettings>();
                 bool useCustomErrorPage = settings?.UseCustomErrorPageInDevelopment ?? false;
-
                 if (useCustomErrorPage)
                 {
                     app.UseExceptionHandler("/Home/Error");

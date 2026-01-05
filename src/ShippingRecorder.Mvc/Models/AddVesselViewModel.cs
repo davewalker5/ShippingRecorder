@@ -2,18 +2,18 @@ using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Mvc.Models
 {
-    public class AddVesselViewModel : Vessel
+    public class AddVesselViewModel : VesselModel
     {
         public string Message { get; set; }
 
         public void Clear()
         {
-            Id = 0;
-            IMO = "";
-            Built = null;
-            Draught = null;
-            Length = null;
-            Beam = null;
+            Vessel.Id = 0;
+            Vessel.IMO = "";
+            Vessel.Built = null;
+            Vessel.Draught = null;
+            Vessel.Length = null;
+            Vessel.Beam = null;
             Message = "";
         }
     }

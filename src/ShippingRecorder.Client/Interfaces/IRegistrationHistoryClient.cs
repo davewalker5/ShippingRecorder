@@ -7,6 +7,8 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface IRegistrationHistoryClient
     {
+        Task<RegistrationHistory> GetActiveRegistrationForVesselAsync(long vesselId);
+
         Task<RegistrationHistory> AddAsync(
             long vesselId,
             long vesselTypeId,

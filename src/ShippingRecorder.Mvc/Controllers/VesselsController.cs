@@ -12,16 +12,28 @@ namespace ShippingRecorder.Mvc.Controllers
     [Authorize]
     public class VesselsController : ShippingRecorderControllerBase
     {
-        private readonly IVesselClient _client;
+        private readonly IVesselClient _vesselClient;
+        private readonly IRegistrationHistoryClient _registrationClient;
+        private readonly ICountryListGenerator _countryListGenerator;
+        private readonly IOperatorListGenerator _operatorListGenerator;
+        private readonly IVesselTypeListGenerator _vesselTypesListGenerator;
         private readonly IShippingRecorderApplicationSettings _settings;
 
         public VesselsController(
-            IVesselClient client,
+            IVesselClient vesselClient,
+            IRegistrationHistoryClient registrationClient,
+            ICountryListGenerator countryListGenertor,
+            IOperatorListGenerator operatorListGenerator,
+            IVesselTypeListGenerator vesselTypesListGenertor,
             IShippingRecorderApplicationSettings settings,
             IPartialViewToStringRenderer renderer,
             ILogger<VesselsController> logger) : base (renderer, logger)
         {
-            _client = client;
+            _vesselClient = vesselClient;
+            _registrationClient = registrationClient;
+            _countryListGenerator = countryListGenertor;
+            _operatorListGenerator = operatorListGenerator;
+            _vesselTypesListGenerator = vesselTypesListGenertor;
             _settings = settings;
         }
 
@@ -33,7 +45,7 @@ namespace ShippingRecorder.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             // Get the list of current vessels
-            List<Vessel> vessels = await _client.ListAsync(1, _settings.SearchPageSize) ?? [];
+            List<Vessel> vessels = await _vesselClient.ListAsync(1, _settings.SearchPageSize) ?? [];
             var plural = vessels.Count == 1 ? "" : "s";
             _logger.LogDebug($"{vessels.Count} vessel{plural} loaded via the service");
 
@@ -73,7 +85,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Retrieve the matching airport records
-                var vessels = await _client.ListAsync(page, _settings.SearchPageSize);
+                var vessels = await _vesselClient.ListAsync(page, _settings.SearchPageSize);
                 model.SetVessels(vessels, page, _settings.SearchPageSize);
             }
             else
@@ -89,9 +101,14 @@ namespace ShippingRecorder.Mvc.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
-            return View(new AddVesselViewModel());
+            return View(new AddVesselViewModel()
+            {
+                Countries = await _countryListGenerator.Create(),
+                Operators = await _operatorListGenerator.Create(),
+                VesselTypes = await _vesselTypesListGenerator.Create()
+            });
         }
 
         /// <summary>
@@ -105,8 +122,48 @@ namespace ShippingRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                _logger.LogDebug($"Adding vessel: IMO = {model.IMO}, Built = {model.Built}, Draught = {model.Draught}, Length = {model.Length}, Beam = {model.Beam}");
-                Vessel vessel = await _client.AddAsync(model.IMO, model.Built, model.Draught, model.Length, model.Beam);
+                _logger.LogDebug(
+                    $"Adding vessel: " +
+                    $"IMO = {model.Vessel.IMO}, " +
+                    $"Built = {model.Vessel.Built}, " +
+                    $"Draught = {model.Vessel.Draught}, " +
+                    $"Length = {model.Vessel.Length}, " +
+                    $"Beam = {model.Vessel.Beam}, " +
+                    $"Vessel Type ID = {model.Registration.VesselTypeId}, " +
+                    $"Flag ID = {model.Registration.FlagId}, " +
+                    $"Operator ID = {model.Registration.OperatorId}, " +
+                    $"Date = {model.Registration.Date}, " +
+                    $"Name = {model.Registration.Name}, " +
+                    $"Callsign = {model.Registration.Callsign}, " +
+                    $"MMSI = {model.Registration.MMSI}, " +
+                    $"Tonnage = {model.Registration.Tonnage}, " +
+                    $"Passengers = {model.Registration.Passengers}, " +
+                    $"Crew = {model.Registration.Crew}, " +
+                    $"Decks = {model.Registration.Decks}, " +
+                    $"Cabins = {model.Registration.Cabins}");
+
+                Vessel vessel = await _vesselClient.AddAsync(
+                    model.Vessel.IMO,
+                    model.Vessel.Built,
+                    model.Vessel.Draught,
+                    model.Vessel.Length,
+                    model.Vessel.Beam);
+
+                await _registrationClient.AddAsync(
+                    vessel.Id,
+                    model.Registration.VesselTypeId,
+                    model.Registration.FlagId,
+                    model.Registration.OperatorId,
+                    model.Registration.Date,
+                    model.Registration.Name,
+                    model.Registration.Callsign,
+                    model.Registration.MMSI,
+                    model.Registration.Tonnage,
+                    model.Registration.Passengers,
+                    model.Registration.Crew,
+                    model.Registration.Decks,
+                    model.Registration.Cabins);
+    
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Vessel '{vessel.IMO}' added successfully";
@@ -115,6 +172,11 @@ namespace ShippingRecorder.Mvc.Controllers
             {
                 LogModelState();
             }
+
+            // Load the drop-down content
+            model.Countries = await _countryListGenerator.Create();
+            model.Operators = await _operatorListGenerator.Create();
+            model.VesselTypes = await _vesselTypesListGenerator.Create();
 
             return View(model);
         }
@@ -127,8 +189,16 @@ namespace ShippingRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            Vessel model = await _client.GetAsync(id);
-            return View(model);
+            Vessel vessel = await _vesselClient.GetAsync(id);
+            RegistrationHistory registration = await _registrationClient.GetActiveRegistrationForVesselAsync(id);
+            return View(new VesselModel
+            {
+                Vessel = vessel,
+                Registration = registration ?? new() { Date = DateTime.Now },
+                Countries = await _countryListGenerator.Create(),
+                Operators = await _operatorListGenerator.Create(),
+                VesselTypes = await _vesselTypesListGenerator.Create()
+            });
         }
 
         /// <summary>
@@ -138,14 +208,60 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Vessel model)
+        public async Task<IActionResult> Edit(VesselModel model)
         {
             IActionResult result;
 
             if (ModelState.IsValid)
             {
-                _logger.LogDebug($"Updating vessel: ID = {model.Id}, IMO = {model.IMO}, Built = {model.Built}, Draught = {model.Draught}, Length = {model.Length}, Beam = {model.Beam}");
-                await _client.UpdateAsync(model.Id, model.IMO, model.Built, model.Draught, model.Length, model.Beam);
+                _logger.LogDebug(
+                    $"Updating vessel: ID = {model.Vessel.Id}, " +
+                    $"IMO = {model.Vessel.IMO}, " +
+                    $"Built = {model.Vessel.Built}, " +
+                    $"Draught = {model.Vessel.Draught}, " +
+                    $"Length = {model.Vessel.Length}, " +
+                    $"Beam = {model.Vessel.Beam}, " +
+                    $"Vessel Type ID = {model.Registration.VesselTypeId}, " +
+                    $"Flag ID = {model.Registration.FlagId}, " +
+                    $"Operator ID = {model.Registration.OperatorId}, " +
+                    $"Date = {model.Registration.Date}, " +
+                    $"Name = {model.Registration.Name}, " +
+                    $"Callsign = {model.Registration.Callsign}, " +
+                    $"MMSI = {model.Registration.MMSI}, " +
+                    $"Tonnage = {model.Registration.Tonnage}, " +
+                    $"Passengers = {model.Registration.Passengers}, " +
+                    $"Crew = {model.Registration.Crew}, " +
+                    $"Decks = {model.Registration.Decks}, " +
+                    $"Cabins = {model.Registration.Cabins}");
+
+                await _vesselClient.UpdateAsync(
+                    model.Vessel.Id,
+                    model.Vessel.IMO,
+                    model.Vessel.Built,
+                    model.Vessel.Draught,
+                    model.Vessel.Length,
+                    model.Vessel.Beam);
+
+                // Load the original registration history for the vessel and see if there are any changes
+                RegistrationHistory registration = await _registrationClient.GetActiveRegistrationForVesselAsync(model.Vessel.Id);
+                if (model.Registration != registration)
+                {
+                    await _registrationClient.AddAsync(
+                        model.Vessel.Id,
+                        model.Registration.VesselTypeId,
+                        model.Registration.FlagId,
+                        model.Registration.OperatorId,
+                        model.Registration.Date,
+                        model.Registration.Name,
+                        model.Registration.Callsign,
+                        model.Registration.MMSI,
+                        model.Registration.Tonnage,
+                        model.Registration.Passengers,
+                        model.Registration.Crew,
+                        model.Registration.Decks,
+                        model.Registration.Cabins);
+                }
+
                 result = RedirectToAction("Index");
             }
             else
@@ -153,6 +269,11 @@ namespace ShippingRecorder.Mvc.Controllers
                 LogModelState();
                 result = View(model);
             }
+
+            // Load the drop-down content
+            model.Countries = await _countryListGenerator.Create();
+            model.Operators = await _operatorListGenerator.Create();
+            model.VesselTypes = await _vesselTypesListGenerator.Create();
 
             return result;
         }
