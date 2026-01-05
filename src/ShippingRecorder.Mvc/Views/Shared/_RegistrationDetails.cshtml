@@ -1,0 +1,114 @@
+@using HealthTracker.Mvc.Helpers
+@model ShippingRecorder.Mvc.Models.VesselModel
+
+@{
+    var formControlAttributes = HtmlAttributesBuilder.FormControlAttributes(Model.Editable);
+    var numericOnlyAttributes = HtmlAttributesBuilder.IntegerAttributes(Model.Editable);
+}
+
+@Html.HiddenFor(m => m.Registration.Id)
+@Html.HiddenFor(m => m.Registration.IsActive)
+@Html.HiddenFor(m => m.Editable)
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.VesselTypeId)</strong>
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Registration.VesselTypeId, Model.VesselTypes, formControlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.VesselTypeId, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.FlagId)</strong>
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Registration.FlagId, Model.Countries, formControlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.FlagId, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.OperatorId)</strong>
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Registration.OperatorId, Model.Operators, formControlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.OperatorId, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br/>
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Date)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Date, "{0:yyyy-MM-dd}", new Dictionary<string, object>(formControlAttributes)
+            {
+                ["type"] = "date"
+            })
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Date, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Name)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Name, formControlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Name, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Callsign)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Callsign, formControlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Callsign, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+</br>
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.MMSI)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.MMSI, numericOnlyAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.MMSI, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Tonnage)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Tonnage, numericOnlyAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Tonnage, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Passengers)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Passengers, numericOnlyAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Passengers, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+</br>
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Crew)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Crew, numericOnlyAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Crew, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Decks)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Decks, numericOnlyAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Decks, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Registration.Cabins)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Registration.Cabins, numericOnlyAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Registration.Cabins, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+</br>

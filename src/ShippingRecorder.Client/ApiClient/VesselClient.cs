@@ -38,6 +38,20 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the vessel with the specified IMO
+        /// </summary>
+        /// <param name="imo"></param>
+        /// <returns></returns>
+        public async Task<Vessel> GetAsync(string imo)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/imo/{imo}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var vessel = Deserialize<Vessel>(json);
+            return vessel;
+        }
+
+        /// <summary>
         /// Add a new vessel to the database
         /// </summary>
         /// <param name="imo"></param>

@@ -10,7 +10,7 @@ namespace ShippingRecorder.Mvc.Controllers
     [Authorize]
     public class SightingDetailsController : ShippingRecorderControllerBase
     {
-        private AddSightingWizard _wizard;
+        private readonly AddSightingWizard _wizard;
 
         public SightingDetailsController(
             AddSightingWizard wizard,
@@ -48,9 +48,7 @@ namespace ShippingRecorder.Mvc.Controllers
             if (haveLocation && ModelState.IsValid)
             {
                 _wizard.CacheSightingDetailsModel(model, User.Identity.Name);
-                // TODO: Redirect to the next step
-                // result = RedirectToAction("Index", "FlightDetails", new { number = model.FlightNumber });
-                result = View(model);
+                result = RedirectToAction("Index", "VesselDetails");
             }
             else
             {
