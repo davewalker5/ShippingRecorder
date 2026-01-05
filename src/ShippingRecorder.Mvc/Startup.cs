@@ -101,6 +101,7 @@ namespace ShippingRecorder.Mvc
             services.AddScoped<ICountryListGenerator, CountryListGenerator>();
             services.AddScoped<IOperatorListGenerator, OperatorListGenerator>();
             services.AddScoped<IVesselTypeListGenerator, VesselTypeListGenerator>();
+            services.AddScoped<ILocationListGenerator, LocationListGenerator>();
 
             // Configure the sightings wizard
             services.AddScoped<AddSightingWizard>();

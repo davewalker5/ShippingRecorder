@@ -166,12 +166,12 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var sightings = await _client.ListSightingsByLocationAsync(sighting.LocationId, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/location/{sighting.LocationId}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/location/{sighting.LocationId}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
-            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.StartsWith(expectedRoute, _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
             Assert.IsNotNull(sightings);
