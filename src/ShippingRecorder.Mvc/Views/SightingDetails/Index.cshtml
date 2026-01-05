@@ -22,7 +22,7 @@
 
         @if ((Model.LastSightingAdded != null) && (Model.SightingId == null))
         {
-            @await Html.PartialAsync("SightingSummary",
+            @await Html.PartialAsync("_SightingSummary",
             new SightingSummaryViewModel()
             {
                 Message = $"Sighting Saved",

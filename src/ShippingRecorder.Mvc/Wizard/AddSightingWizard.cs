@@ -20,7 +20,6 @@ namespace ShippingRecorder.Mvc.Wizard
         private readonly IVesselClient _vesselClient;
         private readonly IRegistrationHistoryClient _registrationHistoryClient;
         private readonly ISightingClient _sightingClient;
-        private readonly ISightingSearchClient _sightingSearchClient;
         private readonly IShippingRecorderApplicationSettings _settings;
         private readonly ICacheWrapper _cache;
         private readonly ILogger<AddSightingWizard> _logger;
@@ -33,7 +32,6 @@ namespace ShippingRecorder.Mvc.Wizard
             IVesselClient vessels,
             IRegistrationHistoryClient registrationHistory,
             ISightingClient sightings,
-            ISightingSearchClient sightingSearchClient,
             IShippingRecorderApplicationSettings settings,
             ICacheWrapper cache,
             ILogger<AddSightingWizard> logger)
@@ -45,7 +43,6 @@ namespace ShippingRecorder.Mvc.Wizard
             _vesselClient = vessels;
             _registrationHistoryClient = registrationHistory;
             _sightingClient = sightings;
-            _sightingSearchClient = sightingSearchClient;
             _settings = settings;
             _cache = cache;
             _logger = logger;
@@ -155,7 +152,7 @@ namespace ShippingRecorder.Mvc.Wizard
                 model.Editable = false;
 
                 // Retrieve the most recent sighting of this vessel
-                model.MostRecentSighting = await _sightingSearchClient.GetMostRecentVesselSightingAsync(vessel.IMO);
+                model.MostRecentSighting = await _sightingClient.GetMostRecentVesselSightingAsync(vessel.IMO);
             }
 
             _logger.LogDebug($"Resolved vessel details model: {model}");

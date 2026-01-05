@@ -22,7 +22,7 @@
 
         @if (Model.MostRecentSighting != null)
         {
-            @await Html.PartialAsync("SightingSummary",
+            @await Html.PartialAsync("_SightingSummary",
             new SightingSummaryViewModel()
             {
                 Message = $"Most Recent Sighting of {Model.MostRecentSighting.Vessel.IMO}",

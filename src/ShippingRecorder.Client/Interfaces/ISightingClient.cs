@@ -11,6 +11,7 @@ namespace ShippingRecorder.Client.Interfaces
         Task<Sighting> AddAsync(long locationId, long? voyageId, long vesselId, DateTime date, bool isMyVoyage);
         Task DeleteAsync(long id);
         Task<List<Sighting>> ListAsync(int pageNumber, int pageSize);
+        Task<Sighting> GetMostRecentVesselSightingAsync(string imo);
         Task<List<Sighting>> ListSightingsByVesselAsync(long vesselId, int pageNumber, int pageSize);
         Task<List<Sighting>> ListSightingsByLocationAsync(long locationId, int pageNumber, int pageSize);
         Task<List<Sighting>> ListSightingsByDateAsync(DateTime start, DateTime end,  int pageNumber, int pageSize);
