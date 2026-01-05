@@ -187,7 +187,10 @@ namespace ShippingRecorder.Mvc.Wizard
                 Editable = false,
                 Date = sighting.Date ?? DateTime.Today,
                 Vessel = vesselDetails.Vessel,
-                Registration = vesselDetails.Registration
+                Registration = vesselDetails.Registration,
+                VesselTypes = await _vesselTypeListGenerator.Create(),
+                Countries = await _countryListGenerator.Create(),
+                Operators = await _operatorListGenerator.Create()
             };
 
             // For the location, if we have a new location specified then use that as the
