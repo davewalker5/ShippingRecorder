@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ShippingRecorder.Entities.Attributes
 {
+    [ExcludeFromCodeCoverage]
     public static class ServiceAccessor
     {
         private static readonly object _lock = new object();

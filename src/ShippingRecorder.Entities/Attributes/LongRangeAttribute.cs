@@ -1,9 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ShippingRecorder.Entities.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
+    [ExcludeFromCodeCoverage]
     public class LongRangeAttribute : ValidationAttribute
     {
         public long Minimum { get; set; }
