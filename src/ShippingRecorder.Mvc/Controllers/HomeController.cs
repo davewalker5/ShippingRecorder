@@ -4,16 +4,21 @@ using ShippingRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ShippingRecorder.Mvc.Wizard;
 
 namespace ShippingRecorder.Mvc.Controllers
 {
     [Authorize]
     public class HomeController : ShippingRecorderControllerBase
     {
+        private AddSightingWizard _wizard;
+
         public HomeController(
+            AddSightingWizard wizard,
             IPartialViewToStringRenderer renderer,
             ILogger<HomeController> logger) : base (renderer, logger)
         {
+            _wizard = wizard;
         }
 
         /// <summary>
@@ -23,7 +28,10 @@ namespace ShippingRecorder.Mvc.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            // If we hit the home page via this action method, reset the add sighting wizard
+            // as we're starting from scratch with a new entry
+            _wizard.Reset(User.Identity.Name);
+            return RedirectToAction("Index", "SightingDetails");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

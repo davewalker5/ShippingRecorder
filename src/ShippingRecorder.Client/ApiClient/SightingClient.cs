@@ -25,6 +25,20 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the sighting with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<Sighting> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var sighting = Deserialize<Sighting>(json);
+            return sighting;
+        }
+
+        /// <summary>
         /// Add a new sighting to the database
         /// </summary>
         /// <param name="locationId"></param>

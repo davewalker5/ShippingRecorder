@@ -16,6 +16,7 @@ using ShippingRecorder.Client.ApiClient;
 using ShippingRecorder.Entities.Attributes;
 using ShippingRecorder.Entities.Interfaces;
 using HealthTracker.Mvc.Helpers;
+using ShippingRecorder.Mvc.Wizard;
 
 namespace ShippingRecorder.Mvc
 {
@@ -100,6 +101,9 @@ namespace ShippingRecorder.Mvc
             services.AddScoped<ICountryListGenerator, CountryListGenerator>();
             services.AddScoped<IOperatorListGenerator, OperatorListGenerator>();
             services.AddScoped<IVesselTypeListGenerator, VesselTypeListGenerator>();
+
+            // Configure the sightings wizard
+            services.AddScoped<AddSightingWizard>();
 
             // Configure session state for token storage
             services.AddSession(options =>

@@ -1,0 +1,132 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.SightingDetailsViewModel
+
+@{
+    ViewData["Title"] = "Sighting : Sighting Details";
+    var defaultDate = (Model.Date ?? DateTime.Now).ToString("MM/dd/yyyy");
+}
+
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.SightingId)
+
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Sighting : Sighting Details</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @if ((Model.LastSightingAdded != null) && (Model.SightingId == null))
+        {
+            @await Html.PartialAsync("SightingSummary",
+            new SightingSummaryViewModel()
+            {
+                Message = $"Sighting Saved",
+                Sighting = Model.LastSightingAdded
+            });
+        }
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Date)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.EditorFor(m => m.Date, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.Date, "", new { @class = "text-danger" })</span>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.LocationId)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.DropDownListFor(m => m.LocationId, new List<SelectListItem>(Model.Locations), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.NewLocation)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    <strong>@Html.TextBoxFor(m => m.NewLocation)</strong>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.LocationErrorMessage))
+                {
+                    <span class="text-danger">@Html.Raw(Model.LocationErrorMessage)</span>
+                }
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.IMO)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.IMO, new {
+                        @class = "form-control",
+                        type = "text",
+                        inputmode = "numeric",
+                        pattern = "[0-9]*",
+                        oninput = "this.value = this.value.replace(/[^0-9]/g, '')"
+                    })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.IMO, "", new { @class = "text-danger" })</span>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.IsMyVoyage)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.CheckBoxFor(m => m.IsMyVoyage, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.IsMyVoyage, "", new { @class = "text-danger" })</span>
+            </div>
+        </div>
+        <hr />
+
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Next</button>
+        </p>
+    }
+</div>
+
+<script type="text/javascript">$(document).ready(function () {
+    // If a location is selected from the drop-down, clear the "new location" text box
+    $("#LocationId").change(function () {
+            $("#NewLocation").val("");
+        });
+
+        // If a new location is entered in the text box, clear the "location" dropdown selection
+        $("#NewLocation").change(function () {
+            $("#LocationId").val("");
+        });
+
+        // Capture the ENTER key and click the primary button instead
+        $(document).keypress(function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $(".btn-primary").click();
+                return false;
+            }
+        });
+    });
+</script>

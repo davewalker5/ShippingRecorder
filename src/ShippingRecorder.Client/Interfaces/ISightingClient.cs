@@ -7,6 +7,7 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface ISightingClient
     {
+        Task<Sighting> GetAsync(long id);
         Task<Sighting> AddAsync(long locationId, long? voyageId, long sightingId, DateTime date, bool isMyVoyage);
         Task DeleteAsync(long id);
         Task<List<Sighting>> ListAsync(int pageNumber, int pageSize);
