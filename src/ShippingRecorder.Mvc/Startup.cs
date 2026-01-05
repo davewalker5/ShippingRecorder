@@ -88,6 +88,7 @@ namespace ShippingRecorder.Mvc
             services.AddSingleton<IPortClient, PortClient>();
             services.AddSingleton<IRegistrationHistoryClient, RegistrationHistoryClient>();
             services.AddSingleton<ISightingClient, SightingClient>();
+            services.AddSingleton<ISightingSearchClient, SightingSearchClient>();
             services.AddSingleton<IVesselClient, VesselClient>();
             services.AddSingleton<IVesselTypeClient, VesselTypeClient>();
             services.AddSingleton<IVoyageClient, VoyageClient>();

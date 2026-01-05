@@ -29,6 +29,14 @@ namespace ShippingRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Get the most recent sighting matching the specified criteria
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<Sighting> GetMostRecentAsync(Expression<Func<Sighting, bool>> predicate)
+            => await ListAsync(predicate, 1, int.MaxValue).OrderByDescending(x => x.Date).FirstOrDefaultAsync();
+
+        /// <summary>
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
