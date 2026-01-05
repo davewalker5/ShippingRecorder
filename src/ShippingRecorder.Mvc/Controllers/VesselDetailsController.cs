@@ -15,7 +15,6 @@ namespace ShippingRecorder.Mvc.Controllers
         private readonly IOperatorListGenerator _operatorListGenerator;
         private readonly IVesselTypeListGenerator _vesselTypesListGenerator;
 
-
         public VesselDetailsController(
             AddSightingWizard wizard,
             ICountryListGenerator countryListGenertor,
@@ -54,22 +53,14 @@ namespace ShippingRecorder.Mvc.Controllers
         {
             IActionResult result = null;
 
-            // If the model isn't editable, ignore view state errors (mandatory fields won't be posted back
+            // If the model isn't editable, ignore model state errors (mandatory fields won't be posted back
             // because the form controls are marked as disabled)
-            if (!model.Editable)
-            {
-                foreach (var entry in ModelState.Values)
-                {
-                    entry.Errors.Clear();
-                }
-            }
+            var isValid = ModelState.IsValid || !model.Editable;
 
-            if (ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
+            if (isValid && (model.Action == ControllerActions.ActionNextPage))
             {
                 _wizard.CacheVesselDetailsModel(model, User.Identity.Name);
-                // TODO: Redirect to the next step
-                // result = RedirectToAction("Index", "ConfirmDetails");
-                result = View(model);
+                result = RedirectToAction("Index", "ConfirmDetails");
             }
             else if (model.Action == ControllerActions.ActionPreviousPage)
             {

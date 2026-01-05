@@ -10,6 +10,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Vessel.Id)
+        @Html.HiddenFor(m => m.Vessel.IMO)
         @Html.HiddenFor(m => m.Registration.Id)
 
         <div class="row">

@@ -20,7 +20,7 @@
         </div>
         <hr />
 
-        @if ((Model.LastSightingAdded != null) && (Model.SightingId == null))
+        @* @if ((Model.LastSightingAdded != null) && (Model.SightingId == null))
         {
             @await Html.PartialAsync("SightingSummary",
             new SightingSummaryViewModel()
@@ -28,7 +28,7 @@
                 Message = $"Sighting Saved",
                 Sighting = Model.LastSightingAdded
             });
-        }
+        } *@
 
         <div class="row">
             <div class="col">

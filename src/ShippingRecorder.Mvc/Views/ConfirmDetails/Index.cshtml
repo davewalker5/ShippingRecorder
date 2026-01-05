@@ -1,0 +1,65 @@
+﻿@using HealthTracker.Mvc.Helpers
+@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.ConfirmDetailsViewModel
+
+@{
+    ViewData["Title"] = "Log Sighting : Confirm Details";
+    var htmlAttributes = HtmlAttributesBuilder.FormControlAttributes(false);
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Log New Sighting > Confirm Details</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Date)</strong>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Date, "{0:yyyy-MM-dd}", new Dictionary<string, object>(htmlAttributes)
+                    {
+                        ["type"] = "date"
+                    })
+                </div>
+            </div>
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Location)</strong>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Location, htmlAttributes)
+                </div>
+            </div>
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Vessel.IMO)</strong>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Vessel.IMO, htmlAttributes)
+                </div>
+            </div>
+        </div>
+        <hr/>
+
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Save</button>
+        </p>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Capture the ENTER key and click the primary button instead
+        $(document).keypress(function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $(".btn-primary").click();
+                return false;
+            }
+        });
+    })
+</script>

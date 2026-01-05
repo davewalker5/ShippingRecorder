@@ -161,6 +161,183 @@ namespace ShippingRecorder.Mvc.Wizard
         }
 
         /// <summary>
+        /// Construct the model to confirm sighting details
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public async Task<ConfirmDetailsViewModel> GetConfirmDetailsModelAsync(string userName)
+        {
+            _logger.LogDebug($"Creating confirm details model for user {userName}");
+
+            // Retrieve the sighting details model from the cache
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
+
+            _logger.LogDebug($"Retrieved sighting details: {sighting}");
+
+            // Retrieve the vessel details model from the cache
+            key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            VesselDetailsViewModel vesselDetails = _cache.Get<VesselDetailsViewModel>(key);
+
+            _logger.LogDebug($"Retrieved vessel details: {vesselDetails}");
+
+            // Use them to construct the confirm details model
+            ConfirmDetailsViewModel model = new ConfirmDetailsViewModel()
+            {
+                Date = sighting.Date ?? DateTime.Today,
+                Vessel = vesselDetails.Vessel,
+                Registration = vesselDetails.Registration
+            };
+
+            // For the location, if we have a new location specified then use that as the
+            // location. Otherwise, look up the location by its ID
+            if (sighting.LocationId == 0)
+            {
+                model.Location = sighting.NewLocation;
+            }
+            else
+            {
+                Location location = await _locationClient.GetAsync(sighting.LocationId);
+                model.Location = location.Name;
+            }
+
+            _logger.LogDebug($"Created confirm details model: {model}");
+            return model;
+        }
+
+        /// <summary>
+        /// Create a new sighting
+        /// </summary>
+        /// <param name="userName"></param>
+        public async Task<Sighting> CreateSighting(string userName)
+        {
+            Sighting sighting = null;
+
+            _logger.LogDebug($"Creating new sighting for user {userName}");
+
+            // Clear the last sighting added message
+            ClearCachedLastSightingAdded(userName);
+
+            // Retrieve the sighting details model from the cache
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            SightingDetailsViewModel details = _cache.Get<SightingDetailsViewModel>(key);
+
+            if (details != null)
+            {
+                // Create the vessel and registration history
+                Vessel vessel = await RetrieveOrCreateVessel(userName);
+
+                // Create the location, if required
+                if (details.LocationId == 0)
+                {
+                    Location location = await _locationClient.AddAsync(details.NewLocation);
+                    details.LocationId = location.Id;
+                }
+
+                // If an existing sighting is being edited, then update it. Otherwise, create a new one
+                if (details.SightingId != null)
+                {
+                    _logger.LogDebug($"Updating existing sighting with ID {details.SightingId} for user {userName}");
+
+                    sighting = await _sightingClient.UpdateAsync(
+                        details.SightingId ?? 0,
+                        details.LocationId,
+                        null,
+                        vessel.Id,
+                        details.Date ?? DateTime.Now,
+                        details.IsMyVoyage);
+                }
+                else
+                {
+                    _logger.LogDebug($"Creating new sighting for user {userName}");
+
+                    sighting = await _sightingClient.AddAsync(
+                        details.LocationId,
+                        null,
+                        vessel.Id,
+                        details.Date ?? DateTime.Now,
+                        details.IsMyVoyage);
+                }
+
+                // Cache the sighting details and other properties that are cached to improve data entry speed
+                key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
+                _cache.Set<Sighting>(key, sighting, _settings.CacheLifetimeSeconds);
+
+                key = GetCacheKey(DefaultDateKeyPrefix, userName);
+                _cache.Set<DateTime>(key, sighting.Date, _settings.CacheLifetimeSeconds);
+            }
+
+            // Clear the cached data
+            Reset(userName);
+
+            _logger.LogDebug($"Created sighting: {sighting}");
+
+            return sighting;
+        }
+
+        /// <summary>
+        /// Either retrieve an existing vessel or create a new one
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        private async Task<Vessel> RetrieveOrCreateVessel(string userName)
+        {
+            Vessel vessel = null;
+
+            _logger.LogDebug($"Creating or retrieving vessel for {userName}");
+
+            // Retrieve the aircraft details from the cache
+            string key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            VesselDetailsViewModel details = _cache.Get<VesselDetailsViewModel>(key);
+            if (details != null)
+            {
+                _logger.LogDebug($"Retrieved aircraft details model: {details}");
+
+                // If this is a sighting for an existing aircraft, just return it.
+                // Otherwise, we need to create a new aircraft
+                if (details.Vessel.Id > 0)
+                {
+                    _logger.LogDebug($"Retrieving vessel with Id: {details.Vessel.Id}");
+                    vessel = await _vesselClient.GetAsync(details.Vessel.Id);
+                }
+                else
+                {
+                    _logger.LogDebug($"Creating new vessel");
+
+                    // Create the vessel
+                    vessel = await _vesselClient.AddAsync(
+                        details.Vessel.IMO,
+                        details.Vessel.Built,
+                        details.Vessel.Draught,
+                        details.Vessel.Length,
+                        details.Vessel.Beam);
+
+                    // Add the registration details
+                    var registration = await _registrationHistoryClient.AddAsync(
+                        vessel.Id,
+                        details.Registration.VesselTypeId,
+                        details.Registration.FlagId,
+                        details.Registration.OperatorId,
+                        details.Registration.Date,
+                        details.Registration.Name,
+                        details.Registration.Callsign,
+                        details.Registration.MMSI,
+                        details.Registration.Tonnage,
+                        details.Registration.Passengers,
+                        details.Registration.Crew,
+                        details.Registration.Decks,
+                        details.Registration.Cabins);
+
+                    // Attach the registration history to the vessel
+                    vessel.RegistrationHistory.Add(registration);
+                }
+            }
+
+            _logger.LogDebug($"Retrieved or created vessel: {vessel}");
+            return vessel;
+        }
+
+        /// <summary>
         /// Retrieve the last sighting added
         /// </summary>
         /// <param name="userName"></param>
@@ -230,6 +407,7 @@ namespace ShippingRecorder.Mvc.Wizard
         public void Reset(string userName)
         {
             ClearCachedSightingDetailsModel(userName);
+            ClearCachedVesselDetailsModel(userName);
         }
 
         /// <summary>

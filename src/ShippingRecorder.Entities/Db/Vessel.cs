@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using ShippingRecorder.Entities.Attributes;
 
 namespace ShippingRecorder.Entities.Db
 {
     [ExcludeFromCodeCoverage]
-    public class Vessel
+    public class Vessel : ShippingRecorderEntityBase
     {
         public const int EarliestYearBuilt = 1900;
         public const decimal MinimumDraught = 2;
