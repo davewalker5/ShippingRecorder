@@ -14,7 +14,7 @@ namespace ShippingRecorder.Mvc.Models
         public bool IsMyVoyage { get; set; }
 
         [DisplayName("My Voyage")]
-        public string MyFlightText { get { return IsMyVoyage ? "Yes" : "No"; }}
+        public string MyVoyageText { get { return IsMyVoyage ? "Yes" : "No"; }}
 
         public string Action { get; set; }
     }

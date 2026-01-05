@@ -108,3 +108,17 @@ table.table.table > caption {
   caption-side: top !important;
   text-align: left;
 }
+
+/* Data Entry Section header
+-------------------------------------------------- */
+
+.section-header {
+  background: #e6e6e6;
+  padding: 5px;
+  border-top: 1px solid darkslategrey;
+  border-bottom: 1px solid darkslategrey;
+  text-align: center;
+  margin-bottom: 5px;
+  color: black;
+  font-weight: bold;
+}

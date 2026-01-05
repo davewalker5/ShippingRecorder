@@ -184,6 +184,7 @@ namespace ShippingRecorder.Mvc.Wizard
             // Use them to construct the confirm details model
             ConfirmDetailsViewModel model = new ConfirmDetailsViewModel()
             {
+                Editable = false,
                 Date = sighting.Date ?? DateTime.Today,
                 Vessel = vesselDetails.Vessel,
                 Registration = vesselDetails.Registration

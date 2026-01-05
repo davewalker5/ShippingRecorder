@@ -30,20 +30,9 @@
             });
         } *@
 
-        <p class="text-center">
-            <b>Core Properties</b>
-        </p>
-        <hr />
-        @await Html.PartialAsync("_VesselProperties", Model)
-        <hr />
+        @await Html.PartialAsync("_VesselDetails", Model)
 
-        <p class="text-center">
-            <b>Registration Details</b>
-        </p>
-        <hr />
-        @await Html.PartialAsync("_RegistrationDetails", Model)
-        <hr />
-
+        <hr/>
         <p class="text-right">
             <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
             <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Next</button>

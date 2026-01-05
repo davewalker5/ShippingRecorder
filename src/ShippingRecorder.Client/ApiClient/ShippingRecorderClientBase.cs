@@ -114,7 +114,7 @@ namespace ShippingRecorder.Client.ApiClient
 
             Logger.LogDebug($"HTTP Status Code = {response?.StatusCode}");
 
-            if (response != null)
+            if ((response != null) && response.IsSuccessStatusCode)
             {
                 // Extract the response content and log it
                 json = await response.Content.ReadAsStringAsync();

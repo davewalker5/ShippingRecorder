@@ -19,6 +19,10 @@
         </div>
         <hr />
 
+        <div class="section-header">
+            Sighting Details
+        </div>
+
         <div class="row">
             <div class="col">
                 <strong>@Html.LabelFor(m => m.Date)</strong>
@@ -41,9 +45,18 @@
                     @Html.TextBoxFor(m => m.Vessel.IMO, htmlAttributes)
                 </div>
             </div>
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.IsMyVoyage)</strong>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.MyVoyageText, htmlAttributes)
+                </div>
+            </div>
         </div>
-        <hr/>
+        <br />
 
+        @await Html.PartialAsync("_VesselDetails", Model)
+
+        <hr/>
         <p class="text-right">
             <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
             <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Save</button>
