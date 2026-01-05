@@ -4,6 +4,7 @@ using ShippingRecorder.Mvc.Models;
 using ShippingRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShippingRecorder.Client.Interfaces;
 
 namespace ShippingRecorder.Mvc.Controllers
 {
@@ -14,19 +15,22 @@ namespace ShippingRecorder.Mvc.Controllers
         private readonly ICountryListGenerator _countryListGenerator;
         private readonly IOperatorListGenerator _operatorListGenerator;
         private readonly IVesselTypeListGenerator _vesselTypesListGenerator;
+        private readonly IVesselClient _vesselClient;
 
         public VesselDetailsController(
             AddSightingWizard wizard,
             ICountryListGenerator countryListGenertor,
             IOperatorListGenerator operatorListGenerator,
-            IVesselTypeListGenerator vesselTypesListGenertor,
+            IVesselTypeListGenerator vesselTypesListGenerator,
+            IVesselClient vesselClient,
             IPartialViewToStringRenderer renderer,
             ILogger<VesselDetailsController> logger) : base (renderer, logger)
         {
             _wizard = wizard;
             _countryListGenerator = countryListGenertor;
             _operatorListGenerator = operatorListGenerator;
-            _vesselTypesListGenerator = vesselTypesListGenertor;
+            _vesselTypesListGenerator = vesselTypesListGenerator;
+            _vesselClient = vesselClient;
         }
 
         /// <summary>
@@ -59,6 +63,14 @@ namespace ShippingRecorder.Mvc.Controllers
 
             if (isValid && (model.Action == ControllerActions.ActionNextPage))
             {
+                // If this is an existing vessel, load the vessel and store it and its active history, if
+                // present, as they won't be POSTed back
+                if (model.Vessel.Id > 0)
+                {
+                    model.Vessel = await _vesselClient.GetAsync(model.Vessel.Id);
+                    model.Registration = model.Vessel.RegistrationHistory.FirstOrDefault(x => x.IsActive) ?? new() { Date = DateTime.Today };
+                }
+
                 _wizard.CacheVesselDetailsModel(model, User.Identity.Name);
                 result = RedirectToAction("Index", "ConfirmDetails");
             }
