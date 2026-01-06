@@ -63,6 +63,7 @@ namespace ShippingRecorder.Client.ApiClient
         /// <summary>
         /// Log out by instructing the token provider to clear the token and clearing the authentication header
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public void ClearAuthentication()
         {
             TokenProvider.ClearToken();

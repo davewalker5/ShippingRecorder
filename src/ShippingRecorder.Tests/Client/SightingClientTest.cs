@@ -107,6 +107,57 @@ namespace ShippingRecorder.Tests.Client
         }
 
         [TestMethod]
+        public async Task GetTest()
+        {
+            var sighting = DataGenerator.CreateSighting();
+            var json = JsonSerializer.Serialize(sighting);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(sighting.Id);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{sighting.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(sighting.Id, retrieved.Id);
+            Assert.AreEqual(sighting.LocationId, retrieved.LocationId);
+            Assert.AreEqual(sighting.VoyageId, retrieved.VoyageId);
+            Assert.AreEqual(sighting.VesselId, retrieved.VesselId);
+            Assert.AreEqual(sighting.Date, retrieved.Date);
+            Assert.AreEqual(sighting.IsMyVoyage, retrieved.IsMyVoyage);
+        }
+
+        [TestMethod]
+        public async Task GetMostRecentTest()
+        {
+            var imo = DataGenerator.RandomInt(0, 9999999).ToString();
+            var sighting = DataGenerator.CreateSighting();
+            var json = JsonSerializer.Serialize<List<Sighting>>([sighting]);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetMostRecentVesselSightingAsync(imo);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/vessel/{imo}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.StartsWith(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(sighting.Id, retrieved.Id);
+            Assert.AreEqual(sighting.LocationId, retrieved.LocationId);
+            Assert.AreEqual(sighting.VoyageId, retrieved.VoyageId);
+            Assert.AreEqual(sighting.VesselId, retrieved.VesselId);
+            Assert.AreEqual(sighting.Date, retrieved.Date);
+            Assert.AreEqual(sighting.IsMyVoyage, retrieved.IsMyVoyage);
+        }
+
+        [TestMethod]
         public async Task ListTest()
         {
             var sighting = DataGenerator.CreateSighting();

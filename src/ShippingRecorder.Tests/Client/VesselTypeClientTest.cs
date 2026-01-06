@@ -92,6 +92,27 @@ namespace ShippingRecorder.Tests.Client
         }
 
         [TestMethod]
+        public async Task GetTest()
+        {
+            var vesseltype = DataGenerator.CreateVesselType();
+            var json = JsonSerializer.Serialize(vesseltype);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(vesseltype.Id);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{vesseltype.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(vesseltype.Id, retrieved.Id);
+            Assert.AreEqual(vesseltype.Name, retrieved.Name);
+        }
+
+        [TestMethod]
         public async Task ListTest()
         {
             var vesseltype = DataGenerator.CreateVesselType();

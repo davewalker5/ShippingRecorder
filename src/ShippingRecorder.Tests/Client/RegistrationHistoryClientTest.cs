@@ -113,6 +113,40 @@ namespace ShippingRecorder.Tests.Client
         }
 
         [TestMethod]
+        public async Task GetActiveForVesselTest()
+        {
+            var vesselId = DataGenerator.RandomId();
+            var history = DataGenerator.CreateRegistrationHistory();
+            var json = JsonSerializer.Serialize(history);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetActiveRegistrationForVesselAsync(vesselId);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/vessel/{vesselId}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(history.Id, retrieved.Id);
+            Assert.AreEqual(history.VesselId, retrieved.VesselId);
+            Assert.AreEqual(history.VesselTypeId, retrieved.VesselTypeId);
+            Assert.AreEqual(history.FlagId, retrieved.FlagId);
+            Assert.AreEqual(history.OperatorId, retrieved.OperatorId);
+            Assert.AreEqual(history.Date, retrieved.Date);
+            Assert.AreEqual(history.Name, retrieved.Name);
+            Assert.AreEqual(history.Callsign, retrieved.Callsign);
+            Assert.AreEqual(history.MMSI, retrieved.MMSI);
+            Assert.AreEqual(history.Tonnage, retrieved.Tonnage);
+            Assert.AreEqual(history.Passengers, retrieved.Passengers);
+            Assert.AreEqual(history.Crew, retrieved.Crew);
+            Assert.AreEqual(history.Decks, retrieved.Decks);
+            Assert.AreEqual(history.Cabins, retrieved.Cabins);
+        }
+
+        [TestMethod]
         public async Task ListTest()
         {
             var history = DataGenerator.CreateRegistrationHistory();

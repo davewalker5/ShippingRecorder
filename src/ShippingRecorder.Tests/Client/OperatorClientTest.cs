@@ -92,6 +92,27 @@ namespace ShippingRecorder.Tests.Client
         }
 
         [TestMethod]
+        public async Task GetTest()
+        {
+            var op = DataGenerator.CreateOperator();
+            var json = JsonSerializer.Serialize(op);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(op.Id);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{op.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(op.Id, retrieved.Id);
+            Assert.AreEqual(op.Name, retrieved.Name);
+        }
+
+        [TestMethod]
         public async Task ListTest()
         {
             var op = DataGenerator.CreateOperator();
