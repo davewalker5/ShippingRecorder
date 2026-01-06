@@ -49,5 +49,16 @@ namespace ShippingRecorder.Manager.Logic
             var importer = new PortImporter(Factory, ExportablePort.CsvRecordPattern);
             await importer.ImportAsync(filePath);
         }
+
+        /// <summary>
+        /// Handle the vessel type import command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleVesselTypeImportAsync()
+        {
+            var filePath = Parser.GetValues(CommandLineOptionType.ImportVesselTypes)[0];
+            var importer = new VesselTypeImporter(Factory, ExportableVesselType.CsvRecordPattern);
+            await importer.ImportAsync(filePath);
+        }
     }
 }

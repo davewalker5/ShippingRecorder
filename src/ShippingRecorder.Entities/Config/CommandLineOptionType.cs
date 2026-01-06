@@ -8,6 +8,7 @@ namespace ShippingRecorder.Entities.Config
         ImportCountries,
         ImportOperators,
         ImportPorts,
+        ImportVesselTypes,
         SetPassword,
         Update
     }

@@ -10,7 +10,7 @@ PROJECT_FILE="$PROJECT_FOLDER/ShippingRecorder.Manager/ShippingRecorder.Manager.
 CONFIG_FILE="$PROJECT_FOLDER/config/manager/appsettings.$1.json"
 PUBLISH_FOLDER="$PROJECT_FOLDER/published/manager/$1"
 MY_APPS_BASE_FOLDER=$(~/Scripts/get-my-apps-folder.sh)
-MY_APPS_FOLDER=$MY_APPS_BASE_FOLDER/ShippingRecorder/manager
+MY_APPS_FOLDER=$MY_APPS_BASE_FOLDER/ShippingRecorder/Manager
 
 echo ""
 echo "Target OS      : $1"

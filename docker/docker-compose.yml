@@ -1,17 +1,28 @@
-version: "3.7"
-
 services:
+  shippingrecorder-ui:
+    container_name: shippingrecordermvc
+    image: davewalker5/shippingrecordermvc:latest
+    platform: linux/amd64
+    restart: always
+    ports:
+      - "8089:80"
+    networks:
+      - shippingrecorder-network
+    depends_on:
+      - shippingrecorder-api
+
   shippingrecorder-api:
     container_name: shippingrecorderservice
     image: davewalker5/shippingrecorderapisqlite:latest
+    platform: linux/amd64
     restart: always
     ports:
-      - "8093:80"
+      - "8100:80"
     volumes:
       - /path/to/database/folder:/var/opt/shippingrecorder.api/
     networks:
       - shippingrecorder-network
 
 networks:
-  flightrecorder-network:
+  shippingrecorder-network:
     driver: bridge
