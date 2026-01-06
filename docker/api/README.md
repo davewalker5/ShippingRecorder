@@ -1,11 +1,11 @@
 # shippingrecorderapisqlite
 
-The [ShippingRecorder](https://github.com/davewalker5/ShippingRecorder) GitHub project implements a REST service and associated web-based UI for a SQL-based aircraft sightings logbook, providing facilities for recording and querying the following data:
+The [ShippingRecorder](https://github.com/davewalker5/ShippingRecorder) GitHub project implements a REST service and associated web-based UI for a SQL-based maritime sightings logbook, providing facilities for recording and querying the following data:
 
-- Manufacturer, model and aircraft registration details
-- Airline and flight details
+- Vessel type and registration details
+- Operator, port, country and voyage details
 - Sighting locations
-- Aircraft sightings
+- Vessel sightings
 
 The shippingrecorderapisqlite image contains a build of the logic and REST service for a SQLite database.
 
