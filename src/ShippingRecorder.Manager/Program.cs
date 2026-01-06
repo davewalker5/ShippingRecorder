@@ -81,6 +81,12 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandlePortImportAsync();
                 }
 
+                // If a CSV file containing vessel type details has been supplied, import it
+                if (parser.IsPresent(CommandLineOptionType.ImportVesselTypes))
+                {
+                    await new ImportHandler(settings, parser, factory).HandleVesselTypeImportAsync();
+                }
+
                 // Handle user addition
                 if (parser.IsPresent(CommandLineOptionType.AddUser))
                 {
