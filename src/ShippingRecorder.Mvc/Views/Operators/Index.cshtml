@@ -1,0 +1,52 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.OperatorListViewModel
+
+@{
+    ViewData["Title"] = "Operators";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Vessel Operators
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the locations at which sightings can be recorded
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PageNumber)
+
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th />
+            </tr>
+            @foreach (var op in Model.Operators)
+            {
+                <tr>
+                    <td valign="center">@op.Name</td>
+                    <td valign="center">
+                        <a class="btn btn-lg" asp-area="" asp-controller="Operators" asp-action="Edit" asp-route-id="@op.Id">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </table>
+        <hr />
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
+            <a class="btn btn-primary" href="/Operators/Add" role="button">Add</a>
+        </p>
+    }
+</div>

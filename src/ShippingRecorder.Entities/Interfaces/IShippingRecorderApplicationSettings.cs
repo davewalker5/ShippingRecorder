@@ -13,5 +13,8 @@ namespace ShippingRecorder.Entities.Interfaces
         string LogFile { get; set; }
         Severity MinimumLogLevel { get; set; }
         int DefaultTimePeriodDays { get; set; }
+        bool UseCustomErrorPageInDevelopment { get; set; }
+        int SearchPageSize { get; set; }
+        int CacheLifetimeSeconds { get; set; }
     }
 }

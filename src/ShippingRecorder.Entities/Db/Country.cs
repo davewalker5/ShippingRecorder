@@ -11,6 +11,8 @@ namespace ShippingRecorder.Entities.Db
         public long Id { get; set; }
 
         [DisplayName("Code")]
+        [StringLength(2, MinimumLength = 2, ErrorMessage = "Country code must be 2 digits long")]
+        [RegularExpression(@"^[A-Za-z]+$", ErrorMessage = "Country code must contain letters only")]
         [Required(ErrorMessage = "You must provide a country code")]
         public string Code { get; set; }
 

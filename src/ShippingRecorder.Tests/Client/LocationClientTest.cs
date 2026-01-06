@@ -34,7 +34,8 @@ namespace ShippingRecorder.Tests.Client
             var provider = new Mock<IAuthenticationTokenProvider>();
             provider.Setup(x => x.GetToken()).Returns(ApiToken);
             var logger = new Mock<ILogger<LocationClient>>();
-            _client = new LocationClient(_httpClient, _settings, provider.Object, logger.Object);
+            var cache = new Mock<ICacheWrapper>();
+            _client = new LocationClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
         }
 
         [TestMethod]
@@ -88,6 +89,27 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
+        }
+
+        [TestMethod]
+        public async Task GetTest()
+        {
+            var location = DataGenerator.CreateLocation();
+            var json = JsonSerializer.Serialize(location);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(location.Id);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{location.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(location.Id, retrieved.Id);
+            Assert.AreEqual(location.Name, retrieved.Name);
         }
 
         [TestMethod]

@@ -18,9 +18,24 @@ namespace ShippingRecorder.Client.ApiClient
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
             IAuthenticationTokenProvider tokenProvider,
+            ICacheWrapper cache,
             ILogger<SightingClient> logger)
-            : base(client, settings, tokenProvider, logger)
+            : base(client, settings, tokenProvider, cache, logger)
         {
+        }
+
+        /// <summary>
+        /// Return the sighting with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<Sighting> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var sighting = Deserialize<Sighting>(json);
+            return sighting;
         }
 
         /// <summary>
@@ -101,6 +116,14 @@ namespace ShippingRecorder.Client.ApiClient
             => await ListSightingsAsync(null, pageNumber, pageSize);
 
         /// <summary>
+        /// Get the most recent sighting of an aircraft
+        /// </summary>
+        /// <param name="imo"></param>
+        /// <returns></returns>
+        public async Task<Sighting> GetMostRecentVesselSightingAsync(string imo)
+            => (await ListSightingsAsync($"vessel/{imo}", 1, 1)).FirstOrDefault();
+
+        /// <summary>
         /// Return a list of sightings for the specified vessel
         /// </summary>
         /// <param name="vesselId"></param>
@@ -118,7 +141,12 @@ namespace ShippingRecorder.Client.ApiClient
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<List<Sighting>> ListSightingsByLocationAsync(long locationId, int pageNumber, int pageSize)
-            => await ListSightingsAsync($"location/{locationId}", pageNumber, pageSize);
+        {
+            // Determine the encoded date range
+            (var encodedFromDate, var encodedToDate) = CalculateEncodedDateRange(DateTime.MinValue, DateTime.Now);
+            var sightings = await ListSightingsAsync($"location/{locationId}/{encodedFromDate}/{encodedToDate}", pageNumber, pageSize);
+            return sightings;
+        }
 
         /// <summary>
         /// Return a list of sightings in the specified date range
@@ -128,7 +156,7 @@ namespace ShippingRecorder.Client.ApiClient
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Sighting>> ListSightingsByDateAsync(DateTime start, DateTime end,  int pageNumber, int pageSize)
+        public async Task<List<Sighting>> ListSightingsByDateAsync(DateTime start, DateTime end, int pageNumber, int pageSize)
         {
             // Determine the encoded date range
             (var encodedFromDate, var encodedToDate) = CalculateEncodedDateRange(start, end);

@@ -53,6 +53,25 @@ namespace ShippingRecorder.Api.Controllers
 
             return sightings;
         }
+        
+        [HttpGet]
+        [Route("recent/imo/{imo}")]
+        public async Task<ActionResult<Sighting>> GetMostRecentVesselSightingAsync(string imo)
+        {
+            LogMessage(Severity.Debug, $"Retrieving most recent sighting for vessel {imo}");
+
+            Sighting sighting = await Factory.Sightings.GetMostRecentAsync(x => x.Vessel.IMO == imo);
+
+            if (sighting == null)
+            {
+                LogMessage(Severity.Debug, $"Sighting for vessel {imo} not found");
+                return NoContent();
+            }
+
+            LogMessage(Severity.Debug, $"Sighting retrieved: {sighting}");
+
+            return sighting;
+        }
 
         [HttpGet]
         [Route("location/{locationId}/{start}/{end}/{pageNumber}/{pageSize}")]

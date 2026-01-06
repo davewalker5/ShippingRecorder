@@ -1,0 +1,12 @@
+@model ShippingRecorder.Mvc.Models.VesselModel
+
+<div class="section-header">
+    Core Vessel Properties
+</div>
+@await Html.PartialAsync("_VesselProperties", Model)
+
+<div class="section-header">
+    Vessel Registration Details
+</div>
+
+@await Html.PartialAsync("_RegistrationDetails", Model)

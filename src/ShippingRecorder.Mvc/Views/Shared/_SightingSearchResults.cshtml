@@ -1,0 +1,54 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.SightingSearchViewModelBase
+@{
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+@Html.HiddenFor(m => m.PageNumber)
+
+@if (Model.Sightings?.Count > 0)
+{
+    <table class="table">
+        <tr>
+            <th>Location</th>
+            <th>IMO</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>My Voyage</th>
+            <th />
+        </tr>
+        @foreach (var sighting in Model.Sightings)
+        {
+            var activeRegistration = sighting.Vessel.RegistrationHistory.FirstOrDefault(x => x.IsActive);
+            var vesselName = activeRegistration?.Name ?? "";
+            <tr>
+                <td valign="center">@sighting.Location.Name</td>
+                <td valign="center">@sighting.Vessel.IMO</td>
+                <td valign="center">@vesselName</td>
+                <td valign="center">@sighting.FormattedDate</td>
+                <td align="center" valign="center">
+                    @if (sighting.IsMyVoyage)
+                    {
+                        <span style="color: green"><i class="fas fa-check-circle"></i></span>
+                    }
+                </td>
+                <td valign="center">
+                    <a class="btn btn-lg" asp-area="" asp-controller="SightingDetails" asp-action="Index" asp-route-id="@sighting.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+    <hr />
+    <p class="text-right">
+        <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+        <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
+    </p>
+}
+else if (Model.HasNoMatchingResults)
+{
+    <hr />
+    @Html.Raw("No matching sightings")
+}

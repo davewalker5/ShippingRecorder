@@ -1,0 +1,54 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VesselDetailsViewModel
+
+@{
+    ViewData["Title"] = "Log Sighting : Vessel Details";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Vessel.Id)
+        @Html.HiddenFor(m => m.Vessel.IMO)
+        @Html.HiddenFor(m => m.Registration.Id)
+
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Log New Sighting > Vessel Details</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @if (Model.MostRecentSighting != null)
+        {
+            @await Html.PartialAsync("_SightingSummary",
+            new SightingSummaryViewModel()
+            {
+                Message = $"Most Recent Sighting of {Model.MostRecentSighting.Vessel.IMO}",
+                Sighting = Model.MostRecentSighting
+            });
+        }
+
+        @await Html.PartialAsync("_VesselDetails", Model)
+
+        <hr/>
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Next</button>
+        </p>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Capture the ENTER key and click the primary button instead
+        $(document).keypress(function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $(".btn-primary").click();
+                return false;
+            }
+        });
+    });
+</script>

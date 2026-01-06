@@ -25,19 +25,26 @@ namespace ShippingRecorder.Client.ApiClient
         protected IShippingRecorderHttpClient Client { get; private set; }
         protected IShippingRecorderApplicationSettings Settings { get; private set; }
         protected IAuthenticationTokenProvider TokenProvider { get; private set; }
+        protected ICacheWrapper Cache { get; private set; }
         protected ILogger Logger { get; private set; }
 
         public ShippingRecorderClientBase(
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
             IAuthenticationTokenProvider tokenProvider,
+            ICacheWrapper cache,
             ILogger logger)
         {
+            Client = client;
             Settings = settings;
             TokenProvider = tokenProvider;
+            Cache = cache;
             Logger = logger;
-            Client = client;
-            Client.BaseAddress = new Uri(Settings.ApiUrl);
+
+            if (Client != null)
+            {  
+                Client.BaseAddress = new Uri(Settings.ApiUrl);
+            }
 
             string token = tokenProvider.GetToken();
             if (!string.IsNullOrEmpty(token))
@@ -107,7 +114,7 @@ namespace ShippingRecorder.Client.ApiClient
 
             Logger.LogDebug($"HTTP Status Code = {response?.StatusCode}");
 
-            if (response != null)
+            if ((response != null) && response.IsSuccessStatusCode)
             {
                 // Extract the response content and log it
                 json = await response.Content.ReadAsStringAsync();

@@ -9,6 +9,7 @@ namespace ShippingRecorder.Entities.Interfaces
     public interface ISightingManager
     {
         Task<Sighting> GetAsync(Expression<Func<Sighting, bool>> predicate);
+        Task<Sighting> GetMostRecentAsync(Expression<Func<Sighting, bool>> predicate);
         IAsyncEnumerable<Sighting> ListAsync(Expression<Func<Sighting, bool>> predicate, int pageNumber, int pageSize);
         Task<Sighting> AddAsync(long locationId, long? voyageId, long vesselId, DateTime date, bool isMyVoyage);
         Task<Sighting> UpdateAsync(long id, long locationId, long? voyageId, long vesselId, DateTime date, bool isMyVoyage);

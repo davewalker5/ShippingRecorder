@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using ShippingRecorder.Entities.Logging;
 
 namespace ShippingRecorder.Entities.Db
 {

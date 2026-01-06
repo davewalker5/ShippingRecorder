@@ -37,7 +37,7 @@ namespace ShippingRecorder.Api.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Vessel>> GetVesselAsync(int id)
+        public async Task<ActionResult<Vessel>> GetVesselByIdAsync(int id)
         {
             LogMessage(Severity.Debug, $"Retrieving vessel with ID {id}");
 
@@ -46,6 +46,23 @@ namespace ShippingRecorder.Api.Controllers
             if (vessel == null)
             {
                 LogMessage(Severity.Debug, $"Vessel with ID {id} not found");
+                return NotFound();
+            }
+
+            return vessel;
+        }
+
+        [HttpGet]
+        [Route("imo/{imo}")]
+        public async Task<ActionResult<Vessel>> GetVesselByIMOAsync(string imo)
+        {
+            LogMessage(Severity.Debug, $"Retrieving vessel with IMO {imo}");
+
+            Vessel vessel = await Factory.Vessels.GetAsync(m => m.IMO == imo);
+
+            if (vessel == null)
+            {
+                LogMessage(Severity.Debug, $"Vessel with IMO {imo} not found");
                 return NotFound();
             }
 

@@ -17,9 +17,24 @@ namespace ShippingRecorder.Client.ApiClient
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
             IAuthenticationTokenProvider tokenProvider,
+            ICacheWrapper cache,
             ILogger<CountryClient> logger)
-            : base(client, settings, tokenProvider, logger)
+            : base(client, settings, tokenProvider, cache, logger)
         {
+        }
+
+        /// <summary>
+        /// Return the country with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<Country> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var country = Deserialize<Country>(json);
+            return country;
         }
 
         /// <summary>

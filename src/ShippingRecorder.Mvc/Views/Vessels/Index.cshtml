@@ -1,0 +1,60 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VesselListViewModel
+
+@{
+    ViewData["Title"] = "Vessels";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Vessels
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage recorded vessels
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PageNumber)
+
+        <table class="table">
+            <tr>
+                <th>IMO</th>
+                <th>Built</th>
+                <th>Draught</th>
+                <th>Length</th>
+                <th>Beam</th>
+                <th />
+            </tr>
+            @foreach (var vessel in Model.Vessels)
+            {
+                <tr>
+                    <td valign="center">@vessel.IMO</td>
+                    <td valign="center">@vessel.Built</td>
+                    <td valign="center">@vessel.Draught</td>
+                    <td valign="center">@vessel.Length</td>
+                    <td valign="center">@vessel.Beam</td>
+                    <td valign="center">
+                        <a class="btn btn-lg" asp-area="" asp-controller="Vessels" asp-action="Edit" asp-route-id="@vessel.Id">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </table>
+        <hr />
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
+            <a class="btn btn-primary" href="/Vessels/Add" role="button">Add</a>
+        </p>
+    }
+</div>

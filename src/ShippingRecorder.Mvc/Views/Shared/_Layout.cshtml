@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Shiping Recorder</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/datatables.min.css" />
+    @RenderSection("Styles", required: false)
+    <script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+</head>
+<body>
+    <div style="width: 90%; margin: 0 auto;">
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container-fluid">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Shipping Recorder</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <ul class="navbar-nav">
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Log Sighting</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Sighting Search
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByVessel" asp-action="Index">Sightings By Vessel</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByLocation" asp-action="Index">Sightings By Location</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByDate" asp-action="Index">Sightings By Date</a>
+                                    </div>
+                                </li>
+                                @* <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Reports
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    </div>
+                                </li> *@
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Data Maintenance
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" asp-area="" asp-controller="Countries" asp-action="Index">Countries</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Locations" asp-action="Index">Locations</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Operators" asp-action="Index">Operators</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Vessels" asp-action="Index">Vessels</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="VesselTypes" asp-action="Index">Vessel Types</a>
+                                    </div>
+                                </li>
+                                @* <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Export
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    </div>
+                                </li> *@
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LogOut">Log Out</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Log In</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="container-fluid">
+            <main role="main" class="pb-3">
+                @RenderBody()
+                @await Html.PartialAsync("_AjaxModalDialog")
+            </main>
+        </div>
+
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                Shipping Recorder @ViewData["Version"] &copy; 2025-2026 - David Walker
+            </div>
+        </footer>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/datatables/datatables.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

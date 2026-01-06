@@ -34,7 +34,8 @@ namespace ShippingRecorder.Tests.Client
             var provider = new Mock<IAuthenticationTokenProvider>();
             provider.Setup(x => x.GetToken()).Returns(ApiToken);
             var logger = new Mock<ILogger<VesselClient>>();
-            _client = new VesselClient(_httpClient, _settings, provider.Object, logger.Object);
+            var cache = new Mock<ICacheWrapper>();
+            _client = new VesselClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
         }
 
         [TestMethod]
@@ -103,6 +104,56 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
+        }
+
+        [TestMethod]
+        public async Task GetByIdTest()
+        {
+            var vessel = DataGenerator.CreateVessel();
+            var json = JsonSerializer.Serialize(vessel);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(vessel.Id);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{vessel.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(vessel.Id, retrieved.Id);
+            Assert.AreEqual(vessel.IMO, retrieved.IMO);
+            Assert.AreEqual(vessel.Built, retrieved.Built);
+            Assert.AreEqual(vessel.Draught, retrieved.Draught);
+            Assert.AreEqual(vessel.Length, retrieved.Length);
+            Assert.AreEqual(vessel.Beam, retrieved.Beam);
+        }
+
+        [TestMethod]
+        public async Task GetByIMOTest()
+        {
+            var vessel = DataGenerator.CreateVessel();
+            var json = JsonSerializer.Serialize(vessel);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(vessel.IMO);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/imo/{vessel.IMO}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(vessel.Id, retrieved.Id);
+            Assert.AreEqual(vessel.IMO, retrieved.IMO);
+            Assert.AreEqual(vessel.Built, retrieved.Built);
+            Assert.AreEqual(vessel.Draught, retrieved.Draught);
+            Assert.AreEqual(vessel.Length, retrieved.Length);
+            Assert.AreEqual(vessel.Beam, retrieved.Beam);
         }
 
         [TestMethod]

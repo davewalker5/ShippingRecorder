@@ -17,9 +17,24 @@ namespace ShippingRecorder.Client.ApiClient
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
             IAuthenticationTokenProvider tokenProvider,
+            ICacheWrapper cache,
             ILogger<VesselTypeClient> logger)
-            : base(client, settings, tokenProvider, logger)
+            : base(client, settings, tokenProvider, cache, logger)
         {
+        }
+
+        /// <summary>
+        /// Return the vessel type with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<VesselType> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var vesselType = Deserialize<VesselType>(json);
+            return vesselType;
         }
 
         /// <summary>

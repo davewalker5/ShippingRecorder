@@ -1,0 +1,48 @@
+@using HealthTracker.Mvc.Helpers
+@model ShippingRecorder.Mvc.Models.VesselModel
+
+@{
+    var htmlAttributes = HtmlAttributesBuilder.IntegerAttributes(Model.Editable);
+    var draughtAttributes = HtmlAttributesBuilder.DecimalAttributes(Model.Editable);
+}
+
+@Html.HiddenFor(m => m.Vessel.Id)
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Vessel.IMO)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Vessel.IMO, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Vessel.IMO, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Vessel.Built)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Vessel.Built, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Vessel.Built, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Vessel.Draught)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Vessel.Draught, draughtAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Vessel.Draught, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Vessel.Length)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Vessel.Length, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Vessel.Length, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Vessel.Beam)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Vessel.Beam, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Vessel.Beam, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br />
