@@ -1,9 +1,8 @@
-version: "3.7"
-
 services:
   shippingrecorder-ui:
     container_name: shippingrecordermvc
     image: davewalker5/shippingrecordermvc:latest
+    platform: linux/amd64
     restart: always
     ports:
       - "8089:80"
@@ -15,6 +14,7 @@ services:
   shippingrecorder-api:
     container_name: shippingrecorderservice
     image: davewalker5/shippingrecorderapisqlite:latest
+    platform: linux/amd64
     restart: always
     ports:
       - "8100:80"
