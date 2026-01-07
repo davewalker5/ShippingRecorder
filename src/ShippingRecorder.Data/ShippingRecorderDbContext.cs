@@ -18,6 +18,7 @@ namespace ShippingRecorder.Data
         public virtual DbSet<Voyage> Voyages { get; set; }
         public virtual DbSet<VoyageEvent> VoyageEvents { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<JobStatus> JobStatuses { get; set; }
 
         public ShippingRecorderDbContext(DbContextOptions<ShippingRecorderDbContext> options) : base(options)
         {
@@ -181,6 +182,21 @@ namespace ShippingRecorder.Data
                 entity.Property(e => e.UserName).IsRequired().HasColumnName("UserName");
                 entity.Property(e => e.Password).IsRequired().HasColumnName("Password");
                 entity.HasIndex(e => e.UserName).IsUnique();
+            });
+
+            modelBuilder.Entity<JobStatus>(entity =>
+            {
+                entity.ToTable("JOB_STATUS");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name).IsRequired().HasColumnName("name");
+                entity.Property(e => e.Parameters).HasColumnName("parameters");
+                entity.Property(e => e.Start).IsRequired().HasColumnName("start").HasColumnType("DATETIME");
+                entity.Property(e => e.End).HasColumnName("end").HasColumnType("DATETIME");
+                entity.Property(e => e.Error).HasColumnName("error");
             });
         }
     }

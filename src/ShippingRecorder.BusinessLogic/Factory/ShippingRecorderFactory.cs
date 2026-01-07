@@ -20,6 +20,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
         private readonly Lazy<IRegistrationHistoryManager> _registrationHistory = null;
         private readonly Lazy<ISightingManager> _sightings = null;
         private readonly Lazy<IUserManager> _users = null;
+        private readonly Lazy<IJobStatusManager> _jobStatuses = null;
 
         public IShippingRecorderLogger Logger { get; private set; }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -33,6 +34,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
         public IRegistrationHistoryManager RegistrationHistory { get { return _registrationHistory.Value; } }
         public ISightingManager Sightings { get { return _sightings.Value; } }
         public IUserManager Users { get { return _users.Value; } }
+        public IJobStatusManager JobStatuses { get { return _jobStatuses.Value; } }
 
         public ShippingRecorderFactory(ShippingRecorderDbContext context, IShippingRecorderLogger logger)
         {
@@ -53,6 +55,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
             _registrationHistory = new Lazy<IRegistrationHistoryManager>(() => new RegistrationHistoryManager(this));
             _sightings = new Lazy<ISightingManager>(() => new SightingManager(this));
             _users = new Lazy<IUserManager>(() => new UserManager(this));
+            _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(this));
         }
 
         /// <summary>

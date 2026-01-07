@@ -16,6 +16,7 @@ namespace ShippingRecorder.Entities.Interfaces
         IRegistrationHistoryManager RegistrationHistory { get; }
         ISightingManager Sightings { get; }
         IUserManager Users { get; }
+        IJobStatusManager JobStatuses { get; }
         T GetContext<T>() where T : DbContext;
     }
 }
