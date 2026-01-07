@@ -104,7 +104,7 @@ namespace ShippingRecorder.BusinessLogic.Database
             
             // Update the record properties and save changes
             status.End = DateTime.Now;
-            status.Error = error.Clean();
+            status.Error = error?.Clean();
             await Context.SaveChangesAsync();
 
             _factory.Logger.LogMessage(Severity.Debug, $"Updated job status {status}");

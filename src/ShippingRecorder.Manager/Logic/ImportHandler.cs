@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ShippingRecorder.BusinessLogic.Config;
 using ShippingRecorder.DataExchange.Entities;
@@ -18,58 +19,66 @@ namespace ShippingRecorder.Manager.Logic
         }
 
         /// <summary>
+        /// Generic import method that also creates job status records for imports
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="type"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        private async Task HandleImport<T, U>(CommandLineOptionType type, string pattern)
+            where T : CsvImporter<U>
+            where U: ExportableEntityBase
+        {
+            var filePath = Parser.GetValues(type)[0];
+            var entityName = typeof(U).Name.Replace("Exportable", "");
+            var jobStatus = await Factory.JobStatuses.AddAsync($"{entityName} import", filePath);
+
+            try
+            {
+                var importer = (T)Activator.CreateInstance(typeof(T), Factory, pattern);
+                await importer.ImportAsync(filePath);
+                await Factory.JobStatuses.UpdateAsync(jobStatus.Id, null);
+            }
+            catch (Exception ex)
+            {
+                await Factory.JobStatuses.UpdateAsync(jobStatus.Id, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Handle the countries import command
         /// </summary>
         /// <returns></returns>
         public async Task HandleCountryImportAsync()
-        {
-            var filePath = Parser.GetValues(CommandLineOptionType.ImportCountries)[0];
-            var importer = new CountryImporter(Factory, ExportableCountry.CsvRecordPattern);
-            await importer.ImportAsync(filePath);
-        }
+            => await HandleImport<CountryImporter, ExportableCountry>(CommandLineOptionType.ImportCountries, ExportableCountry.CsvRecordPattern);
 
         /// <summary>
         /// Handle the operators import command
         /// </summary>
         /// <returns></returns>
         public async Task HandleOperatorImportAsync()
-        {
-            var filePath = Parser.GetValues(CommandLineOptionType.ImportOperators)[0];
-            var importer = new OperatorImporter(Factory, ExportableOperator.CsvRecordPattern);
-            await importer.ImportAsync(filePath);
-        }
+            => await HandleImport<OperatorImporter, ExportableOperator>(CommandLineOptionType.ImportOperators, ExportableOperator.CsvRecordPattern);
 
         /// <summary>
         /// Handle the port import command
         /// </summary>
         /// <returns></returns>
         public async Task HandlePortImportAsync()
-        {
-            var filePath = Parser.GetValues(CommandLineOptionType.ImportPorts)[0];
-            var importer = new PortImporter(Factory, ExportablePort.CsvRecordPattern);
-            await importer.ImportAsync(filePath);
-        }
+            => await HandleImport<PortImporter, ExportablePort>(CommandLineOptionType.ImportPorts, ExportablePort.CsvRecordPattern);
 
         /// <summary>
         /// Handle the vessel type import command
         /// </summary>
         /// <returns></returns>
         public async Task HandleVesselTypeImportAsync()
-        {
-            var filePath = Parser.GetValues(CommandLineOptionType.ImportVesselTypes)[0];
-            var importer = new VesselTypeImporter(Factory, ExportableVesselType.CsvRecordPattern);
-            await importer.ImportAsync(filePath);
-        }
+            => await HandleImport<VesselTypeImporter, ExportableVesselType>(CommandLineOptionType.ImportVesselTypes, ExportableVesselType.CsvRecordPattern);
 
         /// <summary>
         /// Handle the vessels import command
         /// </summary>
         /// <returns></returns>
         public async Task HandleVesselImportAsync()
-        {
-            var filePath = Parser.GetValues(CommandLineOptionType.ImportVessels)[0];
-            var importer = new VesselImporter(Factory, ExportableVessel.CsvRecordPattern);
-            await importer.ImportAsync(filePath);
-        }
+            => await HandleImport<VesselImporter, ExportableVessel>(CommandLineOptionType.ImportVessels, ExportableVessel.CsvRecordPattern);
     }
 }
