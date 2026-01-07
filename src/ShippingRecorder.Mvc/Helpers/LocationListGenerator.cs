@@ -25,21 +25,25 @@ namespace HealthTracker.Mvc.Helpers
 
             // Load the list of locations
             var locations = await _client.ListAsync(1, int.MaxValue);
-            var plural = locations.Count == 1 ? "" : "s";
-            _logger.LogDebug($"{locations.Count} location{plural} loaded via the service");
+            var count = locations?.Count ?? 0;
+            var plural = count == 1 ? "" : "s";
+            _logger.LogDebug($"{count} location{plural} loaded via the service");
 
             // Create a list of select list items from the list of locations. Add an empty entry if there
             // is more than one. If not, the list will only contain that one location which will be the default
             // selection
-            if (locations.Count != 1)
+            if (count != 1)
             {
                 list.Add(new SelectListItem() { Text = "", Value = "0" });
             }
 
             // Now add an entry for each location
-            foreach (var vesselType in locations)
+            if (count > 0)
             {
-                list.Add(new SelectListItem() { Text = vesselType.Name, Value = vesselType.Id.ToString() });
+                foreach (var vesselType in locations)
+                {
+                    list.Add(new SelectListItem() { Text = vesselType.Name, Value = vesselType.Id.ToString() });
+                }
             }
 
             return list;

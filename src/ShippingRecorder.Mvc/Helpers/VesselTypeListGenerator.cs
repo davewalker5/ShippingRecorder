@@ -25,21 +25,25 @@ namespace HealthTracker.Mvc.Helpers
 
             // Load the list of vessel types
             var vesselTypes = await _client.ListAsync(1, int.MaxValue);
-            var plural = vesselTypes.Count == 1 ? "" : "s";
-            _logger.LogDebug($"{vesselTypes.Count} vessel type{plural} loaded via the service");
+            var count = vesselTypes?.Count ?? 0;
+            var plural = count == 1 ? "" : "s";
+            _logger.LogDebug($"{count} vessel type{plural} loaded via the service");
 
             // Create a list of select list items from the list of vessel types. Add an empty entry if there
             // is more than one. If not, the list will only contain that one vessel type which will be the default
             // selection
-            if (vesselTypes.Count != 1)
+            if (count != 1)
             {
                 list.Add(new SelectListItem() { Text = "", Value = "0" });
             }
 
             // Now add an entry for each vessel type
-            foreach (var vesselType in vesselTypes)
+            if (count > 0)
             {
-                list.Add(new SelectListItem() { Text = vesselType.Name, Value = vesselType.Id.ToString() });
+                foreach (var vesselType in vesselTypes)
+                {
+                    list.Add(new SelectListItem() { Text = vesselType.Name, Value = vesselType.Id.ToString() });
+                }
             }
 
             return list;

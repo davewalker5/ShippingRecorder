@@ -121,7 +121,7 @@ namespace ShippingRecorder.Client.ApiClient
         /// <param name="imo"></param>
         /// <returns></returns>
         public async Task<Sighting> GetMostRecentVesselSightingAsync(string imo)
-            => (await ListSightingsAsync($"vessel/{imo}", 1, 1)).FirstOrDefault();
+            => (await ListSightingsAsync($"vessel/{imo}", 1, 1))?.FirstOrDefault();
 
         /// <summary>
         /// Return a list of sightings for the specified vessel
