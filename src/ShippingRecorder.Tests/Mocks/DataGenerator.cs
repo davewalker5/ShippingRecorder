@@ -171,14 +171,19 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static Sighting CreateSighting()
-            => new()
+        {
+            var location = CreateLocation();
+            var vessel = CreateVessel();
+            return new()
             {
                 Id = RandomId(),
-                LocationId = RandomId(),
-                VoyageId = RandomId(),
-                VesselId = RandomId(),
-                Date = DateTime.Now,
+                Location = location,
+                LocationId = location.Id,
+                Vessel = vessel,
+                VesselId = vessel.Id,
+                Date = DateTime.Today,
                 IsMyVoyage = RandomInt(0, 100) > 50
             };
+        }
     }
 }
