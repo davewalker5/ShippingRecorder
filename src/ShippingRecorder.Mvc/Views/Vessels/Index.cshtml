@@ -28,6 +28,7 @@
         <table class="table">
             <tr>
                 <th>IMO</th>
+                <th>Name</th>
                 <th>Built</th>
                 <th>Draught</th>
                 <th>Length</th>
@@ -36,8 +37,10 @@
             </tr>
             @foreach (var vessel in Model.Vessels)
             {
+                var vesselName = vessel?.ActiveRegistrationHistory?.Name ?? "";
                 <tr>
                     <td valign="center">@vessel.IMO</td>
+                    <td valign="center">@vesselName</td>
                     <td valign="center">@vessel.Built</td>
                     <td valign="center">@vessel.Draught</td>
                     <td valign="center">@vessel.Length</td>

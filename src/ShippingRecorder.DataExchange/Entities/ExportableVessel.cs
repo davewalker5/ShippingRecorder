@@ -26,7 +26,6 @@ namespace ShippingRecorder.DataExchange.Entities
         /// Flag (Country Code)
         /// Operator Name
         /// </summary>
-        // public const string CsvRecordPattern = @"^""[0-9]{7}"",""(?:\d+)?"",""(?:\d+(?:\.\d+)?)?"",""(?:\d+)?"",""(?:\d+)?"",""(?:\d+)?"",""(?:\d+)?"",""(?:\d+)?"",""(?:\d+)?"",""(?:\d+)?"",""(?!\s*"")[\s\S]*"",""[A-Za-z0-9]+"",""[0-9]{9}"",""(?!\s*"")[\s\S]*"",""[A-Za-z]{2}"",""(?!\s*"")[\s\S]*"".?$";
         public const string CsvRecordPattern = @"^""\d{7}"",""\d*"",""[0-9.]*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""[^""]+"",""[^""\s]+"",""\d{9}"",""[^""]+"",""[A-Za-z0-9]{2}"",""[^""]+"".?$";
 
         [Export("IMO", 1)]
