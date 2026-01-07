@@ -159,7 +159,7 @@ namespace ShippingRecorder.Tests.Mocks
             => new()
             {
                 Id = RandomId(),
-                IMO = RandomInt(0, 9999999).ToString(),
+                IMO = RandomInt(0, 9999999).ToString("0000000"),
                 Built = 1950 + RandomInt(0, DateTime.Today.Year - 1950),
                 Draught = RandomDecimal(0.5M, 10M),
                 Length = RandomInt(30, 300),
