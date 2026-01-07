@@ -69,8 +69,21 @@ namespace ShippingRecorder.DataExchange.Import
             var type = _types.First(x => x.Name == vessel.VesselType);
             var country = _countries.First(x => x.Code == vessel.Flag);
             var op = _operators.First(x => x.Name == vessel.Operator);
-            var id = (await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam)).Id;
 
+            // If the vessel exists, update its properties. Otherwise, create a new vessel
+            long id;
+            var existing = await _factory.Vessels.GetAsync(x => x.IMO == vessel.IMO);
+            if (existing != null)
+            {
+                id = existing.Id;
+                await _factory.Vessels.UpdateAsync(id, vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            }
+            else
+            {
+                id = (await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam)).Id;     
+            }
+
+            // Add the registration history
             _ = await _factory.RegistrationHistory.AddAsync(
                                 id,
                                 type.Id,

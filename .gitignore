@@ -407,5 +407,5 @@ ASALocalRun/
 published/
 Published/
 appsettings.Development.json
-
 .~lock.*
+venv/
