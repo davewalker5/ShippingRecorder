@@ -99,21 +99,5 @@ namespace ShippingRecorder.Api.Controllers
             await Factory.RegistrationHistory.Deactivate(id);
             return Ok();
         }
-
-        [HttpGet]
-        [Route("vessel/{vesselId}")]
-        public async Task<ActionResult<RegistrationHistory>> GetActiveRegistrationHistoryForVesselAsync(int vesselId)
-        {
-            LogMessage(Severity.Debug, $"Retrieving current registration history for vessel with ID {vesselId}");
-
-            var details = await Factory.RegistrationHistory.GetAsync(x => x.VesselId == vesselId && x.IsActive);
-
-            if (details == null)
-            {
-                return NoContent();
-            }
-
-            return details;
-        }
     }
 }

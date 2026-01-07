@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using ShippingRecorder.Entities.Attributes;
 
 namespace ShippingRecorder.Entities.Db
@@ -40,5 +42,8 @@ namespace ShippingRecorder.Entities.Db
         public int? Beam { get; set; }
 
         public ICollection<RegistrationHistory> RegistrationHistory { get; set; } = [];
+
+        [NotMapped]
+        public RegistrationHistory ActiveRegistrationHistory => RegistrationHistory?.FirstOrDefault(x => x.IsActive);
     }
 }

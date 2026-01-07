@@ -143,12 +143,9 @@ namespace ShippingRecorder.Mvc.Wizard
             {
                 _logger.LogDebug($"Adding existing vessel details to model: {vessel}");
 
-                // Existing vessel - get it's active registration details
-                var registration = await _registrationHistoryClient.GetActiveRegistrationForVesselAsync(vessel.Id);
-
                 // Add the vessel and registration to the model
                 model.Vessel = vessel;
-                model.Registration = registration ?? new() { Date = DateTime.Today };
+                model.Registration = vessel.ActiveRegistrationHistory ?? new() { Date = DateTime.Today };
                 model.Editable = false;
 
                 // Retrieve the most recent sighting of this vessel

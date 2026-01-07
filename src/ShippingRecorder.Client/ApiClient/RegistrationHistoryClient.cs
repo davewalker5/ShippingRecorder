@@ -25,20 +25,6 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
-        /// Return the current active registration history for a vessel
-        /// </summary>
-        /// <param name="vesselId"></param>
-        /// <returns></returns>
-        public async Task<RegistrationHistory> GetActiveRegistrationForVesselAsync(long vesselId)
-        {
-            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
-            var route = $"{baseRoute}/vessel/{vesselId}";
-            var json = await SendDirectAsync(route, null, HttpMethod.Get);
-            var registration = Deserialize<RegistrationHistory>(json);
-            return registration;
-        }
-
-        /// <summary>
         /// Add a new registration history to the database
         /// </summary>
         /// <param name="vesselId"></param>
