@@ -190,11 +190,10 @@ namespace ShippingRecorder.Mvc.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             Vessel vessel = await _vesselClient.GetAsync(id);
-            RegistrationHistory registration = await _registrationClient.GetActiveRegistrationForVesselAsync(id);
             return View(new VesselModel
             {
                 Vessel = vessel,
-                Registration = registration ?? new() { Date = DateTime.Now },
+                Registration = vessel.ActiveRegistrationHistory ?? new() { Date = DateTime.Now },
                 Countries = await _countryListGenerator.Create(),
                 Operators = await _operatorListGenerator.Create(),
                 VesselTypes = await _vesselTypesListGenerator.Create()
@@ -234,7 +233,7 @@ namespace ShippingRecorder.Mvc.Controllers
                     $"Decks = {model.Registration.Decks}, " +
                     $"Cabins = {model.Registration.Cabins}");
 
-                await _vesselClient.UpdateAsync(
+                var vessel = await _vesselClient.UpdateAsync(
                     model.Vessel.Id,
                     model.Vessel.IMO,
                     model.Vessel.Built,
@@ -243,7 +242,7 @@ namespace ShippingRecorder.Mvc.Controllers
                     model.Vessel.Beam);
 
                 // Load the original registration history for the vessel and see if there are any changes
-                RegistrationHistory registration = await _registrationClient.GetActiveRegistrationForVesselAsync(model.Vessel.Id);
+                RegistrationHistory registration = vessel.ActiveRegistrationHistory;
                 if (model.Registration != registration)
                 {
                     await _registrationClient.AddAsync(
