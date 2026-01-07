@@ -1,10 +1,12 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using ShippingRecorder.BusinessLogic.Config;
 using ShippingRecorder.DataExchange.Entities;
 using ShippingRecorder.DataExchange.Import;
 using ShippingRecorder.Entities.Config;
 using ShippingRecorder.Entities.Interfaces;
+using ShippingRecorder.Entities.Jobs;
 
 namespace ShippingRecorder.Manager.Logic
 {
@@ -30,18 +32,31 @@ namespace ShippingRecorder.Manager.Logic
             where T : CsvImporter<U>
             where U: ExportableEntityBase
         {
+            // Get the import file path
             var filePath = Parser.GetValues(type)[0];
+
+            // Synthesise a work item identical to the ones used by the API for data exchange. This results in
+            // entries written to the status table having the same formatting as those writen by the API
             var entityName = typeof(U).Name.Replace("Exportable", "");
-            var jobStatus = await Factory.JobStatuses.AddAsync($"{entityName} import", filePath);
+            var workItem = new ImportWorkItem
+            {
+                JobName = $"{entityName} Import",
+                FileName = Path.GetFileName(filePath)
+            };
+
+            // Create the job status record
+            var jobStatus = await Factory.JobStatuses.AddAsync(workItem.JobName, workItem.ToString());
 
             try
             {
+                // Create the importer, import the data and update the job status for completion with no error
                 var importer = (T)Activator.CreateInstance(typeof(T), Factory, pattern);
                 await importer.ImportAsync(filePath);
                 await Factory.JobStatuses.UpdateAsync(jobStatus.Id, null);
             }
             catch (Exception ex)
             {
+                // Update the job status for completion with errors
                 await Factory.JobStatuses.UpdateAsync(jobStatus.Id, ex.Message);
             }
         }
