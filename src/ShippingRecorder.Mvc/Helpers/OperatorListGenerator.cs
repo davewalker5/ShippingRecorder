@@ -25,21 +25,25 @@ namespace HealthTracker.Mvc.Helpers
 
             // Load the list of operators
             var operators = await _client.ListAsync(1, int.MaxValue);
-            var plural = operators.Count == 1 ? "" : "s";
-            _logger.LogDebug($"{operators.Count} operator{plural} loaded via the service");
+            var count = operators?.Count ?? 0;
+            var plural = count == 1 ? "" : "s";
+            _logger.LogDebug($"{count} operator{plural} loaded via the service");
 
             // Create a list of select list items from the list of operators. Add an empty entry if there
             // is more than one. If not, the list will only contain that one operator which will be the default
             // selection
-            if (operators.Count != 1)
+            if (count != 1)
             {
                 list.Add(new SelectListItem() { Text = "", Value = "0" });
             }
 
             // Now add an entry for each operator
-            foreach (var op in operators)
+            if (count > 0)
             {
-                list.Add(new SelectListItem() { Text = op.Name, Value = op.Id.ToString() });
+                foreach (var op in operators)
+                {
+                    list.Add(new SelectListItem() { Text = op.Name, Value = op.Id.ToString() });
+                }
             }
 
             return list;
