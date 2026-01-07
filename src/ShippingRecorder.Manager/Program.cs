@@ -99,6 +99,12 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandleSightingImportAsync();
                 }
 
+                // If a sighting export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportSightings))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleSightingExportAsync();
+                }
+
                 // Handle user addition
                 if (parser.IsPresent(CommandLineOptionType.AddUser))
                 {
