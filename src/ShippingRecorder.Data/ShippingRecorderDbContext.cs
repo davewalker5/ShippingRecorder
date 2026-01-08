@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ShippingRecorder.Entities.Db;
 using Microsoft.EntityFrameworkCore;
+using ShippingRecorder.Entities.Reporting;
 
 namespace ShippingRecorder.Data
 {
@@ -19,6 +20,7 @@ namespace ShippingRecorder.Data
         public virtual DbSet<VoyageEvent> VoyageEvents { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<JobStatus> JobStatuses { get; set; }
+        public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
 
         public ShippingRecorderDbContext(DbContextOptions<ShippingRecorderDbContext> options) : base(options)
         {
@@ -30,6 +32,8 @@ namespace ShippingRecorder.Data
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<LocationStatistics>().HasNoKey();
+
             modelBuilder.Entity<Country>(entity =>
             {
                 entity.ToTable("COUNTRY", tb =>

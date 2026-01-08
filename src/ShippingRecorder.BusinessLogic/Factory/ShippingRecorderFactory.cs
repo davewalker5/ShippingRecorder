@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using ShippingRecorder.BusinessLogic.Database;
 using ShippingRecorder.Data;
 using ShippingRecorder.Entities.Interfaces;
+using ShippingRecorder.Entities.Reporting;
 
 namespace ShippingRecorder.BusinessLogic.Factory
 {
@@ -22,6 +24,8 @@ namespace ShippingRecorder.BusinessLogic.Factory
         private readonly Lazy<IUserManager> _users = null;
         private readonly Lazy<IJobStatusManager> _jobStatuses = null;
 
+        private readonly Lazy<IDateBasedReport<LocationStatistics>> _locationStatistics = null;
+
         public IShippingRecorderLogger Logger { get; private set; }
         public ILocationManager Locations { get { return _locations.Value; } }
         public IOperatorManager Operators { get { return _operators.Value; } }
@@ -35,6 +39,9 @@ namespace ShippingRecorder.BusinessLogic.Factory
         public ISightingManager Sightings { get { return _sightings.Value; } }
         public IUserManager Users { get { return _users.Value; } }
         public IJobStatusManager JobStatuses { get { return _jobStatuses.Value; } }
+
+        [ExcludeFromCodeCoverage]
+        public IDateBasedReport<LocationStatistics> LocationStatistics { get { return _locationStatistics.Value; } }
 
         public ShippingRecorderFactory(ShippingRecorderDbContext context, IShippingRecorderLogger logger)
         {
@@ -56,6 +63,10 @@ namespace ShippingRecorder.BusinessLogic.Factory
             _sightings = new Lazy<ISightingManager>(() => new SightingManager(this));
             _users = new Lazy<IUserManager>(() => new UserManager(this));
             _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(this));
+
+            // Lazily instantiate the reporting managers : Once again, they'll only actually be created if called by
+            // the application
+            _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(this));
         }
 
         /// <summary>
