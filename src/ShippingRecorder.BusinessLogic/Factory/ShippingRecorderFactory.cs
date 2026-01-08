@@ -25,6 +25,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
         private readonly Lazy<IJobStatusManager> _jobStatuses = null;
 
         private readonly Lazy<IDateBasedReport<LocationStatistics>> _locationStatistics = null;
+        private readonly Lazy<IDateBasedReport<SightingsByMonth>> _sightingsByMonth = null;
 
         public IShippingRecorderLogger Logger { get; private set; }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -42,6 +43,9 @@ namespace ShippingRecorder.BusinessLogic.Factory
 
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<LocationStatistics> LocationStatistics { get { return _locationStatistics.Value; } }
+
+        [ExcludeFromCodeCoverage]
+        public IDateBasedReport<SightingsByMonth> SightingsByMonth { get { return _sightingsByMonth.Value; } }
 
         public ShippingRecorderFactory(ShippingRecorderDbContext context, IShippingRecorderLogger logger)
         {
@@ -67,6 +71,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
             // Lazily instantiate the reporting managers : Once again, they'll only actually be created if called by
             // the application
             _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(this));
+            _sightingsByMonth = new Lazy<IDateBasedReport<SightingsByMonth>>(() => new DateBasedReport<SightingsByMonth>(this));
         }
 
         /// <summary>

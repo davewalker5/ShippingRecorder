@@ -21,5 +21,6 @@ namespace ShippingRecorder.Entities.Interfaces
         T GetContext<T>() where T : DbContext;
 
         IDateBasedReport<LocationStatistics> LocationStatistics { get; }
+        IDateBasedReport<SightingsByMonth> SightingsByMonth { get; }
     }
 }

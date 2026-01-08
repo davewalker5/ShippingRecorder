@@ -21,6 +21,7 @@ namespace ShippingRecorder.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<JobStatus> JobStatuses { get; set; }
         public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
+        public virtual DbSet<SightingsByMonth> SightingsByMonth { get; set; }
 
         public ShippingRecorderDbContext(DbContextOptions<ShippingRecorderDbContext> options) : base(options)
         {
@@ -33,6 +34,7 @@ namespace ShippingRecorder.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<LocationStatistics>().HasNoKey();
+            modelBuilder.Entity<SightingsByMonth>().HasNoKey();
 
             modelBuilder.Entity<Country>(entity =>
             {
