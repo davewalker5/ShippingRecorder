@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ShippingRecorder.Entities.Reporting;
 
 namespace ShippingRecorder.Entities.Interfaces
 {
@@ -18,5 +19,12 @@ namespace ShippingRecorder.Entities.Interfaces
         IUserManager Users { get; }
         IJobStatusManager JobStatuses { get; }
         T GetContext<T>() where T : DbContext;
+
+        IDateBasedReport<LocationStatistics> LocationStatistics { get; }
+        IDateBasedReport<SightingsByMonth> SightingsByMonth { get; }
+        IDateBasedReport<MyVoyages> MyVoyages { get; }
+        IDateBasedReport<OperatorStatistics> OperatorStatistics { get; }
+        IDateBasedReport<VesselTypeStatistics> VesselTypeStatistics { get; }
+        IDateBasedReport<FlagStatistics> FlagStatistics { get; }
     }
 }

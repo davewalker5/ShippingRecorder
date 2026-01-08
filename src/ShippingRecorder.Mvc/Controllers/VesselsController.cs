@@ -283,7 +283,7 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <param name="identifier"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ShowVesselDetails(int identifier)
+        public async Task<IActionResult> ShowVesselDetails(long identifier)
         {
             var vessel = await _vesselClient.GetAsync(identifier);
             var model = new VesselDetailsViewModel()

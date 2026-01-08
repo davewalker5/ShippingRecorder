@@ -1,0 +1,107 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VesselTypeStatisticsViewModel
+
+@{
+    ViewData["Title"] = "VesselType Statistics Report";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Vessel Type Statistics
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Produce summary statistics for all vessel types
+        </em>
+    </small>
+</p>
+
+<div id="MessageContainer" style="display:none">
+    <div class="row">
+        <div class="col-md-12 message">
+            <span id="MessageText"></span>
+        </div>
+    </div>
+    <hr />
+</div>
+
+<div id="ErrorContainer" style="display:none">
+    <div class="row">
+        <div class="col-md-12 error">
+            <span id="ErrorText"></span>
+        </div>
+    </div>
+    <hr />
+</div>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.From)</strong>
+                <div class="input-group">
+                    @Html.EditorFor(m => m.From, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.From, "", new { @class = "text-danger" })</span>
+            </div>
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.To)</strong>
+                <div class="input-group">
+                    @Html.EditorFor(m => m.To, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.To, "", new { @class = "text-danger" })</span>
+            </div>
+            <div class="col">
+                <strong><label>&nbsp;</label></strong>
+                <div class="input-group">
+                    @* @if (Model.Records != null)
+                    {
+                        <button id="Export" class="btn btn-secondary">Export</button>
+                        <strong><label>&nbsp;</label></strong>
+                    } *@
+                    <button type="submit" name="Action" value="@ControllerActions.ActionSearch" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        @Html.HiddenFor(m => m.PageNumber)
+
+        @if (Model.Records != null)
+        {
+            <table class="table">
+                <tr>
+                    <th>Type</th>
+                    <th>Sightings</th>
+                    <th>Locations</th>
+                    <th>Vessels</th>
+                </tr>
+                @foreach (var record in Model.Records)
+                {
+                    <tr>
+                        <td valign="center">@record.Name</td>
+                        <td valign="center">@record.Sightings</td>
+                        <td valign="center">@record.Locations</td>
+                        <td valign="center">@record.Vessels</td>
+                    </tr>
+                }
+            </table>
+            <hr />
+            <p class="text-right">
+                <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+                <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
+            </p>
+        }
+        else if (Model.HasNoMatchingResults)
+        {
+            <hr />
+            @Html.Raw("VesselType statistics are not available")
+        }
+    }
+</div>

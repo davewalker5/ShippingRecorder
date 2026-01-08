@@ -3,6 +3,7 @@ using ShippingRecorder.Entities.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
+using ShippingRecorder.Entities.Reporting;
 
 namespace ShippingRecorder.Api.Controllers
 {
@@ -51,6 +52,174 @@ namespace ShippingRecorder.Api.Controllers
 
             // Convert to a list and return the results
             return results;
+        }
+
+        /// <summary>
+        /// Generate the location statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("locations/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<LocationStatistics>>> GetLocationStatisticsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.LocationStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the sightings by month statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("sightings/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<SightingsByMonth>>> GetSightingsByMonthAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.SightingsByMonth.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the "My Voyages" report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("myvoyages/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<MyVoyages>>> GetMyFlightsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.MyVoyages.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the operator statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("operators/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<OperatorStatistics>>> GetOperatorStatisticsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.OperatorStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the vessel type statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("vesseltypes/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<VesselTypeStatistics>>> GetVesselTypeStatisticsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.VesselTypeStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the flag statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("flags/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<FlagStatistics>>> GetFlagStatisticsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.FlagStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
         }
     }
 }

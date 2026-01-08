@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ShippingRecorder.Entities.Db;
 using Microsoft.EntityFrameworkCore;
+using ShippingRecorder.Entities.Reporting;
 
 namespace ShippingRecorder.Data
 {
@@ -19,6 +20,12 @@ namespace ShippingRecorder.Data
         public virtual DbSet<VoyageEvent> VoyageEvents { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<JobStatus> JobStatuses { get; set; }
+        public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
+        public virtual DbSet<SightingsByMonth> SightingsByMonth { get; set; }
+        public virtual DbSet<MyVoyages> MyVoyages { get; set; }
+        public virtual DbSet<OperatorStatistics> OperatorStatistics { get; set; }
+        public virtual DbSet<VesselTypeStatistics> VesselTypeStatistics { get; set; }
+        public virtual DbSet<FlagStatistics> FlagStatistics { get; set; }
 
         public ShippingRecorderDbContext(DbContextOptions<ShippingRecorderDbContext> options) : base(options)
         {
@@ -30,6 +37,13 @@ namespace ShippingRecorder.Data
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<LocationStatistics>().HasNoKey();
+            modelBuilder.Entity<SightingsByMonth>().HasNoKey();
+            modelBuilder.Entity<MyVoyages>().HasNoKey();
+            modelBuilder.Entity<OperatorStatistics>().HasNoKey();
+            modelBuilder.Entity<VesselTypeStatistics>().HasNoKey();
+            modelBuilder.Entity<FlagStatistics>().HasNoKey();
+
             modelBuilder.Entity<Country>(entity =>
             {
                 entity.ToTable("COUNTRY", tb =>

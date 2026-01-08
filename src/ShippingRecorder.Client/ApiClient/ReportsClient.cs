@@ -7,6 +7,7 @@ using ShippingRecorder.Client.Interfaces;
 using ShippingRecorder.Entities.Db;
 using Microsoft.Extensions.Logging;
 using ShippingRecorder.Entities.Interfaces;
+using ShippingRecorder.Entities.Reporting;
 
 namespace ShippingRecorder.Client.ApiClient
 {
@@ -32,6 +33,72 @@ namespace ShippingRecorder.Client.ApiClient
         /// <returns></returns>
         public async Task<List<JobStatus>> JobStatusAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
             => await DateBasedReportAsync<JobStatus>("JobStatus", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the location statistics report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<LocationStatistics>> LocationStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<LocationStatistics>("LocationStatistics", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the sightings by month report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<SightingsByMonth>> SightingsByMonthAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<SightingsByMonth>("SightingsByMonth", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the "my voyages" report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<MyVoyages>> MyVoyagesAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<MyVoyages>("MyVoyages", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the operator statistics report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<OperatorStatistics>> OperatorStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<OperatorStatistics>("OperatorStatistics", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the vessel type statistics report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<VesselTypeStatistics>> VesselTypeStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<VesselTypeStatistics>("VesselTypeStatistics", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the flag statistics report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<FlagStatistics>> FlagStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<FlagStatistics>("FlagStatistics", from, to, pageNumber, pageSize);
 
         /// <summary>
         /// Return a date-based statistics report
