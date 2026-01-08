@@ -16,6 +16,7 @@
             <th>Name</th>
             <th>Date</th>
             <th>My Voyage</th>
+            <th></th>
             <th />
         </tr>
         @foreach (var sighting in Model.Sightings)
@@ -32,6 +33,11 @@
                     {
                         <span style="color: green"><i class="fas fa-check-circle"></i></span>
                     }
+                </td>
+                <td valign="center">
+                    <a class="btn btn-lg" href="javascript:LoadModalContent(@sighting.VesselId, '/Vessels/ShowVesselDetails')">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
                 </td>
                 <td valign="center">
                     <a class="btn btn-lg" asp-area="" asp-controller="SightingDetails" asp-action="Index" asp-route-id="@sighting.Id">
