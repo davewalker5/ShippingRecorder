@@ -10,38 +10,38 @@ using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.DataExchange.Export
 {
-    public class SightingExporter : ISightingExporter
+    public class VesselExporter : IVesselExporter
     {
         private readonly IShippingRecorderFactory _factory;
 
-        public event EventHandler<ExportEventArgs<ExportableSighting>> RecordExport;
+        public event EventHandler<ExportEventArgs<ExportableVessel>> RecordExport;
 
-        public SightingExporter(IShippingRecorderFactory factory)
+        public VesselExporter(IShippingRecorderFactory factory)
             => _factory = factory;
 
         /// <summary>
-        /// Export the sightings to a CSV file
+        /// Export the vessels to a CSV file
         /// </summary>
         /// <param name="file"></param>
         public async Task ExportAsync(string file)
         {
-            var sightings = await _factory.Sightings.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
-            await ExportAsync(sightings, file);
+            var vessels = await _factory.Vessels.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
+            await ExportAsync(vessels, file);
         }
 
         /// <summary>
-        /// Export a collection of sightings to a CSV file
+        /// Export a collection of meals to a CSV file
         /// </summary>
-        /// <param name="sightings"></param>
+        /// <param name="vessels"></param>
         /// <param name="file"></param>
 #pragma warning disable CS1998
-        public async Task ExportAsync(IEnumerable<Sighting> sightings, string file)
+        public async Task ExportAsync(IEnumerable<Vessel> vessels, string file)
         {
-            // Convert the sightings to exportable (flattened hierarchy) sightings
-            var exportable = sightings.ToExportable();
+            // Convert the vessels to exportable (flattened hierarchy) vessels
+            var exportable = vessels.ToExportable();
 
             // Configure an exporter to export them
-            var exporter = new CsvExporter<ExportableSighting>(ExportableEntityBase.DateFormat);
+            var exporter = new CsvExporter<ExportableVessel>(ExportableEntityBase.DateFormat);
             exporter.RecordExport += OnRecordExported;
 
             // Export the records
@@ -50,11 +50,11 @@ namespace ShippingRecorder.DataExchange.Export
 #pragma warning restore CS1998
 
         /// <summary>
-        /// Handler for sighting export notifications
+        /// Handler for vessel export notifications
         /// </summary>
         /// <param name="_"></param>
         /// <param name="e"></param>
-        private void OnRecordExported(object _, ExportEventArgs<ExportableSighting> e)
+        private void OnRecordExported(object _, ExportEventArgs<ExportableVessel> e)
         {
             RecordExport?.Invoke(this, e);
         }

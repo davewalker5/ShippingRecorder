@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ShippingRecorder.BusinessLogic.Factory;
 
-namespace ShippingRecorder.Tests.Sightings
+namespace ShippingRecorder.Tests.Export
 {
     [TestClass]
     public class SightingExportTest

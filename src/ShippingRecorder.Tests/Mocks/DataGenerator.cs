@@ -1,6 +1,8 @@
 using System;
 using System.Text;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Wordprocessing;
+using ShippingRecorder.BusinessLogic.Extensions;
 using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Tests.Mocks
@@ -9,7 +11,8 @@ namespace ShippingRecorder.Tests.Mocks
     {
         private const int MinimumStringLength = 10;
         private const int MaximumStringLength = 50;
-        private const string Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 !@£$%^&*()_-";
+        private const string Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        private static readonly string CharacterSet = $"{Letters}1234567890 !@£$%^&*()_-";
 
         private static Random _generator = new();
 
@@ -50,8 +53,9 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <param name="minimumLength"></param>
         /// <param name="maximumLength"></param>
+        /// <param name="characters"><param>
         /// <returns></returns>
-        public static string RandomWord(int minimumLength, int maximumLength)
+        public static string RandomWord(int minimumLength, int maximumLength, string characters)
         {
             // Generate a random length for the word, within the specified limits
             var length = RandomInt(minimumLength, maximumLength);
@@ -61,12 +65,30 @@ namespace ShippingRecorder.Tests.Mocks
             for (int i = 0; i < length; i++)
             {
                 // Select a random offset within the character set and append that character
-                var offset = (int)_generator.NextInt64(0, Letters.Length);
-                builder.Append(Letters[offset]);
+                var offset = (int)_generator.NextInt64(0, CharacterSet.Length);
+                builder.Append(CharacterSet[offset]);
             }
 
             return builder.ToString();
         }
+
+        /// <summary>
+        /// Generate a random alphanumeric word of the specified length
+        /// </summary>
+        /// <param name="minimumLength"></param>
+        /// <param name="maximumLength"></param>
+        /// <returns></returns>
+        public static string RandomWord(int minimumLength, int maximumLength)
+            => RandomWord(minimumLength, maximumLength, CharacterSet);
+
+        /// <summary>
+        /// Generate a random word of the specified length containing only letters
+        /// </summary>
+        /// <param name="minimumLength"></param>
+        /// <param name="maximumLength"></param>
+        /// <returns></returns>
+        public static string RandomAlphaWord(int minimumLength, int maximumLength)
+            => RandomWord(minimumLength, maximumLength, Letters);
 
         /// <summary>
         /// Generate a random alphanumeric word
@@ -87,21 +109,21 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static Operator CreateOperator()
-            => new() { Id = RandomId(), Name = RandomWord() };
+            => new() { Id = RandomId(), Name = RandomWord().TitleCase() };
 
         /// <summary>
         /// Return a random vessel type
         /// </summary>
         /// <returns></returns>
         public static VesselType CreateVesselType()
-            => new() { Id = RandomId(), Name = RandomWord() };
+            => new() { Id = RandomId(), Name = RandomWord().TitleCase() };
 
         /// <summary>
         /// Return a random country
         /// </summary>
         /// <returns></returns>
         public static Country CreateCountry()
-            => new() { Id = RandomId(), Code = RandomWord(2, 2), Name = RandomWord() };
+            => new() { Id = RandomId(), Code = RandomAlphaWord(2, 2).CleanCode(), Name = RandomWord() };
 
         /// <summary>
         /// Return a random port
@@ -136,27 +158,37 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static RegistrationHistory CreateRegistrationHistory()
-            => new()
+        {
+            var vesselType = CreateVesselType();
+            var flag = CreateCountry();
+            var op = CreateOperator();
+            return new()
             {
                 Id = RandomId(),
                 VesselId = RandomId(),
-                VesselTypeId = RandomId(),
-                FlagId = RandomId(),
-                OperatorId = RandomId(),
-                Date = DateTime.Now,
+                VesselType = vesselType,
+                VesselTypeId = vesselType.Id,
+                Flag = flag,
+                FlagId = flag.Id,
+                Operator = op,
+                OperatorId = op.Id,
+                Date = DateTime.Today,
                 Name = RandomWord(),
-                Callsign = RandomWord(),
-                MMSI = RandomWord(9, 9),
+                Callsign = RandomWord().CleanCode(),
+                MMSI = RandomWord(9, 9).CleanCode(),
                 Tonnage = RandomInt(40000, 80000),
                 Crew = RandomInt(500, 1000),
+                IsActive = true
             };
+        }
 
         /// <summary>
         /// Create a random vessel
         /// </summary>
         /// <returns></returns>
         public static Vessel CreateVessel()
-            => new()
+        {
+            var vessel = new Vessel
             {
                 Id = RandomId(),
                 IMO = RandomInt(0, 9999999).ToString("0000000"),
@@ -165,6 +197,13 @@ namespace ShippingRecorder.Tests.Mocks
                 Length = RandomInt(5, 300),
                 Beam = RandomInt(2, 35)
             };
+
+            var registration = CreateRegistrationHistory();
+            registration.VesselId = vessel.Id;
+            vessel.RegistrationHistory = [registration];
+
+            return vessel;
+        }
 
         /// <summary>
         /// Create a random sighting

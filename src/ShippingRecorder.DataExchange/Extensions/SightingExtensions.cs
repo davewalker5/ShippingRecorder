@@ -24,13 +24,13 @@ namespace ShippingRecorder.DataExchange.Extensions
         /// <summary>
         /// Return a collection of exportable sightings from a collection of sightings
         /// </summary>
-        /// <param name="people"></param>
+        /// <param name="sightings"></param>
         /// <returns></returns>
-        public static IEnumerable<ExportableSighting> ToExportable(this IEnumerable<Sighting> people)
+        public static IEnumerable<ExportableSighting> ToExportable(this IEnumerable<Sighting> sightings)
         {
             var exportable = new List<ExportableSighting>();
 
-            foreach (var sighting in people)
+            foreach (var sighting in sightings)
             {
                 exportable.Add(sighting.ToExportable());
             }
