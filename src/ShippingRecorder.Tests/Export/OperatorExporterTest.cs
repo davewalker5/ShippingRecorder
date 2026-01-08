@@ -13,9 +13,9 @@ using ShippingRecorder.BusinessLogic.Factory;
 namespace ShippingRecorder.Tests.Export
 {
     [TestClass]
-    public class LocationExportTest
+    public class OperatorExportTest
     {
-        private readonly Location _location = DataGenerator.CreateLocation();
+        private readonly Operator _location = DataGenerator.CreateOperator();
 
         private string _filePath;
 
@@ -32,7 +32,7 @@ namespace ShippingRecorder.Tests.Export
         public void FromCsvRecordTest()
         {
             var record = $@"""{_location.Name}""";
-            var exportable = ExportableLocation.FromCsv(record);
+            var exportable = ExportableOperator.FromCsv(record);
             Assert.AreEqual(_location.Name, exportable.Name);
         }
 
@@ -40,12 +40,12 @@ namespace ShippingRecorder.Tests.Export
         public async Task ExportTest()
         {
             var context = ShippingRecorderDbContextFactory.CreateInMemoryDbContext();
-            await context.Locations.AddAsync(_location);
+            await context.Operators.AddAsync(_location);
             await context.SaveChangesAsync();
 
             var logger = new Mock<IShippingRecorderLogger>();
             var factory = new ShippingRecorderFactory(context, new MockFileLogger());
-            var exporter = new LocationExporter(factory);
+            var exporter = new OperatorExporter(factory);
 
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             await exporter.ExportAsync(_filePath);
@@ -57,7 +57,7 @@ namespace ShippingRecorder.Tests.Export
             var records = File.ReadAllLines(_filePath);
             Assert.HasCount(2, records);
 
-            var exportable = ExportableLocation.FromCsv(records[1]);
+            var exportable = ExportableOperator.FromCsv(records[1]);
             Assert.AreEqual(_location.Name, exportable.Name);
         }
     }

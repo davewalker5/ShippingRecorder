@@ -105,6 +105,12 @@ namespace ShippingRecorder.Manager
                     await new ExportHandler(settings, parser, factory).HandleLocationExportAsync();
                 }
 
+                // If an operators export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportOperators))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleOperatorExportAsync();
+                }
+
                 // If a sighting export has been requested, run the export
                 if (parser.IsPresent(CommandLineOptionType.ExportSightings))
                 {

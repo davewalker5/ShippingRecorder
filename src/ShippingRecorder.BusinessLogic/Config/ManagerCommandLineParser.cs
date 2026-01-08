@@ -15,6 +15,7 @@ namespace ShippingRecorder.BusinessLogic.Config
             Add(CommandLineOptionType.ImportVessels, false, "--import-vessels", "-iv", "Import vessels from a CSV file", 1, 1);
             Add(CommandLineOptionType.ImportSightings, false, "--import-sightings", "-is", "Import sightings from a CSV file", 1, 1);
             Add(CommandLineOptionType.ExportLocations, false, "--export-locations", "-el", "Export locations to a CSV file", 1, 1);
+            Add(CommandLineOptionType.ExportOperators, false, "--export-operators", "-eo", "Export operators to a CSV file", 1, 1);
             Add(CommandLineOptionType.ExportVessels, false, "--export-vessels", "-ev", "Export vessels to a CSV file", 1, 1);
             Add(CommandLineOptionType.ExportSightings, false, "--export-sightings", "-es", "Export sightings to a CSV file", 1, 1);
             Add(CommandLineOptionType.AddUser, false, "--add-user", "-au", "Add a user to the database", 2, 2);
