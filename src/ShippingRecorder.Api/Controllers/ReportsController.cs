@@ -137,5 +137,34 @@ namespace ShippingRecorder.Api.Controllers
             // Convert to a list and return the results
             return results.ToList();
         }
+
+        /// <summary>
+        /// Generate the operator statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("operators/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<OperatorStatistics>>> GetOperatorStatisticsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.OperatorStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
     }
 }
