@@ -92,6 +92,7 @@ namespace ShippingRecorder.Mvc
             services.AddSingleton<IVesselTypeClient, VesselTypeClient>();
             services.AddSingleton<IVoyageClient, VoyageClient>();
             services.AddSingleton<IVoyageEventClient, VoyageEventClient>();
+            services.AddSingleton<IReportsClient, ReportsClient>();
 
             // Modal dialog support
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
