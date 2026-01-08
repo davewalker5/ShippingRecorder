@@ -99,6 +99,36 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandleSightingImportAsync();
                 }
 
+                // If a locations export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportLocations))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleLocationExportAsync();
+                }
+
+                // If an operators export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportOperators))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleOperatorExportAsync();
+                }
+
+                // If a sighting export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportSightings))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleSightingExportAsync();
+                }
+
+                // If a vessel type export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportVesselTypes))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleVesselTypeExportAsync();
+                }
+
+                // If a vessel export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportVessels))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleVesselExportAsync();
+                }
+
                 // Handle user addition
                 if (parser.IsPresent(CommandLineOptionType.AddUser))
                 {

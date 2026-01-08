@@ -39,12 +39,17 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// <returns></returns>
         public virtual IAsyncEnumerable<Vessel> ListAsync(Expression<Func<Vessel, bool>> predicate, int pageNumber, int pageSize)
             => Context.Vessels
-                            .Where(predicate)
-                            .Include(x => x.RegistrationHistory)
-                            .OrderBy(x => x.IMO)
-                            .Skip((pageNumber - 1) * pageSize)
-                            .Take(pageSize)
-                            .AsAsyncEnumerable();
+                    .Where(predicate)
+                    .Include(x => x.RegistrationHistory)
+                        .ThenInclude(h => h.VesselType)
+                    .Include(x => x.RegistrationHistory)
+                        .ThenInclude(h => h.Flag)
+                    .Include(x => x.RegistrationHistory)
+                        .ThenInclude(h => h.Operator)
+                    .OrderBy(x => x.IMO)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .AsAsyncEnumerable();
 
         /// <summary>
         /// Add a vessel

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using ShippingRecorder.BusinessLogic.Extensions;
 using ShippingRecorder.DataExchange.Attributes;
 
 namespace ShippingRecorder.DataExchange.Entities
@@ -29,7 +30,7 @@ namespace ShippingRecorder.DataExchange.Entities
             {
                 Date = DateTime.ParseExact(words[0].Replace("\"", "").Trim(), DateFormat, CultureInfo.CurrentCulture),
                 Location = words[1].Replace("\"", "").Trim(),
-                IMO = words[2].Replace("\"", "").Trim(),
+                IMO = words[2].Replace("\"", "").Trim().CleanCode(),
                 IsMyVoyage = words[3].Replace("\"", "").Trim().Equals("True", StringComparison.OrdinalIgnoreCase)
             };
         }
