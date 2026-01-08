@@ -16,5 +16,6 @@ namespace ShippingRecorder.Entities.Interfaces
         bool UseCustomErrorPageInDevelopment { get; set; }
         int SearchPageSize { get; set; }
         int CacheLifetimeSeconds { get; set; }
+        string DateTimeFormat { get; set; }
     }
 }
