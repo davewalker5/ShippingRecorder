@@ -69,7 +69,7 @@ namespace ShippingRecorder.Tests.Mocks
                 builder.Append(CharacterSet[offset]);
             }
 
-            return builder.ToString();
+            return builder.ToString().Trim();
         }
 
         /// <summary>

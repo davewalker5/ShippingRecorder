@@ -105,6 +105,12 @@ namespace ShippingRecorder.Manager
                     await new ExportHandler(settings, parser, factory).HandleSightingExportAsync();
                 }
 
+                // If a vessel export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportVessels))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleVesselExportAsync();
+                }
+
                 // Handle user addition
                 if (parser.IsPresent(CommandLineOptionType.AddUser))
                 {

@@ -37,52 +37,5 @@ namespace ShippingRecorder.DataExchange.Extensions
 
             return exportable;
         }
-
-        /// <summary>
-        /// Return a sighting from an exportable sighting
-        /// </summary>
-        /// <param name="sighting"></param>
-        /// <param name="locations"></param>
-        /// <param name="vessels"></param>
-        /// <returns></returns>
-        public static Sighting FromExportable(
-            this ExportableSighting sighting,
-            IEnumerable<Location> locations,
-            IEnumerable<Vessel> vessels)
-        {
-            var location = locations.First(x => x.Name == sighting.Location);
-            var vessel = vessels.First(x => x.IMO == sighting.IMO);
-            return new()
-            {
-                Date = sighting.Date,
-                LocationId = location.Id,
-                Location = location,
-                VesselId = vessel.Id,
-                Vessel = vessel,
-                IsMyVoyage = sighting.IsMyVoyage
-            };
-        }
-
-        /// <summary>
-        /// Return a collection of sightings from a collection of exportable sightings
-        /// </summary>
-        /// <param name="exportable"></param>
-        /// <param name="locations"></param>
-        /// <param name="vessels"></param>
-        /// <returns></returns>
-        public static IEnumerable<Sighting> FromExportable(
-            this IEnumerable<ExportableSighting> exportable,
-            IEnumerable<Location> locations,
-            IEnumerable<Vessel> vessels)
-        {
-            var sightings = new List<Sighting>();
-
-            foreach (var sighting in exportable)
-            {
-                sightings.Add(sighting.FromExportable(locations, vessels));
-            }
-
-            return sightings;
-        }
     }
 }
