@@ -24,6 +24,7 @@ namespace ShippingRecorder.Data
         public virtual DbSet<SightingsByMonth> SightingsByMonth { get; set; }
         public virtual DbSet<MyVoyages> MyVoyages { get; set; }
         public virtual DbSet<OperatorStatistics> OperatorStatistics { get; set; }
+        public virtual DbSet<VesselTypeStatistics> VesselTypeStatistics { get; set; }
 
         public ShippingRecorderDbContext(DbContextOptions<ShippingRecorderDbContext> options) : base(options)
         {
@@ -39,6 +40,7 @@ namespace ShippingRecorder.Data
             modelBuilder.Entity<SightingsByMonth>().HasNoKey();
             modelBuilder.Entity<MyVoyages>().HasNoKey();
             modelBuilder.Entity<OperatorStatistics>().HasNoKey();
+            modelBuilder.Entity<VesselTypeStatistics>().HasNoKey();
 
             modelBuilder.Entity<Country>(entity =>
             {

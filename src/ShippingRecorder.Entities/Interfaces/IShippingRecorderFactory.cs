@@ -24,5 +24,6 @@ namespace ShippingRecorder.Entities.Interfaces
         IDateBasedReport<SightingsByMonth> SightingsByMonth { get; }
         IDateBasedReport<MyVoyages> MyVoyages { get; }
         IDateBasedReport<OperatorStatistics> OperatorStatistics { get; }
+        IDateBasedReport<VesselTypeStatistics> VesselTypeStatistics { get; }
     }
 }
