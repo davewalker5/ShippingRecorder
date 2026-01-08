@@ -276,5 +276,28 @@ namespace ShippingRecorder.Mvc.Controllers
 
             return result;
         }
+
+        /// <summary>
+        /// Show the modal dialog containing the vessel details for the specified vessel
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ShowVesselDetails(int identifier)
+        {
+            var vessel = await _vesselClient.GetAsync(identifier);
+            var model = new VesselDetailsViewModel()
+            {
+                Countries = await _countryListGenerator.Create(),
+                Operators = await _operatorListGenerator.Create(),
+                VesselTypes = await _vesselTypesListGenerator.Create(),
+                Editable = false,
+                Vessel = vessel,
+                Registration = vessel.ActiveRegistrationHistory ?? new() { Date = DateTime.Today }
+            };
+
+            var title = $"Vessel Details for IMO {vessel.IMO}";
+            return await LoadModalContent("_VesselDetails", model, title);
+        }
     }
 }
