@@ -29,6 +29,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
         private readonly Lazy<IDateBasedReport<MyVoyages>> _myVoyages = null;
         private readonly Lazy<IDateBasedReport<OperatorStatistics>> _operatorStatistics = null;
         private readonly Lazy<IDateBasedReport<VesselTypeStatistics>> _vesselTypeStatistics = null;
+        private readonly Lazy<IDateBasedReport<FlagStatistics>> _flagStatistics = null;
 
         public IShippingRecorderLogger Logger { get; private set; }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -59,6 +60,9 @@ namespace ShippingRecorder.BusinessLogic.Factory
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<VesselTypeStatistics> VesselTypeStatistics { get { return _vesselTypeStatistics.Value; } }
 
+        [ExcludeFromCodeCoverage]
+        public IDateBasedReport<FlagStatistics> FlagStatistics { get { return _flagStatistics.Value; } }
+
         public ShippingRecorderFactory(ShippingRecorderDbContext context, IShippingRecorderLogger logger)
         {
             // Store the database context and logger
@@ -87,6 +91,7 @@ namespace ShippingRecorder.BusinessLogic.Factory
             _myVoyages = new Lazy<IDateBasedReport<MyVoyages>>(() => new DateBasedReport<MyVoyages>(this));
             _operatorStatistics = new Lazy<IDateBasedReport<OperatorStatistics>>(() => new DateBasedReport<OperatorStatistics>(this));
             _vesselTypeStatistics = new Lazy<IDateBasedReport<VesselTypeStatistics>>(() => new DateBasedReport<VesselTypeStatistics>(this));
+            _flagStatistics = new Lazy<IDateBasedReport<FlagStatistics>>(() => new DateBasedReport<FlagStatistics>(this));
         }
 
         /// <summary>

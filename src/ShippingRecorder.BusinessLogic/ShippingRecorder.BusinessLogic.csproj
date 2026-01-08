@@ -39,6 +39,9 @@
     <EmbeddedResource Include="Sql\VesselTypeStatistics.sql">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Sql\FlagStatistics.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

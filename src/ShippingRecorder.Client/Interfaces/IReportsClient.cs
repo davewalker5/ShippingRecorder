@@ -14,5 +14,6 @@ namespace ShippingRecorder.Client.Interfaces
         Task<List<MyVoyages>> MyVoyagesAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize);
         Task<List<OperatorStatistics>> OperatorStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize);
         Task<List<VesselTypeStatistics>> VesselTypeStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize);
+        Task<List<FlagStatistics>> FlagStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize);
     }
 }

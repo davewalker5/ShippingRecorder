@@ -1,20 +1,20 @@
 ﻿@using ShippingRecorder.Mvc.Entities
-@model ShippingRecorder.Mvc.Models.OperatorStatisticsViewModel
+@model ShippingRecorder.Mvc.Models.FlagStatisticsViewModel
 
 @{
-    ViewData["Title"] = "Operator Statistics Report";
+    ViewData["Title"] = "Flag Statistics Report";
     string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
     string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
 }
 
 <p class="text-center font-weight-bold">
     <span style="font-size: 1.2rem">
-        Operator Statistics
+        Flag Statistics
     </span>
     <br />
     <small class="text-muted">
         <em>
-            Produce summary statistics for all operators
+            Produce summary statistics for all countries
         </em>
     </small>
 </p>
@@ -77,7 +77,8 @@
         {
             <table class="table">
                 <tr>
-                    <th>Operator</th>
+                    <th>Code</th>
+                    <th>Country</th>
                     <th>Sightings</th>
                     <th>Locations</th>
                     <th>Vessels</th>
@@ -85,6 +86,7 @@
                 @foreach (var record in Model.Records)
                 {
                     <tr>
+                        <td valign="center">@record.Code</td>
                         <td valign="center">@record.Name</td>
                         <td valign="center">@record.Sightings</td>
                         <td valign="center">@record.Locations</td>
@@ -101,7 +103,7 @@
         else if (Model.HasNoMatchingResults)
         {
             <hr />
-            @Html.Raw("Operator statistics are not available")
+            @Html.Raw("Flag statistics are not available")
         }
     }
 </div>
