@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ShippingRecorder.Entities.Jobs
 {
+    [ExcludeFromCodeCoverage]
     public class ExportWorkItem : BackgroundWorkItem
     {
         public string FileName { get; set; }

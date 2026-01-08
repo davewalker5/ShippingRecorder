@@ -2,11 +2,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using ShippingRecorder.BusinessLogic.Extensions;
 using ShippingRecorder.DataExchange.Attributes;
+using ShippingRecorder.Entities.Interfaces;
 
 namespace ShippingRecorder.DataExchange.Entities
 {
     [ExcludeFromCodeCoverage]
-    public class ExportableLocation : ExportableEntityBase
+    public class ExportableLocation : ExportableEntityBase, INamedEntity
     {
         /// <summary>
         /// Location Name

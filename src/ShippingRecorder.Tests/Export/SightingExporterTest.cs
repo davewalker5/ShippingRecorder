@@ -74,14 +74,12 @@ namespace ShippingRecorder.Tests.Export
             await context.Sightings.AddAsync(_sighting);
             await context.SaveChangesAsync();
 
-
             var logger = new Mock<IShippingRecorderLogger>();
             var factory = new ShippingRecorderFactory(context, new MockFileLogger());
             var exporter = new SightingExporter(factory);
 
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
-            List<Sighting> measurements = [_sighting];
-            await exporter.ExportAsync(measurements, _filePath);
+            await exporter.ExportAsync(_filePath);
 
             var info = new FileInfo(_filePath);
             Assert.AreEqual(info.FullName, _filePath);

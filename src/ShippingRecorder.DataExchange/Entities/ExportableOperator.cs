@@ -2,11 +2,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using ShippingRecorder.BusinessLogic.Extensions;
 using ShippingRecorder.DataExchange.Attributes;
+using ShippingRecorder.Entities.Interfaces;
 
 namespace ShippingRecorder.DataExchange.Entities
 {
     [ExcludeFromCodeCoverage]
-    public class ExportableOperator : ExportableEntityBase
+    public class ExportableOperator : ExportableEntityBase, INamedEntity
     {
         /// <summary>
         /// Operator Name

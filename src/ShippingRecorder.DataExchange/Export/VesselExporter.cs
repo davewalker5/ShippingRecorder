@@ -30,7 +30,7 @@ namespace ShippingRecorder.DataExchange.Export
         }
 
         /// <summary>
-        /// Export a collection of meals to a CSV file
+        /// Export a collection of vessels to a CSV file
         /// </summary>
         /// <param name="vessels"></param>
         /// <param name="file"></param>

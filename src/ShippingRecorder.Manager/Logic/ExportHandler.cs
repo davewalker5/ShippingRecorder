@@ -65,6 +65,13 @@ namespace ShippingRecorder.Manager.Logic
         }
 
         /// <summary>
+        /// Handle the location export command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleLocationExportAsync()
+            => await HandleExport<LocationExporter, ExportableLocation, Location>(CommandLineOptionType.ExportLocations);
+
+        /// <summary>
         /// Handle the sightings export command
         /// </summary>
         /// <returns></returns>

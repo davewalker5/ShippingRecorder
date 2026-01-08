@@ -116,8 +116,7 @@ namespace ShippingRecorder.Tests.Export
             var exporter = new VesselExporter(factory);
 
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
-            List<Vessel> measurements = [_vessel];
-            await exporter.ExportAsync(measurements, _filePath);
+            await exporter.ExportAsync(_filePath);
 
             var info = new FileInfo(_filePath);
             Assert.AreEqual(info.FullName, _filePath);

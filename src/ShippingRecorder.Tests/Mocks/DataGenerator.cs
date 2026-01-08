@@ -102,7 +102,7 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static Location CreateLocation()
-            => new() { Id = RandomId(), Name = RandomWord() };
+            => new() { Id = RandomId(), Name = RandomWord().TitleCase() };
 
         /// <summary>
         /// Return a random operator

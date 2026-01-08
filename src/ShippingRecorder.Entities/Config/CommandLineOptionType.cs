@@ -4,6 +4,7 @@ namespace ShippingRecorder.Entities.Config
     {
         AddUser,
         DeleteUser,
+        ExportLocations,
         ExportSightings,
         ExportVessels,
         Help,
