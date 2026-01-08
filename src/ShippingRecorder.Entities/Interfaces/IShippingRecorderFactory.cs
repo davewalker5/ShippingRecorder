@@ -22,5 +22,6 @@ namespace ShippingRecorder.Entities.Interfaces
 
         IDateBasedReport<LocationStatistics> LocationStatistics { get; }
         IDateBasedReport<SightingsByMonth> SightingsByMonth { get; }
+        IDateBasedReport<MyVoyages> MyVoyages { get; }
     }
 }

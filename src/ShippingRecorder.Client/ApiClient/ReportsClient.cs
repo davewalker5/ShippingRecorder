@@ -57,6 +57,17 @@ namespace ShippingRecorder.Client.ApiClient
             => await DateBasedReportAsync<SightingsByMonth>("SightingsByMonth", from, to, pageNumber, pageSize);
 
         /// <summary>
+        /// Return the "my voyages" report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<MyVoyages>> MyVoyagesAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<MyVoyages>("MyVoyages", from, to, pageNumber, pageSize);
+
+        /// <summary>
         /// Return a date-based statistics report
         /// </summary>
         /// <typeparam name="T"></typeparam>
