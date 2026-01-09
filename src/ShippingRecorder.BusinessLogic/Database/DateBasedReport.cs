@@ -1,5 +1,4 @@
-﻿using ShippingRecorder.BusinessLogic.Factory;
-using ShippingRecorder.Entities.Interfaces;
+﻿using ShippingRecorder.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -14,12 +13,12 @@ namespace ShippingRecorder.BusinessLogic.Database
         private const string FromDatePlaceHolder = "$from";
         private const string ToDatePlaceHolder = "$to";
 
-        internal DateBasedReport(ShippingRecorderFactory factory) : base(factory)
+        internal DateBasedReport(IShippingRecorderFactory factory) : base(factory)
         {
         }
 
         /// <summary>
-        /// Generate a datebased report for reporting entity type T
+        /// Generate a date based report for reporting entity type T
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>

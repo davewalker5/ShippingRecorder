@@ -54,7 +54,8 @@ namespace ShippingRecorder.BusinessLogic.Logging
                 .File(
                         logFile,
                         rollingInterval: RollingInterval.Day,
-                        rollOnFileSizeLimit: true)
+                        rollOnFileSizeLimit: true,
+                        buffered: false)
                     .CreateLogger();
 #pragma warning restore CS8602, S4792
 

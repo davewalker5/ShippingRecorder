@@ -8,6 +8,7 @@ using ShippingRecorder.Entities.Db;
 using Microsoft.Extensions.Logging;
 using ShippingRecorder.Entities.Interfaces;
 using ShippingRecorder.Entities.Reporting;
+using System.Web;
 
 namespace ShippingRecorder.Client.ApiClient
 {
@@ -113,8 +114,8 @@ namespace ShippingRecorder.Client.ApiClient
         private async Task<List<T>> DateBasedReportAsync<T>(string routeName, DateTime? from, DateTime? to, int pageNumber, int pageSize)
         {
             // URL encode the dates
-            string fromRouteSegment = (from ?? DateTime.MinValue).ToString(Settings.DateTimeFormat);
-            string toRouteSegment = (to ?? DateTime.MaxValue).ToString(Settings.DateTimeFormat);
+            string fromRouteSegment = HttpUtility.UrlEncode((from ?? DateTime.MinValue).ToString(Settings.DateTimeFormat));
+            string toRouteSegment = HttpUtility.UrlEncode((to ?? DateTime.MaxValue).ToString(Settings.DateTimeFormat));
 
             // Construct the route
             string route = @$"{Settings.ApiRoutes.First(r => r.Name == routeName).Route}/{fromRouteSegment}/{toRouteSegment}/{pageNumber}/{pageSize}";

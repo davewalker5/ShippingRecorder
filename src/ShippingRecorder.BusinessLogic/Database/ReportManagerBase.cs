@@ -1,5 +1,4 @@
-﻿using ShippingRecorder.BusinessLogic.Factory;
-using ShippingRecorder.Entities.Logging;
+﻿using ShippingRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -8,18 +7,15 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ShippingRecorder.Data;
+using ShippingRecorder.Entities.Interfaces;
 
 namespace ShippingRecorder.BusinessLogic.Database
 {
     [ExcludeFromCodeCoverage]
-    internal abstract class ReportManagerBase
+    internal abstract class ReportManagerBase : DatabaseManagerBase
     {
-
-        private readonly ShippingRecorderFactory _factory;
-
-        protected ReportManagerBase(ShippingRecorderFactory factory)
+        protected ReportManagerBase(IShippingRecorderFactory factory) : base(factory)
         {
-            _factory = factory;
         }
 
         /// <summary>
