@@ -6,12 +6,14 @@ using ShippingRecorder.Entities.Db;
 using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ShippingRecorder.Client.ApiClient
 {
     public class VesselClient : ShippingRecorderClientBase, IVesselClient
     {
         private const string RouteKey = "Vessel";
+        private const string ImportRouteKey = "ImportVessel";
 
         public VesselClient(
             IShippingRecorderHttpClient client,
@@ -136,5 +138,25 @@ namespace ShippingRecorder.Client.ApiClient
             List<Vessel> vessels = Deserialize<List<Vessel>>(json);
             return vessels;
         }
+
+        /// <summary>
+        /// Request an import of vessels from the content of a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileContentAsync(string content)
+        {
+            dynamic data = new{ Content = content };
+            var json = Serialize(data);
+            await SendIndirectAsync(ImportRouteKey, json, HttpMethod.Post);
+        }
+
+        /// <summary>
+        /// Request an import of vessels given the path to a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileAsync(string filePath)
+            => await ImportFromFileContentAsync(File.ReadAllText(filePath));
     }
 }
