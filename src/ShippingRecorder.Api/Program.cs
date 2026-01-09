@@ -71,9 +71,13 @@ namespace ShippingRecorder.Api
             builder.Services.AddScoped<ShippingRecorderFactory>();
             builder.Services.AddScoped<IUserService, UserService>();
 
-            // Add the person importer hosted service
+            // Add the location importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<LocationImportWorkItem>, BackgroundQueue<LocationImportWorkItem>>();
             builder.Services.AddHostedService<LocationImportService>();
+
+            // Add the country importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<CountryImportWorkItem>, BackgroundQueue<CountryImportWorkItem>>();
+            builder.Services.AddHostedService<CountryImportService>();
 
             // Configure JWT
             byte[] key = Encoding.ASCII.GetBytes(settings!.Secret);

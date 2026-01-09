@@ -409,3 +409,7 @@ Published/
 appsettings.Development.json
 .~lock.*
 venv/
+
+data.csv
+payload.json
+

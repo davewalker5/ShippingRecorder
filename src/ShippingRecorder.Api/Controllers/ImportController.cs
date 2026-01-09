@@ -11,11 +11,24 @@ namespace ShippingRecorder.Api.Controllers
     [Route("[controller]")]
     public class ImportController : Controller
     {
+        private readonly IBackgroundQueue<CountryImportWorkItem> _countryQueue;
         private readonly IBackgroundQueue<LocationImportWorkItem> _locationQueue;
 
-        public ImportController(IBackgroundQueue<LocationImportWorkItem> locationQueue)
+        public ImportController(
+            IBackgroundQueue<CountryImportWorkItem> countryQueue,
+            IBackgroundQueue<LocationImportWorkItem> locationQueue)
         {
+            _countryQueue = countryQueue;
             _locationQueue = locationQueue;
+        }
+
+        [HttpPost]
+        [Route("countries")]
+        public IActionResult ImportCountries([FromBody] CountryImportWorkItem item)
+        {
+            item.JobName = "Country Import";
+            _countryQueue.Enqueue(item);
+            return Accepted();
         }
 
         [HttpPost]
