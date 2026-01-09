@@ -71,10 +71,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                DateTime start = model.From ?? DateTime.MinValue;
-                DateTime end = model.To ?? DateTime.MaxValue;
-
-                List<OperatorStatistics> records = await _reportsClient.OperatorStatisticsAsync(start, end, page, _settings.SearchPageSize);
+                List<OperatorStatistics> records = await _reportsClient.OperatorStatisticsAsync(model.From, model.To, page, _settings.SearchPageSize);
                 model.SetRecords(records, page, _settings.SearchPageSize);
             }
             else

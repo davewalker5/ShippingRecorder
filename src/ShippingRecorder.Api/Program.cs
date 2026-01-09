@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ShippingRecorder.DataExchange.Import;
+using ShippingRecorder.Api.Entities;
 
 namespace ShippingRecorder.Api
 {
@@ -68,6 +70,10 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<ShippingRecorderApplicationSettings>(settings);
             builder.Services.AddScoped<ShippingRecorderFactory>();
             builder.Services.AddScoped<IUserService, UserService>();
+
+            // Add the person importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<LocationImportWorkItem>, BackgroundQueue<LocationImportWorkItem>>();
+            builder.Services.AddHostedService<LocationImportService>();
 
             // Configure JWT
             byte[] key = Encoding.ASCII.GetBytes(settings!.Secret);
