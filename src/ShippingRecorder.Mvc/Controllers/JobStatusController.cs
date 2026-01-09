@@ -71,11 +71,8 @@ namespace ShippingRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                DateTime start = model.From ?? DateTime.MinValue;
-                DateTime end = model.To ?? DateTime.MaxValue;
-
                 // Retrieve the matching report records
-                List<JobStatus> records = await _reportsClient.JobStatusAsync(start, end, page, _settings.SearchPageSize);
+                List<JobStatus> records = await _reportsClient.JobStatusAsync(model.From, model.To, page, _settings.SearchPageSize);
                 model.SetRecords(records, page, _settings.SearchPageSize);
             }
             else

@@ -15,8 +15,6 @@ namespace ShippingRecorder.Client.ApiClient
 {
     public abstract class ShippingRecorderClientBase
     {
-        protected const string DateTimeFormat = "yyyy-MM-dd H:mm:ss";
-
         private readonly JsonSerializerOptions _serializerOptions = new ()
         {
             PropertyNameCaseInsensitive = true
@@ -209,8 +207,8 @@ namespace ShippingRecorder.Client.ApiClient
             (DateTime fromDate, DateTime toDate) = CalculateDateRange(from, to);
 
             // Encode the dates
-            var encodedFromDate = HttpUtility.UrlEncode(fromDate.ToString(DateTimeFormat));
-            var encodedToDate = HttpUtility.UrlEncode(toDate.ToString(DateTimeFormat));
+            var encodedFromDate = HttpUtility.UrlEncode(fromDate.ToString(Settings.DateTimeFormat));
+            var encodedToDate = HttpUtility.UrlEncode(toDate.ToString(Settings.DateTimeFormat));
 
             return (encodedFromDate, encodedToDate);
         }

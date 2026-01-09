@@ -2,8 +2,9 @@
 using ShippingRecorder.Entities.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Web;
 using ShippingRecorder.Entities.Reporting;
+using System.Globalization;
+using System.Web;
 
 namespace ShippingRecorder.Api.Controllers
 {
@@ -35,8 +36,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<JobStatus>>> GetJobsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.JobStatuses
@@ -67,8 +68,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<LocationStatistics>>> GetLocationStatisticsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.LocationStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
@@ -95,8 +96,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<SightingsByMonth>>> GetSightingsByMonthAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.SightingsByMonth.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
@@ -123,8 +124,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<MyVoyages>>> GetMyFlightsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.MyVoyages.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
@@ -151,8 +152,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<OperatorStatistics>>> GetOperatorStatisticsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.OperatorStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
@@ -179,8 +180,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<VesselTypeStatistics>>> GetVesselTypeStatisticsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.VesselTypeStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
@@ -207,8 +208,8 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<List<FlagStatistics>>> GetFlagStatisticsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
-            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
-            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, CultureInfo.InvariantCulture);
 
             // Get the report content
             var results = await _factory.FlagStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);

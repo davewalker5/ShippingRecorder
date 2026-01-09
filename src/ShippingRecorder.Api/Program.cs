@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ShippingRecorder.DataExchange.Import;
+using ShippingRecorder.Api.Entities;
 
 namespace ShippingRecorder.Api
 {
@@ -68,6 +70,34 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<ShippingRecorderApplicationSettings>(settings);
             builder.Services.AddScoped<ShippingRecorderFactory>();
             builder.Services.AddScoped<IUserService, UserService>();
+
+            // Add the location importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<LocationImportWorkItem>, BackgroundQueue<LocationImportWorkItem>>();
+            builder.Services.AddHostedService<LocationImportService>();
+
+            // Add the country importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<CountryImportWorkItem>, BackgroundQueue<CountryImportWorkItem>>();
+            builder.Services.AddHostedService<CountryImportService>();
+
+            // Add the operator importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<OperatorImportWorkItem>, BackgroundQueue<OperatorImportWorkItem>>();
+            builder.Services.AddHostedService<OperatorImportService>();
+
+            // Add the vessel type importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VesselTypeImportWorkItem>, BackgroundQueue<VesselTypeImportWorkItem>>();
+            builder.Services.AddHostedService<VesselTypeImportService>();
+
+            // Add the vessel importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VesselImportWorkItem>, BackgroundQueue<VesselImportWorkItem>>();
+            builder.Services.AddHostedService<VesselImportService>();
+
+            // Add the sighting importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<SightingImportWorkItem>, BackgroundQueue<SightingImportWorkItem>>();
+            builder.Services.AddHostedService<SightingImportService>();
+
+            // Add the port importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<PortImportWorkItem>, BackgroundQueue<PortImportWorkItem>>();
+            builder.Services.AddHostedService<PortImportService>();
 
             // Configure JWT
             byte[] key = Encoding.ASCII.GetBytes(settings!.Secret);

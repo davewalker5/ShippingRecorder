@@ -14,6 +14,8 @@ namespace ShippingRecorder.Client.ApiClient
 {
     public class ReportsClient : ShippingRecorderClientBase, IReportsClient
     {
+        private readonly DateTime DefaultMinimumDate = new(1970, 1, 1, 0, 0, 0);
+
         public ReportsClient(
             IShippingRecorderHttpClient client,
             IShippingRecorderApplicationSettings settings,
@@ -113,9 +115,17 @@ namespace ShippingRecorder.Client.ApiClient
         /// <returns></returns>
         private async Task<List<T>> DateBasedReportAsync<T>(string routeName, DateTime? from, DateTime? to, int pageNumber, int pageSize)
         {
+            // Make sure the dates passed to the API aren't NULL
+            var nonNullFrom = (from ?? DefaultMinimumDate).ToString(Settings.DateTimeFormat);
+            var nonNullTo = (to ?? DateTime.Now).ToString(Settings.DateTimeFormat);
+
             // URL encode the dates
-            string fromRouteSegment = HttpUtility.UrlEncode((from ?? DateTime.MinValue).ToString(Settings.DateTimeFormat));
-            string toRouteSegment = HttpUtility.UrlEncode((to ?? DateTime.MaxValue).ToString(Settings.DateTimeFormat));
+            string fromRouteSegment = HttpUtility.UrlEncode(nonNullFrom);
+            string toRouteSegment = HttpUtility.UrlEncode(nonNullTo);
+
+            Logger.LogDebug($"Date Time Formatter is {Settings.DateTimeFormat}");
+            Logger.LogDebug($"{nonNullFrom} encoded as {fromRouteSegment}");
+            Logger.LogDebug($"{nonNullTo} encoded as {toRouteSegment}");
 
             // Construct the route
             string route = @$"{Settings.ApiRoutes.First(r => r.Name == routeName).Route}/{fromRouteSegment}/{toRouteSegment}/{pageNumber}/{pageSize}";
