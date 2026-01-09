@@ -16,19 +16,22 @@ namespace ShippingRecorder.Api.Controllers
         private readonly IBackgroundQueue<OperatorImportWorkItem> _operatorQueue;
         private readonly IBackgroundQueue<VesselImportWorkItem> _vesselQueue;
         private readonly IBackgroundQueue<VesselTypeImportWorkItem> _vesselTypeQueue;
+        private readonly IBackgroundQueue<SightingImportWorkItem> _sightingQueue;
 
         public ImportController(
             IBackgroundQueue<CountryImportWorkItem> countryQueue,
             IBackgroundQueue<LocationImportWorkItem> locationQueue,
             IBackgroundQueue<OperatorImportWorkItem> operatorQueue,
             IBackgroundQueue<VesselImportWorkItem> vesselQueue,
-            IBackgroundQueue<VesselTypeImportWorkItem> vesselTypeQueue)
+            IBackgroundQueue<VesselTypeImportWorkItem> vesselTypeQueue,
+            IBackgroundQueue<SightingImportWorkItem> sightingQueue)
         {
             _countryQueue = countryQueue;
             _locationQueue = locationQueue;
             _operatorQueue = operatorQueue;
             _vesselQueue = vesselQueue;
             _vesselTypeQueue = vesselTypeQueue;
+            _sightingQueue = sightingQueue;
         }
 
         [HttpPost]
@@ -73,6 +76,15 @@ namespace ShippingRecorder.Api.Controllers
         {
             item.JobName = "Vessel Type Import";
             _vesselTypeQueue.Enqueue(item);
+            return Accepted();
+        }
+
+        [HttpPost]
+        [Route("sightings")]
+        public IActionResult ImportSightings([FromBody] SightingImportWorkItem item)
+        {
+            item.JobName = "Sighting Import";
+            _sightingQueue.Enqueue(item);
             return Accepted();
         }
     }
