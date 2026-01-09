@@ -4,12 +4,13 @@ using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Client.Interfaces
 {
-    public interface ILocationClient
+    public interface ILocationClient : IImporterExporter
     {
         Task<Location> GetAsync(long id);
         Task<Location> AddAsync(string name);
         Task DeleteAsync(long id);
         Task<List<Location>> ListAsync(int pageNumber, int pageSize);
         Task<Location> UpdateAsync(long id, string name);
+        
     }
 }

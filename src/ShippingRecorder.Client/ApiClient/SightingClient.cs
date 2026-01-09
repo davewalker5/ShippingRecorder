@@ -7,12 +7,14 @@ using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 namespace ShippingRecorder.Client.ApiClient
 {
     public class SightingClient : ShippingRecorderClientBase, ISightingClient
     {
         private const string RouteKey = "Sighting";
+        private const string ImportRouteKey = "ImportSighting";
 
         public SightingClient(
             IShippingRecorderHttpClient client,
@@ -195,5 +197,25 @@ namespace ShippingRecorder.Client.ApiClient
             List<Sighting> sightings = Deserialize<List<Sighting>>(json);
             return sightings;
         }
+
+        /// <summary>
+        /// Request an import of sightings from the content of a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileContentAsync(string content)
+        {
+            dynamic data = new{ Content = content };
+            var json = Serialize(data);
+            await SendIndirectAsync(ImportRouteKey, json, HttpMethod.Post);
+        }
+
+        /// <summary>
+        /// Request an import of sightings given the path to a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileAsync(string filePath)
+            => await ImportFromFileContentAsync(File.ReadAllText(filePath));
     }
 }

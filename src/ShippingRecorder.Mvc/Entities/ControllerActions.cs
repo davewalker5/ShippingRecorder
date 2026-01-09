@@ -5,6 +5,7 @@
         public const string ActionPreviousPage = "Previous";
         public const string ActionNextPage = "Next";
         public const string ActionSearch = "Search";
+        public const string ActionImport = "Import";
         public const string ActionExport = "Export";
     }
 }

@@ -6,12 +6,14 @@ using ShippingRecorder.Entities.Db;
 using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ShippingRecorder.Client.ApiClient
 {
     public class CountryClient : ShippingRecorderClientBase, ICountryClient
     {
         private const string RouteKey = "Country";
+        private const string ImportRouteKey = "ImportCountry";
 
         public CountryClient(
             IShippingRecorderHttpClient client,
@@ -111,5 +113,25 @@ namespace ShippingRecorder.Client.ApiClient
             List<Country> countries = Deserialize<List<Country>>(json);
             return countries;
         }
+
+        /// <summary>
+        /// Request an import of countries from the content of a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileContentAsync(string content)
+        {
+            dynamic data = new{ Content = content };
+            var json = Serialize(data);
+            await SendIndirectAsync(ImportRouteKey, json, HttpMethod.Post);
+        }
+
+        /// <summary>
+        /// Request an import of countries given the path to a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileAsync(string filePath)
+            => await ImportFromFileContentAsync(File.ReadAllText(filePath));
     }
 }
