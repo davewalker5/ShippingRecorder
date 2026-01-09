@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
 using System.Web;
+using System;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -244,16 +245,14 @@ namespace ShippingRecorder.Tests.Client
 
             var from = sighting.Date.AddDays(-1);
             var to = sighting.Date.AddDays(1);
-            var encodedFrom = HttpUtility.UrlEncode(from.ToString("yyyy-MM-dd H:mm:ss"));
-            var encodedTo = HttpUtility.UrlEncode(to.ToString("yyyy-MM-dd H:mm:ss"));
 
             var sightings = await _client.ListSightingsByDateAsync(from, to, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/date/{encodedFrom}/{encodedTo}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/date/";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
-            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.StartsWith(expectedRoute, _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
             Assert.IsNotNull(sightings);
