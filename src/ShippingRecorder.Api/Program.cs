@@ -83,6 +83,10 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<IBackgroundQueue<OperatorImportWorkItem>, BackgroundQueue<OperatorImportWorkItem>>();
             builder.Services.AddHostedService<OperatorImportService>();
 
+            // Add the vessel type importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VesselTypeImportWorkItem>, BackgroundQueue<VesselTypeImportWorkItem>>();
+            builder.Services.AddHostedService<VesselTypeImportService>();
+
             // Configure JWT
             byte[] key = Encoding.ASCII.GetBytes(settings!.Secret);
             builder.Services.AddAuthentication(x =>

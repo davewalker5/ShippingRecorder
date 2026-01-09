@@ -6,11 +6,11 @@ using ShippingRecorder.DataExchange.Entities;
 
 namespace ShippingRecorder.Api.Services
 {
-    public class OperatorImportService : BackgroundQueueProcessor<OperatorImportWorkItem>
+    public class VesselTypeImportService : BackgroundQueueProcessor<VesselTypeImportWorkItem>
     {
-        public OperatorImportService(
-            ILogger<BackgroundQueueProcessor<OperatorImportWorkItem>> logger,
-            IBackgroundQueue<OperatorImportWorkItem> queue,
+        public VesselTypeImportService(
+            ILogger<BackgroundQueueProcessor<VesselTypeImportWorkItem>> logger,
+            IBackgroundQueue<VesselTypeImportWorkItem> queue,
             IServiceScopeFactory serviceScopeFactory)
             : base(logger, queue, serviceScopeFactory)
         {
@@ -22,17 +22,17 @@ namespace ShippingRecorder.Api.Services
         /// <param name="item"></param>
         /// <param name="factory"></param>
         /// <returns></returns>
-        protected override async Task ProcessWorkItemAsync(OperatorImportWorkItem item, IShippingRecorderFactory factory)
+        protected override async Task ProcessWorkItemAsync(VesselTypeImportWorkItem item, IShippingRecorderFactory factory)
         {
-            MessageLogger.LogInformation("Operator import started");
+            MessageLogger.LogInformation("Vessel type import started");
             var records = item.Content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             var count = records.Length - 1;
             if (count > 0)
             {
                 var messageEnding = (count > 1) ? "s" : "";
-                MessageLogger.LogInformation($"Importing {records.Count() - 1} operator{messageEnding}");
-                var importer = new OperatorImporter(factory, ExportableOperator.CsvRecordPattern);
+                MessageLogger.LogInformation($"Importing {records.Count() - 1} vessel type{messageEnding}");
+                var importer = new VesselTypeImporter(factory, ExportableVesselType.CsvRecordPattern);
                 await importer.ImportAsync(records);
             }
             else
@@ -40,7 +40,7 @@ namespace ShippingRecorder.Api.Services
                 MessageLogger.LogWarning("No records found to import");
             }
 
-            MessageLogger.LogInformation("Operator import completed");
+            MessageLogger.LogInformation("Vessel type import completed");
         }
     }
 }

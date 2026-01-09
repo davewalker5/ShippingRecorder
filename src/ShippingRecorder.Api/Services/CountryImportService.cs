@@ -30,8 +30,8 @@ namespace ShippingRecorder.Api.Services
             var count = records.Length - 1;
             if (count > 0)
             {
-                var messageEnding = (count > 1) ? "s" : "";
-                MessageLogger.LogInformation($"Importing {records.Count() - 1} location{messageEnding}");
+                var messageEnding = (count > 1) ? "countries" : "country";
+                MessageLogger.LogInformation($"Importing {records.Count() - 1} {messageEnding}");
                 var importer = new CountryImporter(factory, ExportableCountry.CsvRecordPattern);
                 await importer.ImportAsync(records);
             }
