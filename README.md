@@ -72,6 +72,7 @@ Sources of publicly-available and free-to-use reference data are as follows:
 | ------------- | -------- | ------------------------------------------------ |
 | Country codes | DataHub  | https://datahub.io/core/country-list             |
 | Ports         | UNCE     | https://unece.org/trade/cefact/UNLOCODE-Download |
+| Operators     | Wikidata | https://www.wikidata.org                         |
 
 ## Feedback
 
