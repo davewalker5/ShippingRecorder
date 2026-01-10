@@ -104,7 +104,7 @@ namespace ShippingRecorder.Api
 
             // Add the vessel exporter hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VesselExportWorkItem>, BackgroundQueue<VesselExportWorkItem>>();
-            // builder.Services.AddHostedService<VesselExportService>();
+            builder.Services.AddHostedService<VesselExportService>();
 
             // Add the sighting importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<SightingImportWorkItem>, BackgroundQueue<SightingImportWorkItem>>();
