@@ -96,7 +96,7 @@ namespace ShippingRecorder.Api
 
             // Add the vessel type exporter hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VesselTypeExportWorkItem>, BackgroundQueue<VesselTypeExportWorkItem>>();
-            // builder.Services.AddHostedService<VesselTypeExportService>();
+            builder.Services.AddHostedService<VesselTypeExportService>();
 
             // Add the vessel importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VesselImportWorkItem>, BackgroundQueue<VesselImportWorkItem>>();
