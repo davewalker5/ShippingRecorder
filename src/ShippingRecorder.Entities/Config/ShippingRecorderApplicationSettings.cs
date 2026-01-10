@@ -18,5 +18,6 @@ namespace ShippingRecorder.Entities.Config
         public int SearchPageSize { get; set; }
         public int CacheLifetimeSeconds { get; set; }
         public string DateTimeFormat { get; set; }
+        public string ExportPath { get; set; }
     }
 }

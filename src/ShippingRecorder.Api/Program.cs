@@ -75,6 +75,10 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<IBackgroundQueue<LocationImportWorkItem>, BackgroundQueue<LocationImportWorkItem>>();
             builder.Services.AddHostedService<LocationImportService>();
 
+            // Add the location exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<LocationExportWorkItem>, BackgroundQueue<LocationExportWorkItem>>();
+            builder.Services.AddHostedService<LocationExportService>();
+
             // Add the country importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<CountryImportWorkItem>, BackgroundQueue<CountryImportWorkItem>>();
             builder.Services.AddHostedService<CountryImportService>();
@@ -83,17 +87,33 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<IBackgroundQueue<OperatorImportWorkItem>, BackgroundQueue<OperatorImportWorkItem>>();
             builder.Services.AddHostedService<OperatorImportService>();
 
+            // Add the operator exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<OperatorExportWorkItem>, BackgroundQueue<OperatorExportWorkItem>>();
+            // builder.Services.AddHostedService<OperatorExportService>();
+
             // Add the vessel type importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VesselTypeImportWorkItem>, BackgroundQueue<VesselTypeImportWorkItem>>();
             builder.Services.AddHostedService<VesselTypeImportService>();
+
+            // Add the vessel type exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VesselTypeExportWorkItem>, BackgroundQueue<VesselTypeExportWorkItem>>();
+            // builder.Services.AddHostedService<VesselTypeExportService>();
 
             // Add the vessel importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VesselImportWorkItem>, BackgroundQueue<VesselImportWorkItem>>();
             builder.Services.AddHostedService<VesselImportService>();
 
+            // Add the vessel exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VesselExportWorkItem>, BackgroundQueue<VesselExportWorkItem>>();
+            // builder.Services.AddHostedService<VesselExportService>();
+
             // Add the sighting importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<SightingImportWorkItem>, BackgroundQueue<SightingImportWorkItem>>();
             builder.Services.AddHostedService<SightingImportService>();
+
+            // Add the sighting exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<SightingExportWorkItem>, BackgroundQueue<SightingExportWorkItem>>();
+            // builder.Services.AddHostedService<SightingExportService>();
 
             // Add the port importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<PortImportWorkItem>, BackgroundQueue<PortImportWorkItem>>();
