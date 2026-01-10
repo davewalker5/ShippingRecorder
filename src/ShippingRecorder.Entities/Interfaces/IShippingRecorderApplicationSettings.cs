@@ -17,5 +17,6 @@ namespace ShippingRecorder.Entities.Interfaces
         int SearchPageSize { get; set; }
         int CacheLifetimeSeconds { get; set; }
         string DateTimeFormat { get; set; }
+        string ExportPath { get; set; }
     }
 }
