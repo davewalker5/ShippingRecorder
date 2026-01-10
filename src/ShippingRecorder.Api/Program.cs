@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ShippingRecorder.DataExchange.Import;
 using ShippingRecorder.Api.Entities;
 
 namespace ShippingRecorder.Api
@@ -89,7 +88,7 @@ namespace ShippingRecorder.Api
 
             // Add the operator exporter hosted service
             builder.Services.AddSingleton<IBackgroundQueue<OperatorExportWorkItem>, BackgroundQueue<OperatorExportWorkItem>>();
-            // builder.Services.AddHostedService<OperatorExportService>();
+            builder.Services.AddHostedService<OperatorExportService>();
 
             // Add the vessel type importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VesselTypeImportWorkItem>, BackgroundQueue<VesselTypeImportWorkItem>>();
