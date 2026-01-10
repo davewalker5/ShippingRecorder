@@ -4,7 +4,7 @@ using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Client.Interfaces
 {
-    public interface IOperatorClient : IImporterExporter
+    public interface IOperatorClient : IImporter, IExporter
     {
         Task<Operator> GetAsync(long id);
         Task<Operator> AddAsync(string name);

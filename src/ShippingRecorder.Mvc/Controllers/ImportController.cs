@@ -110,7 +110,7 @@ namespace ShippingRecorder.Mvc.Controllers
             {
                 // Request the import
                 _logger.LogDebug($"Requesting import of {model.DataExchangeTypeName} data from {fileName}");
-                await Client(model.DataExchangeType).ImportFromFileContentAsync(content);
+                await ImportClient(model.DataExchangeType).ImportFromFileContentAsync(content);
 
                 // Reset the model and set a confirmation message
                 ModelState.Clear();

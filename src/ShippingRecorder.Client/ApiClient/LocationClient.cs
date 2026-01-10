@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace ShippingRecorder.Client.ApiClient
 {
@@ -14,6 +15,7 @@ namespace ShippingRecorder.Client.ApiClient
     {
         private const string RouteKey = "Location";
         private const string ImportRouteKey = "ImportLocation";
+        private const string ExportRouteKey = "ExportLocation";
 
         public LocationClient(
             IShippingRecorderHttpClient client,
@@ -129,5 +131,18 @@ namespace ShippingRecorder.Client.ApiClient
         /// <returns></returns>
         public async Task ImportFromFileAsync(string filePath)
             => await ImportFromFileContentAsync(File.ReadAllText(filePath));
+
+        /// <summary>
+        /// Request an export of locations to a named file in the export location
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task ExportAsync(string fileName)
+        {
+            dynamic data = new{ FileName = fileName };
+            var json = Serialize(data);
+            await SendIndirectAsync(ExportRouteKey, json, HttpMethod.Post);
+        }
     }
 }

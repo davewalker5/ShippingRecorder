@@ -17,7 +17,8 @@ namespace ShippingRecorder.Mvc.Controllers
             { DataExchangeType.VesselTypes, "VesselType" }
         };
 
-        protected readonly Dictionary<DataExchangeType, IImporterExporter> _clients = new();
+        protected readonly Dictionary<DataExchangeType, IImporter> _importers = new();
+        protected readonly Dictionary<DataExchangeType, IExporter> _exporters = new();
 
         public DataExchangeControllerBase(
             ICountryClient countryClient,
@@ -30,13 +31,19 @@ namespace ShippingRecorder.Mvc.Controllers
             IPartialViewToStringRenderer renderer,
             ILogger logger) : base(renderer, logger)
         {
-            _clients.Add(DataExchangeType.Countries, countryClient);
-            _clients.Add(DataExchangeType.Locations, locationClient);
-            _clients.Add(DataExchangeType.Operators, operatorClient);
-            _clients.Add(DataExchangeType.Ports, portClient);
-            _clients.Add(DataExchangeType.Sightings, sightingClient);
-            _clients.Add(DataExchangeType.Vessels, vesselClient);
-            _clients.Add(DataExchangeType.VesselTypes, vesselTypeClient);
+            _importers.Add(DataExchangeType.Countries, countryClient);
+            _importers.Add(DataExchangeType.Locations, locationClient);
+            _importers.Add(DataExchangeType.Operators, operatorClient);
+            _importers.Add(DataExchangeType.Ports, portClient);
+            _importers.Add(DataExchangeType.Sightings, sightingClient);
+            _importers.Add(DataExchangeType.Vessels, vesselClient);
+            _importers.Add(DataExchangeType.VesselTypes, vesselTypeClient);
+
+            _exporters.Add(DataExchangeType.Locations, locationClient);
+            _exporters.Add(DataExchangeType.Operators, operatorClient);
+            _exporters.Add(DataExchangeType.Sightings, sightingClient);
+            _exporters.Add(DataExchangeType.Vessels, vesselClient);
+            _exporters.Add(DataExchangeType.VesselTypes, vesselTypeClient);
         }
 
         /// <summary>
@@ -48,11 +55,19 @@ namespace ShippingRecorder.Mvc.Controllers
             => _controllerMap[type];
 
         /// <summary>
-        /// Return the API client associated with a given data exchange type
+        /// Return the data import API client associated with a given data exchange type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        protected IImporterExporter Client(DataExchangeType type)
-            => _clients[type];
+        protected IImporter ImportClient(DataExchangeType type)
+            => _importers[type];
+
+        /// <summary>
+        /// Return the data export API client associated with a given data exchange type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected IExporter ExportClient(DataExchangeType type)
+            => _exporters[type];
     }
 }
