@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace ShippingRecorder.Client.ApiClient
 {

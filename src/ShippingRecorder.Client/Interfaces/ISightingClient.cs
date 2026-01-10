@@ -5,7 +5,7 @@ using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Client.Interfaces
 {
-    public interface ISightingClient : IImporterExporter
+    public interface ISightingClient : IImporter, IExporter
     {
         Task<Sighting> GetAsync(long id);
         Task<Sighting> AddAsync(long locationId, long? voyageId, long vesselId, DateTime date, bool isMyVoyage);

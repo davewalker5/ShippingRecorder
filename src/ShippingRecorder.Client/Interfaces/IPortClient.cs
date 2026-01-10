@@ -4,7 +4,7 @@ using ShippingRecorder.Entities.Db;
 
 namespace ShippingRecorder.Client.Interfaces
 {
-    public interface IPortClient : IImporterExporter
+    public interface IPortClient : IImporter
     {
         Task<Port> AddAsync(long countryId, string code, string name);
         Task DeleteAsync(long id);

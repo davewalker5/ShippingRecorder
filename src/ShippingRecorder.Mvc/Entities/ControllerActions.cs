@@ -7,5 +7,6 @@
         public const string ActionSearch = "Search";
         public const string ActionImport = "Import";
         public const string ActionExport = "Export";
+        public const string ActionCancel = "Cancel";
     }
 }
