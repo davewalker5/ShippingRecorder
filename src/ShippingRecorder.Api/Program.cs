@@ -112,7 +112,7 @@ namespace ShippingRecorder.Api
 
             // Add the sighting exporter hosted service
             builder.Services.AddSingleton<IBackgroundQueue<SightingExportWorkItem>, BackgroundQueue<SightingExportWorkItem>>();
-            // builder.Services.AddHostedService<SightingExportService>();
+            builder.Services.AddHostedService<SightingExportService>();
 
             // Add the port importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<PortImportWorkItem>, BackgroundQueue<PortImportWorkItem>>();
