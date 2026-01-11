@@ -101,8 +101,8 @@ namespace ShippingRecorder.Tests.Client
             var json = JsonSerializer.Serialize<List<Voyage>>([voyage]);
             _httpClient.AddResponse(json);
 
-            var voyages = await _client.ListAsync(1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/1/{int.MaxValue}";
+            var voyages = await _client.ListAsync(voyage.OperatorId, 1, int.MaxValue);
+            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{voyage.OperatorId}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
