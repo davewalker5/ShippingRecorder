@@ -15,11 +15,16 @@ namespace ShippingRecorder.Entities.Db
         [Required(ErrorMessage = "You must specify an operator")]
         public long OperatorId { get; set; }
 
+        [DisplayName("Vessel")]
+        [Required(ErrorMessage = "You must specify a vessel")]
+        public long VesselId { get; set; }
+
         [DisplayName("Number")]
         [Required(ErrorMessage = "You must provide a voyage number")]
         public string Number { get; set; }
 
         public virtual Operator Operator { get; set; }
+        public virtual Vessel Vessel { get; set; }
         public ICollection<VoyageEvent> Events { get; set; } = [];
 
         public override string ToString()

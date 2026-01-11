@@ -12,7 +12,9 @@ namespace ShippingRecorder.Tests.Db
     public class VoyageManagerTest
     {
         private long _operatorId;
+        private long _vesselId;
         private long _secondOperatorId;
+        private long _secondVesselId;
         private const string Number = "9272QIU261";
         private const string SecondNumber = "039271HGFU";
 
@@ -24,8 +26,10 @@ namespace ShippingRecorder.Tests.Db
             var context = ShippingRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new ShippingRecorderFactory(context, new MockFileLogger());
             _operatorId = (await _factory.Operators.AddAsync("P&O Ferries")).Id;
+            _vesselId = (await _factory.Vessels.AddAsync("9226906", null, null, null, null)).Id;
             _secondOperatorId = (await _factory.Operators.AddAsync("Royal Caribbean International")).Id;
-            _ = await _factory.Voyages.AddAsync(_operatorId, Number);
+            _secondVesselId = (await _factory.Vessels.AddAsync("9744001", null, null, null, null)).Id;
+            _ = await _factory.Voyages.AddAsync(_operatorId, _vesselId, Number);
         }
 
         [TestMethod]
@@ -35,6 +39,7 @@ namespace ShippingRecorder.Tests.Db
             Assert.IsNotNull(entity);
             Assert.IsGreaterThan(0, entity.Id);
             Assert.AreEqual(_operatorId, entity.OperatorId);
+            Assert.AreEqual(_vesselId, entity.VesselId);
             Assert.AreEqual(Number, entity.Number);
         }
 
@@ -51,6 +56,7 @@ namespace ShippingRecorder.Tests.Db
             var entities = await _factory.Voyages.ListAsync(e => true, 1, int.MaxValue).ToListAsync();
             Assert.HasCount(1, entities);
             Assert.AreEqual(_operatorId, entities.First().OperatorId);
+            Assert.AreEqual(_vesselId, entities.First().VesselId);
             Assert.AreEqual(Number, entities.First().Number);
         }
 
@@ -60,6 +66,7 @@ namespace ShippingRecorder.Tests.Db
             var entities = await _factory.Voyages.ListAsync(e => (e.OperatorId == _operatorId) && (e.Number == Number), 1, int.MaxValue).ToListAsync();
             Assert.HasCount(1, entities);
             Assert.AreEqual(_operatorId, entities.First().OperatorId);
+            Assert.AreEqual(_vesselId, entities.First().VesselId);
             Assert.AreEqual(Number, entities.First().Number);
         }
 
@@ -74,16 +81,17 @@ namespace ShippingRecorder.Tests.Db
         public async Task UpdateTestAsync()
         {
             var entity = await _factory.Voyages.GetAsync(e => (e.OperatorId == _operatorId) && (e.Number == Number));
-            var updated = await _factory.Voyages.UpdateAsync(entity.Id, _secondOperatorId, SecondNumber);
+            var updated = await _factory.Voyages.UpdateAsync(entity.Id, _secondOperatorId, _secondVesselId, SecondNumber);
             Assert.IsNotNull(updated);
             Assert.AreEqual(entity.Id, updated.Id);
             Assert.AreEqual(_secondOperatorId, entity.OperatorId);
+            Assert.AreEqual(_secondVesselId, entity.VesselId);
             Assert.AreEqual(SecondNumber, entity.Number);
         }
 
         [TestMethod]
         public async Task UpdateMissingTestAsync()
-            => await Assert.ThrowsAsync<VoyageNotFoundException>(() => _factory.Voyages.UpdateAsync(-1, _secondOperatorId, SecondNumber));
+            => await Assert.ThrowsAsync<VoyageNotFoundException>(() => _factory.Voyages.UpdateAsync(-1, _secondOperatorId, _secondVesselId, SecondNumber));
 
         [TestMethod]
         public async Task DeleteTestAsync()

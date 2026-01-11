@@ -57,7 +57,7 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<Voyage>> AddVoyageAsync([FromBody] Voyage template)
         {
             LogMessage(Severity.Debug, $"Adding voyage: Operator ID = {template.OperatorId}, Number = {template.Number}");
-            Voyage voyage = await Factory.Voyages.AddAsync(template.OperatorId, template.Number);
+            Voyage voyage = await Factory.Voyages.AddAsync(template.OperatorId, template.VesselId, template.Number);
             LogMessage(Severity.Debug, $"Voyage added: {voyage}");
             return voyage;
         }
@@ -67,7 +67,7 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<Voyage>> UpdateVoyageAsync([FromBody] Voyage template)
         {
             LogMessage(Severity.Debug, $"Updating voyage: ID = {template.Id}, Number = {template.Number}");
-            Voyage voyage = await Factory.Voyages.UpdateAsync(template.Id, template.OperatorId, template.Number);
+            Voyage voyage = await Factory.Voyages.UpdateAsync(template.Id, template.OperatorId, template.VesselId, template.Number);
             LogMessage(Severity.Debug, $"Voyage updated: {voyage}");
             return voyage;
         }

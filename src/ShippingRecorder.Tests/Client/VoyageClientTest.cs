@@ -43,10 +43,10 @@ namespace ShippingRecorder.Tests.Client
         public async Task AddTest()
         {
             var voyage = DataGenerator.CreateVoyage();
-            var json = JsonSerializer.Serialize(new { voyage.OperatorId, voyage.Number });
+            var json = JsonSerializer.Serialize(new { voyage.OperatorId, voyage.VesselId, voyage.Number });
             _httpClient.AddResponse(json);
 
-            var added = await _client.AddAsync(voyage.OperatorId, voyage.Number);
+            var added = await _client.AddAsync(voyage.OperatorId, voyage.VesselId, voyage.Number);
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -66,7 +66,7 @@ namespace ShippingRecorder.Tests.Client
             var json = JsonSerializer.Serialize(voyage);
             _httpClient.AddResponse(json);
 
-            var updated = await _client.UpdateAsync(voyage.Id, voyage.OperatorId, voyage.Number);
+            var updated = await _client.UpdateAsync(voyage.Id, voyage.OperatorId, voyage.VesselId, voyage.Number);
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());

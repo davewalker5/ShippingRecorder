@@ -28,13 +28,15 @@ namespace ShippingRecorder.Client.ApiClient
         /// </summary>
         /// <param
         /// <param name="operatorId"></param>
+        /// <param name="vesselId"></param>
         /// <param name="number"></param>
         /// <returns></returns>
-        public async Task<Voyage> AddAsync(long operatorId, string number)
+        public async Task<Voyage> AddAsync(long operatorId, long vesselId, string number)
         {
             dynamic template = new
             {
                 OperatorId = operatorId,
+                VesselId = vesselId,
                 Number = number
             };
 
@@ -49,15 +51,17 @@ namespace ShippingRecorder.Client.ApiClient
         /// Update an existing voyage
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="code"></param>
-        /// <param name="name"></param>
+        /// <param name="operatorId"></param>
+        /// <param name="vesselId"></param>
+        /// <param name="number"></param>
         /// <returns></returns>
-        public async Task<Voyage> UpdateAsync(long id, long operatorId, string number)
+        public async Task<Voyage> UpdateAsync(long id, long operatorId, long vesselId, string number)
         {
             dynamic template = new
             {
                 Id = id,
                 OperatorId = operatorId,
+                VesselId = vesselId,
                 Number = number
             };
 

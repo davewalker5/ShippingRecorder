@@ -18,6 +18,7 @@ namespace ShippingRecorder.Tests.Import
     public class VoyageImporterTest
     {
         private const string Operator = "Carnival Uk";
+        private const string IMO = "9826548";
         private const string Number = "K511";
         private const string Port = "GBSOU";
 
@@ -46,9 +47,10 @@ namespace ShippingRecorder.Tests.Import
             var gb = await _factory.Countries.AddAsync("GB", "United Kingdom");
             _  = await _factory.Ports.AddAsync(gb.Id, Port, "Southampton");
             _  = await _factory.Operators.AddAsync(Operator);
+            _  = await _factory.Vessels.AddAsync(IMO, null, null, null, null);
 
             var date = DateTime.Today;
-            var record = $@"""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
+            var record = $@"""{IMO}"",""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -82,9 +84,26 @@ namespace ShippingRecorder.Tests.Import
         {
             var gb = await _factory.Countries.AddAsync("GB", "United Kingdom");
             _  = await _factory.Ports.AddAsync(gb.Id, Port, "Southampton");
+            _  = await _factory.Vessels.AddAsync(IMO, null, null, null, null);
 
             var date = DateTime.Today;
-            var record = $@"""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
+            var record = $@"""{IMO}"",""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            File.WriteAllLines(_filePath, ["", record]);
+
+            var importer = new VoyageImporter(_factory, ExportableVoyage.CsvRecordPattern);
+            await Assert.ThrowsAsync<InvalidFieldValueException>(() => importer.ImportAsync(_filePath));
+        }
+
+        [TestMethod]
+        public async Task InvalidVesselTest()
+        {
+            var gb = await _factory.Countries.AddAsync("GB", "United Kingdom");
+            _  = await _factory.Ports.AddAsync(gb.Id, Port, "Southampton");
+            _  = await _factory.Operators.AddAsync(Operator);
+
+            var date = DateTime.Today;
+            var record = $@"""{IMO}"",""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -96,9 +115,10 @@ namespace ShippingRecorder.Tests.Import
         public async Task InvalidPortTest()
         {
             _  = await _factory.Operators.AddAsync(Operator);
+            _  = await _factory.Vessels.AddAsync(IMO, null, null, null, null);
 
             var date = DateTime.Today;
-            var record = $@"""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
+            var record = $@"""{IMO}"",""{Operator}"",""{Number}"",""Depart"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -114,7 +134,7 @@ namespace ShippingRecorder.Tests.Import
             _  = await _factory.Operators.AddAsync(Operator);
 
             var date = DateTime.Today;
-            var record = $@"""{Operator}"",""{Number}"",""Invalid"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
+            var record = $@"""{IMO}"",""{Operator}"",""{Number}"",""Invalid"",""{Port}"",""{date.ToString(ExportableVoyage.DateFormat)}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -130,7 +150,7 @@ namespace ShippingRecorder.Tests.Import
             _  = await _factory.Operators.AddAsync(Operator);
 
             var date = DateTime.Today;
-            var record = $@"""{Operator}"",""{Number}"",""Depart"",""{Port}"",""31-Jun-2025""";
+            var record = $@"""{IMO}"",""{Operator}"",""{Number}"",""Depart"",""{Port}"",""31-Jun-2025""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
