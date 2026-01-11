@@ -41,8 +41,9 @@ namespace ShippingRecorder.BusinessLogic.Database
                             .Where(predicate)
                             .Include(x => x.Events
                                 .OrderBy(e => e.Date)
-                                .ThenBy(e => e.EventType))
+                                .ThenByDescending(e => e.EventType))
                                 .ThenInclude(e => e.Port)
+                                    .ThenInclude(p => p.Country)
                             .Include(x => x.Operator)
                             .Include(x => x.Vessel)
                                 .ThenInclude(x => x.RegistrationHistory)

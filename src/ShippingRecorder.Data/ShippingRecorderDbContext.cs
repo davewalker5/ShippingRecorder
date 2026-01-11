@@ -170,6 +170,7 @@ namespace ShippingRecorder.Data
                 entity.ToTable("VOYAGE");
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
                 entity.Property(e => e.OperatorId).IsRequired().HasColumnName("operator_id");
+                entity.Property(e => e.VesselId).IsRequired().HasColumnName("vessel_id");
                 entity.Property(e => e.Number).IsRequired().HasColumnName("number");
 
                 entity.HasOne(e => e.Operator).WithMany().HasForeignKey(e => e.OperatorId).OnDelete(DeleteBehavior.Restrict);
@@ -183,7 +184,7 @@ namespace ShippingRecorder.Data
                 entity.Property(e => e.VoyageId).IsRequired().HasColumnName("voyage_id");
                 entity.Property(e => e.EventType).IsRequired().HasColumnName("event_type");
                 entity.Property(e => e.PortId).IsRequired().HasColumnName("port_id");
-                entity.Property(e => e.Date).HasColumnName("arrival").HasColumnType("DATETIME");
+                entity.Property(e => e.Date).HasColumnName("date").HasColumnType("DATETIME");
 
                 entity.HasOne(e => e.Port).WithMany().HasForeignKey(e => e.PortId).OnDelete(DeleteBehavior.Restrict);
             });
