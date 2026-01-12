@@ -20,9 +20,25 @@
 </p>
 
 <div class="container-fluid">
+    @using (Html.BeginForm("Delete", "Voyages", FormMethod.Post, new { name = "delete-form", id = "delete-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id", 0)
+    }
+
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>@Html.Raw(Model.Message)</span>
+                </div>
+            </div>
+            <hr />
+        }
 
         <div class="row">
             <div class="col">
@@ -45,3 +61,19 @@
         @await Html.PartialAsync("_VoyageSearchResults", Model)
     }
 </div>
+
+<script type="text/javascript">
+    function submitDeleteForm(id) {
+        $.confirm({
+            text: "Are you sure?",
+            confirm: function(button) {
+                $("#delete-form #id").val(id);
+                $("#delete-form").submit()
+            },
+            cancel: function(button) {
+            },
+            confirmButton: "Yes",
+            cancelButton: "No"
+        });
+    }
+</script>

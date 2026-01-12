@@ -12,8 +12,8 @@ namespace ShippingRecorder.Mvc.Models
         public long? OperatorId { get; set; }
 
         public IList<SelectListItem> Operators { get; set; }
-        
         public List<Voyage> Voyages { get; private set; }
+        public string Message { get; set; } = "";
 
         /// <summary>
         /// Set the collection of voyages that are exposed to the view

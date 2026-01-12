@@ -135,5 +135,29 @@ namespace ShippingRecorder.Mvc.Controllers
 
             return View(model);
         }
+
+        /// <summary>
+        /// Handle POST events to delete an existing food item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Delete the item
+            _logger.LogDebug($"Deleting food item: ID = {id}");
+            await _client.DeleteAsync(id);
+
+            // Return the list view with an empty list of items
+            var model = new VoyageSearchViewModel
+            {
+                PageNumber = 1,
+                Operators = await _operatorListGenerator.Create(),
+                Message = "Voyage successfully deleted"
+            };
+
+            return View("Index", model);
+        }
     }
 }

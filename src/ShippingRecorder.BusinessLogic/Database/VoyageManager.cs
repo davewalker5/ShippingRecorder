@@ -137,6 +137,14 @@ namespace ShippingRecorder.BusinessLogic.Database
                 throw new VoyageNotFoundException(message);
             }
 
+            // Remove the associated voyage events
+            var events = Context.VoyageEvents.Where(x => x.VoyageId == id);
+            if (events.Any())
+            {
+                Context.VoyageEvents.RemoveRange(events);
+                await Context.SaveChangesAsync();
+            }
+
             // Remove the voyage
             Context.Remove(voyage);
             await Context.SaveChangesAsync();
