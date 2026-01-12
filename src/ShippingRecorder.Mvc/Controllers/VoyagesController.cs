@@ -34,15 +34,26 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <summary>
         /// Serve the empty search sightings by date range
         /// </summary>
+        /// <param name="operatorId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int id = 0)
         {
+            // Create the model
             var model = new VoyageSearchViewModel
             {
                 PageNumber = 1,
                 Operators = await _operatorListGenerator.Create()
             };
+
+            // If we have an operator, retrieve the voyages associated with them
+            if (id > 0)
+            {
+                List<Voyage> voyages = await _client.ListAsync(id, 1, _settings.SearchPageSize);
+                model.OperatorId = id;
+                model.SetVoyages(voyages, 1, _settings.SearchPageSize);
+            }
+
             return View(model);
         }
 

@@ -1,0 +1,37 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VoyageBuilderViewModel
+
+@{
+    ViewData["Title"] = "Voyage Builder";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Voyage Builder
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the properties and events associated with a voyage
+        </em>
+    </small>
+</p>
+<hr />
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @await Html.PartialAsync("_VoyageDetails", Model)
+
+        <hr />
+        <p class="text-right">
+            @if (Model.Editable)
+            {
+                var closeHref = $"/Voyages/Index/{Model.Voyage.OperatorId}";
+                <button type="submit" name="Action" value="@ControllerActions.ActionAdd" class="btn btn-primary">Add Event</button>
+                <a class="btn btn-primary" role="button" asp-area="" asp-controller="Voyages" asp-action="Index" asp-route-id="@Model.Voyage.OperatorId">Close</a>
+            }
+        </p>
+    }
+</div>

@@ -47,7 +47,7 @@
                 <td valign="center">@lastEvent?.Port.Name</td>
                 <td valign="center">@lastEvent?.Port.Country.Name</td>
                 <td valign="center">
-                    <a class="btn btn-lg" asp-area="" asp-controller="VoyageEvents" asp-action="Index" asp-route-id="@voyage.Id">
+                    <a class="btn btn-lg" asp-area="" asp-controller="VoyageBuilder" asp-action="Index" asp-route-id="@voyage.Id">
                         <i class="fas fa-edit"></i>
                     </a>
                 </td>
@@ -59,12 +59,6 @@
             </tr>
         }
     </table>
-    <hr />
-    <p class="text-right">
-        <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
-        <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
-        <a class="btn btn-primary" href="/Voyages/Add" role="button">Add</a>
-    </p>
 }
 else if (Model.HasNoMatchingResults)
 {

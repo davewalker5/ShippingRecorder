@@ -59,6 +59,15 @@
         <br />
 
         @await Html.PartialAsync("_VoyageSearchResults", Model)
+
+        @if (Model.Voyages?.Count > 0)
+        {
+            <hr />
+            <p class="text-right">
+                <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+                <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
+            </p>
+        }
     }
 </div>
 
