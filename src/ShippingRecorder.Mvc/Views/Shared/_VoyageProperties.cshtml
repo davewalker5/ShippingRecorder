@@ -1,0 +1,33 @@
+@using HealthTracker.Mvc.Helpers
+@model ShippingRecorder.Mvc.Models.VoyageEventsViewModel
+
+@{
+    var htmlAttributes = HtmlAttributesBuilder.IntegerAttributes(Model.Editable);
+}
+
+@Html.HiddenFor(m => m.Voyage.Id)
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Voyage.Number)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Voyage.Number, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Voyage.Number, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Voyage.OperatorId)</strong>
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Voyage.OperatorId, Model.Operators, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Voyage.OperatorId, "", new { @class = "text-danger" })</span>
+    </div>
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Voyage.VesselId)</strong>
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Voyage.VesselId, Model.Vessels, htmlAttributes)
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Voyage.VesselId, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br />

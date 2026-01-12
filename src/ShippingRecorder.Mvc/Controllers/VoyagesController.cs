@@ -115,25 +115,25 @@ namespace ShippingRecorder.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddVoyageViewModel model)
         {
+            IActionResult result;
+
             if (ModelState.IsValid)
             {
                 _logger.LogDebug($"Adding voyage: Operator ID = {model.OperatorId}, Vessel Id = {model.VesselId}, Number = {model.Number}");
                 Voyage voyage = await _client.AddAsync(model.OperatorId, model.VesselId, model.Number);
-                ModelState.Clear();
-                model.Clear();
-                // TODO : Redirect to the voyage details page so events can be added
-                model.Message = $"Voyage '{voyage.Number}' added successfully";
+                result = RedirectToAction("Index", "VoyageEvents", new { id = voyage.Id});
             }
             else
             {
                 LogModelState();
+
+                // Load ancillary data then render the view
+                model.Operators = await _operatorListGenerator.Create();
+                model.Vessels = await _vesselListGenerator.Create();
+                result = View(model);
             }
 
-            // Load ancillary data then render the view
-            model.Operators = await _operatorListGenerator.Create();
-            model.Vessels = await _vesselListGenerator.Create();
-
-            return View(model);
+            return result;
         }
 
         /// <summary>

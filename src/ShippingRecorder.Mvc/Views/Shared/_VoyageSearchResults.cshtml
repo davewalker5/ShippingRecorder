@@ -1,6 +1,7 @@
 @using ShippingRecorder.Entities.Db
 @using ShippingRecorder.Mvc.Entities
 @model ShippingRecorder.Mvc.Models.VoyageSearchViewModel
+
 @{
     string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
     string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
@@ -46,7 +47,7 @@
                 <td valign="center">@lastEvent?.Port.Name</td>
                 <td valign="center">@lastEvent?.Port.Country.Name</td>
                 <td valign="center">
-                    <a class="btn btn-lg" asp-area="" asp-controller="" asp-action="" asp-route-id="@voyage.Id">
+                    <a class="btn btn-lg" asp-area="" asp-controller="VoyageEvents" asp-action="Index" asp-route-id="@voyage.Id">
                         <i class="fas fa-edit"></i>
                     </a>
                 </td>
