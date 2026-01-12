@@ -12,19 +12,22 @@ namespace ShippingRecorder.Mvc.Controllers
     [Authorize]
     public class VoyagesController : ShippingRecorderControllerBase
     {
-        private readonly IVoyageClient _voyageClient;
+        private readonly IVoyageClient _client;
         private readonly IOperatorListGenerator _operatorListGenerator;
+        private readonly IVesselListGenerator _vesselListGenerator;
         private readonly IShippingRecorderApplicationSettings _settings;
 
         public VoyagesController(
             IVoyageClient voyageClient,
             IOperatorListGenerator operatorListGenerator,
+            IVesselListGenerator vesselListGenerator,
             IShippingRecorderApplicationSettings settings,
             IPartialViewToStringRenderer renderer,
             ILogger<VoyagesController> logger) : base (renderer, logger)
         {
-            _voyageClient = voyageClient;
+            _client = voyageClient;
             _operatorListGenerator = operatorListGenerator;
+            _vesselListGenerator = vesselListGenerator;
             _settings = settings;
         }
 
@@ -57,6 +60,8 @@ namespace ShippingRecorder.Mvc.Controllers
                 int page = model.PageNumber;
                 switch (model.Action)
                 {
+                    case ControllerActions.ActionAdd:
+                        return RedirectToAction("Add");
                     case ControllerActions.ActionPreviousPage:
                         page -= 1;
                         break;
@@ -75,7 +80,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                List<Voyage> voyages = await _voyageClient.ListAsync(model.OperatorId.Value, page, _settings.SearchPageSize);
+                List<Voyage> voyages = await _client.ListAsync(model.OperatorId.Value, page, _settings.SearchPageSize);
                 model.SetVoyages(voyages, page, _settings.SearchPageSize);
             }
             else
@@ -84,6 +89,50 @@ namespace ShippingRecorder.Mvc.Controllers
             }
 
             model.Operators = await _operatorListGenerator.Create();
+            return View(model);
+        }
+
+        /// <summary>
+        /// Serve the page to add a new voyage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            return View(new AddVoyageViewModel()
+            {
+                Operators = await _operatorListGenerator.Create(),
+                Vessels = await _vesselListGenerator.Create()
+            });
+        }
+
+        /// <summary>
+        /// Handle POST events to save new voyages
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(AddVoyageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _logger.LogDebug($"Adding voyage: Operator ID = {model.OperatorId}, Vessel Id = {model.VesselId}, Number = {model.Number}");
+                Voyage voyage = await _client.AddAsync(model.OperatorId, model.VesselId, model.Number);
+                ModelState.Clear();
+                model.Clear();
+                // TODO : Redirect to the voyage details page so events can be added
+                model.Message = $"Voyage '{voyage.Number}' added successfully";
+            }
+            else
+            {
+                LogModelState();
+            }
+
+            // Load ancillary data then render the view
+            model.Operators = await _operatorListGenerator.Create();
+            model.Vessels = await _vesselListGenerator.Create();
+
             return View(model);
         }
     }
