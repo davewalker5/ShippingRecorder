@@ -93,7 +93,7 @@ namespace ShippingRecorder.Mvc.Wizard
                         LastSightingAdded = lastAdded,
                         Date = sighting.Date,
                         LocationId = sighting.LocationId,
-                        VoyageId = sighting.VoyageId.Value,
+                        VoyageId = sighting.VoyageId ?? 0,
                         IMO = sighting.Vessel.IMO
                     };
                 }
