@@ -198,7 +198,7 @@ namespace ShippingRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Handle POST events to delete an existing food item
+        /// Handle POST events to delete an existing voyage
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -207,10 +207,10 @@ namespace ShippingRecorder.Mvc.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             // Delete the item
-            _logger.LogDebug($"Deleting food item: ID = {id}");
+            _logger.LogDebug($"Deleting voyage: ID = {id}");
             await _client.DeleteAsync(id);
 
-            // Return the list view with an empty list of items
+            // Return the list view with an empty list of voyages
             var model = new VoyageSearchViewModel
             {
                 PageNumber = 1,

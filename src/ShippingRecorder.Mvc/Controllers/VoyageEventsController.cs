@@ -129,6 +129,27 @@ namespace ShippingRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Handle POST events to delete an existing voyage event
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(long id)
+        {
+            // Retrieve the item
+            _logger.LogDebug($"Retrieving voyage event: ID = {id}");
+            var evt = await _voyageEventClient.GetAsync(id);
+
+            // Delete the item
+            _logger.LogDebug($"Deleting voyage event: ID = {id}");
+            await _voyageEventClient.DeleteAsync(id);
+
+            // Redirect to the voyage builder for the specified voyage
+            return RedirectToAction("Index", "VoyageBuilder", new { id = evt.VoyageId });
+        }
+
+        /// <summary>
         /// Build a voyage/event model
         /// </summary>
         /// <param name="voyageId"></param>

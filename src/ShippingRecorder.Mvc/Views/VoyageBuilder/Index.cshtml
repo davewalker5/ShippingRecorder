@@ -19,12 +19,22 @@
 <hr />
 
 <div class="container-fluid">
+    @using (Html.BeginForm("Delete", "VoyageEvents", FormMethod.Post, new { name = "delete-form", id = "delete-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id", 0)
+    }
+
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
         @await Html.PartialAsync("_VoyageDetails", Model)
 
-        <hr />
+        @if (Model.Voyage.Events?.Count == 0)
+        {
+            <hr />
+        }
+
         <p class="text-right">
             @if (Model.Editable)
             {
@@ -34,3 +44,19 @@
         </p>
     }
 </div>
+
+<script type="text/javascript">
+    function submitDeleteForm(id) {
+        $.confirm({
+            text: "Are you sure?",
+            confirm: function(button) {
+                $("#delete-form #id").val(id);
+                $("#delete-form").submit()
+            },
+            cancel: function(button) {
+            },
+            confirmButton: "Yes",
+            cancelButton: "No"
+        });
+    }
+</script>
