@@ -133,7 +133,56 @@ namespace ShippingRecorder.Mvc.Controllers
             {
                 _logger.LogDebug($"Adding voyage: Operator ID = {model.OperatorId}, Vessel Id = {model.VesselId}, Number = {model.Number}");
                 Voyage voyage = await _client.AddAsync(model.OperatorId, model.VesselId, model.Number);
-                result = RedirectToAction("Index", "VoyageEvents", new { id = voyage.Id});
+                result = RedirectToAction("Index", "VoyageBuilder", new { id = voyage.Id});
+            }
+            else
+            {
+                LogModelState();
+
+                // Load ancillary data then render the view
+                model.Operators = await _operatorListGenerator.Create();
+                model.Vessels = await _vesselListGenerator.Create();
+                result = View(model);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Serve the page to edit an existing voyage
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var voyage = await _client.GetAsync(id);
+            return View(new EditVoyageViewModel()
+            {
+                Operators = await _operatorListGenerator.Create(),
+                Vessels = await _vesselListGenerator.Create(),
+                OperatorId = voyage.OperatorId,
+                VesselId = voyage.VesselId,
+                Number = voyage.Number
+            });
+        }
+
+        /// <summary>
+        /// Handle POST events to update existing voyages
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditVoyageViewModel model)
+        {
+            IActionResult result;
+
+            if (ModelState.IsValid)
+            {
+                _logger.LogDebug($"Updating voyage: ID = {model.Id}, Operator ID = {model.OperatorId}, Vessel Id = {model.VesselId}, Number = {model.Number}");
+                Voyage voyage = await _client.UpdateAsync(model.Id, model.OperatorId, model.VesselId, model.Number);
+                result = RedirectToAction("Index", "VoyageBuilder", new { id = voyage.Id});
             }
             else
             {

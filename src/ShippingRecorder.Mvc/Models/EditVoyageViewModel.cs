@@ -1,6 +1,6 @@
 namespace ShippingRecorder.Mvc.Models
 {
-    public class AddVoyageViewModel : VoyageModel
+    public class EditVoyageViewModel : VoyageModel
     {
     }
 }

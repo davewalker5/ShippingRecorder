@@ -2,7 +2,7 @@
 @model ShippingRecorder.Mvc.Models.VoyageBuilderViewModel
 
 @{
-    var htmlAttributes = HtmlAttributesBuilder.FormControlAttributes(Model.Editable);
+    var htmlAttributes = HtmlAttributesBuilder.FormControlAttributes(false);
 }
 
 @Html.HiddenFor(m => m.Voyage.Id)
@@ -29,5 +29,13 @@
         </div>
         <span>@Html.ValidationMessageFor(m => m.Voyage.VesselId, "", new { @class = "text-danger" })</span>
     </div>
+    @if (Model.Editable)
+    {
+        <div class="col-1">
+            <div class="input-group" style="position: absolute; bottom: 0;">
+                <a class="btn btn-primary" role="button" asp-area="" asp-controller="Voyages" asp-action="Edit" asp-route-id="@Model.Voyage.Id">Edit</a>
+            </div>
+        </div>
+    }
 </div>
 <br />
