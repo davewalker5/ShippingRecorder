@@ -77,7 +77,10 @@ namespace ShippingRecorder.Mvc
 
             // Configure the cache
             services.AddMemoryCache();
-            services.AddSingleton<ICacheWrapper>(s => new CacheWrapper(new MemoryCacheOptions()));
+            services.AddSingleton<ShippingRecorderCache>(s => new ShippingRecorderCache(new MemoryCacheOptions()));
+            services.AddSingleton<ICacheWrapper>(sp => sp.GetRequiredService<ShippingRecorderCache>());
+            services.AddSingleton<IUserCacheWrapper>(sp => sp.GetRequiredService<ShippingRecorderCache>());
+            services.AddSingleton<IShippingRecorderCache>(sp => sp.GetRequiredService<ShippingRecorderCache>());
             
             // Configure the client APIs
             services.AddSingleton<IShippingRecorderHttpClient>(provider => ShippingRecorderHttpClient.Instance);
