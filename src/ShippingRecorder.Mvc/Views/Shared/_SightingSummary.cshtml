@@ -17,6 +17,7 @@
                 <th>Location</th>
                 <th>IMO</th>
                 <th>Name</th>
+                <th>Voyage</th>
                 <th>My Voyage</th>
             </tr>
         </thead>
@@ -26,6 +27,7 @@
                 <td>@Model.Sighting.Location.Name</td>
                 <td>@Model.Sighting.Vessel.IMO</td>
                 <td>@vesselName</td>
+                <td>@Model.Sighting.Voyage?.Number</td>
                 <td align="center">
                     @if (Model.Sighting.IsMyVoyage)
                     {

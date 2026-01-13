@@ -19,14 +19,14 @@
         @foreach (var evt in Model.Voyage.OrderedEvents())
         {
             <tr>
-                <td valign="center">@evt.Date.ToShortDateString()</td>
-                <td valign="center">@evt.Port.Code</td>
-                <td valign="center">@evt.Port.Name</td>
-                <td valign="center">@evt.Port.Country.Name</td>
-                <td valign="center">@evt.EventType.ToString()</td>
+                <td valign="middle">@evt.Date.ToShortDateString()</td>
+                <td valign="middle">@evt.Port.Code</td>
+                <td valign="middle">@evt.Port.Name</td>
+                <td valign="middle">@evt.Port.Country.Name</td>
+                <td valign="middle">@evt.EventType.ToString()</td>
                 @if (Model.Editable)
                 {
-                    <td valign="center">
+                    <td valign="middle">
                         <a class="btn btn-lg"
                             asp-area=""
                             asp-controller="VoyageEvents"
@@ -36,7 +36,7 @@
                             <i class="fas fa-edit"></i>
                         </a>
                     </td>
-                    <td valign="center">
+                    <td valign="middle">
                         <a class="btn btn-lg" href="javascript:submitDeleteForm(@evt.Id)">
                             <i class="fas fa-trash"></i>
                         </a>

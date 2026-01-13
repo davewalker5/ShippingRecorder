@@ -23,7 +23,7 @@ namespace HealthTracker.Mvc.Helpers
         {
             var list = new List<SelectListItem>();
 
-            // Load the list of operators
+            // Load the list of vessels
             var vessels = await _client.ListAsync(1, int.MaxValue);
             var count = vessels?.Count ?? 0;
             var plural = count == 1 ? "" : "s";

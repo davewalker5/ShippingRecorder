@@ -34,9 +34,9 @@
             @foreach (var country in Model.Countries)
             {
                 <tr>
-                    <td valign="center">@country.Code</td>
-                    <td valign="center">@country.Name</td>
-                    <td valign="center">
+                    <td valign="middle">@country.Code</td>
+                    <td valign="middle">@country.Name</td>
+                    <td valign="middle">
                         <a class="btn btn-lg" asp-area="" asp-controller="Countries" asp-action="Edit" asp-route-id="@country.Id">
                             <i class="fas fa-edit"></i>
                         </a>

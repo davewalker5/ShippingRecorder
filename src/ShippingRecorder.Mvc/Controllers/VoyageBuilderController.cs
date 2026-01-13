@@ -41,5 +41,25 @@ namespace ShippingRecorder.Mvc.Controllers
             };
             return View(model);
         }
+
+        /// <summary>
+        /// Show the modal dialog containing the voyage details for the specified voyage
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ShowVoyageDetails(long identifier)
+        {
+            var model = new VoyageBuilderViewModel()
+            {
+                Editable = false,
+                Voyage = await _client.GetAsync(identifier),
+                Operators = await _operatorListGenerator.Create(),
+                Vessels = await _vesselListGenerator.Create()
+            };
+
+            var title = $"Voyage Details for {model.Voyage.Number}";
+            return await LoadModalContent("_VoyageDetails", model, title);
+        }
     }
 }

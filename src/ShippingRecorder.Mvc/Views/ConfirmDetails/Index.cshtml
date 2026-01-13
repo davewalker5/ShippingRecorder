@@ -46,6 +46,12 @@
                 </div>
             </div>
             <div class="col">
+                <strong>@Html.LabelFor(m => m.Voyage)</strong>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Voyage, htmlAttributes)
+                </div>
+            </div>
+            <div class="col">
                 <strong>@Html.LabelFor(m => m.IsMyVoyage)</strong>
                 <div class="input-group">
                     @Html.TextBoxFor(m => m.MyVoyageText, htmlAttributes)

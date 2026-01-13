@@ -37,21 +37,21 @@
             VoyageEvent lastEvent = voyage.LastEvent();
 
             <tr>
-                <td valign="center">@voyage.Number</td>
-                <td valign="center">@voyage.Operator.Name</td>
-                <td valign="center">@vesselName</td>
-                <td valign="center">@firstEvent?.Date.ToShortDateString()</td>
-                <td valign="center">@firstEvent?.Port.Name</td>
-                <td valign="center">@firstEvent?.Port.Country.Name</td>
-                <td valign="center">@lastEvent?.Date.ToShortDateString()</td>
-                <td valign="center">@lastEvent?.Port.Name</td>
-                <td valign="center">@lastEvent?.Port.Country.Name</td>
-                <td valign="center">
+                <td valign="middle">@voyage.Number</td>
+                <td valign="middle">@voyage.Operator.Name</td>
+                <td valign="middle">@vesselName</td>
+                <td valign="middle">@firstEvent?.Date.ToShortDateString()</td>
+                <td valign="middle">@firstEvent?.Port.Name</td>
+                <td valign="middle">@firstEvent?.Port.Country.Name</td>
+                <td valign="middle">@lastEvent?.Date.ToShortDateString()</td>
+                <td valign="middle">@lastEvent?.Port.Name</td>
+                <td valign="middle">@lastEvent?.Port.Country.Name</td>
+                <td valign="middle">
                     <a class="btn btn-lg" asp-area="" asp-controller="VoyageBuilder" asp-action="Index" asp-route-id="@voyage.Id">
                         <i class="fas fa-edit"></i>
                     </a>
                 </td>
-                <td valign="center">
+                <td valign="middle">
                     <a class="btn btn-lg" href="javascript:submitDeleteForm(@voyage.Id)">
                         <i class="fas fa-trash"></i>
                     </a>
