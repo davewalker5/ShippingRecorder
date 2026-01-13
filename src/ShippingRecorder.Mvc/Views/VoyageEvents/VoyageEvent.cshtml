@@ -5,7 +5,7 @@
 @Html.HiddenFor(m => m.VoyageId)
 
 <div class="row">
-    <div class="col-md">
+    <div class="col-2">
         <strong>@Html.LabelFor(m => m.VoyageNumber)</strong>
         <div class="input-group">
             @Html.TextBoxFor(m => m.VoyageNumber, new { @class = "form-control", @disabled = "" })
@@ -27,10 +27,16 @@
 <br />
 
 <div class="row">
-    <div class="col">
+    <div class="col-2">
         <strong>@Html.LabelFor(m => m.Port)</strong>
         <div class="input-group">
-            @Html.EditorFor(m => m.Port, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Port, new {
+                @class = "form-control",
+                type = "text",
+                inputmode = "text",
+                pattern = "[A-Z]{2}[A-Z0-9]{3}",
+                oninput = "let v=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');let r='';for(let i=0;i<v.length && r.length<5;i++){let c=v.charAt(i);if(r.length<2){if(/[A-Z]/.test(c))r+=c;}else{r+=c;}}this.value=r;"
+            })
         </div>
         <span>@Html.ValidationMessageFor(m => m.Port, "", new { @class = "text-danger" })</span>
     </div>
