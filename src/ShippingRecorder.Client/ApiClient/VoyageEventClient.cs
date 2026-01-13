@@ -25,6 +25,20 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the voyage event with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<VoyageEvent> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var evt = Deserialize<VoyageEvent>(json);
+            return evt;
+        }
+
+        /// <summary>
         /// Add a new voyage event to the database
         /// </summary>
         /// <param

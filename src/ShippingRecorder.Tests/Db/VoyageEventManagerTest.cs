@@ -15,6 +15,7 @@ namespace ShippingRecorder.Tests.Db
     public class VoyageEventManagerTest
     {
         private const string OperatorName = "P&O Ferries";
+        private const string IMO = "9826548";
         private const string VoyageNumber = "87236JGH78";
 
         private readonly List<dynamic> VoyageEvents =
@@ -46,7 +47,8 @@ namespace ShippingRecorder.Tests.Db
 
             // Create the voyage
             var op = await _factory.Operators.AddAsync(OperatorName);
-            _voyage = await _factory.Voyages.AddAsync(op.Id, VoyageNumber);
+            var vessel = await _factory.Vessels.AddAsync(IMO, null, null, null, null);
+            _voyage = await _factory.Voyages.AddAsync(op.Id, vessel.Id, VoyageNumber);
 
             // Create the voyage events
             for (int i = 0; i < VoyageEvents.Count; i++)

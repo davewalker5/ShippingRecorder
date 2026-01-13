@@ -1,0 +1,88 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VoyageSearchViewModel
+
+@{
+    ViewData["Title"] = "Sighting Search By Location";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Voyages
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            View and manage voyages
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm("Delete", "Voyages", FormMethod.Post, new { name = "delete-form", id = "delete-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id", 0)
+    }
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>@Html.Raw(Model.Message)</span>
+                </div>
+            </div>
+            <hr />
+        }
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.OperatorId)</strong>
+                <div class="input-group">
+                    @Html.DropDownListFor(m => m.OperatorId, Model.Operators, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.OperatorId, "", new { @class = "text-danger" })</span>
+            </div>
+            <div class="col">
+                <strong><label>&nbsp;</label></strong>
+                <div class="input-group">
+                    <button type="submit" name="Action" value="@ControllerActions.ActionSearch" class="btn btn-primary" style="margin-right: 10px">Search</button>
+                    <button type="submit" name="Action" value="@ControllerActions.ActionAdd" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        @await Html.PartialAsync("_VoyageSearchResults", Model)
+
+        @if (Model.Voyages?.Count > 0)
+        {
+            <hr />
+            <p class="text-right">
+                <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+                <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
+            </p>
+        }
+    }
+</div>
+
+<script type="text/javascript">
+    function submitDeleteForm(id) {
+        $.confirm({
+            text: "Are you sure?",
+            confirm: function(button) {
+                $("#delete-form #id").val(id);
+                $("#delete-form").submit()
+            },
+            cancel: function(button) {
+            },
+            confirmButton: "Yes",
+            cancelButton: "No"
+        });
+    }
+</script>

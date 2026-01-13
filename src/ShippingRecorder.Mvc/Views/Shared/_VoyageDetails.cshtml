@@ -1,0 +1,12 @@
+@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VoyageBuilderViewModel
+
+<div class="section-header">
+    Voyage Properties
+</div>
+@await Html.PartialAsync("_VoyageProperties", Model)
+
+<div class="section-header">
+    Events
+</div>
+@await Html.PartialAsync("_VoyageEventList", Model)

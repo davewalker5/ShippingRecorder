@@ -52,6 +52,23 @@ namespace ShippingRecorder.Api.Controllers
             return port;
         }
 
+        [HttpGet]
+        [Route("unlocode/{code}")]
+        public async Task<ActionResult<Port>> GetPortAsync(string code)
+        {
+            LogMessage(Severity.Debug, $"Retrieving port with UN/LOCODE {code}");
+
+            Port port = await Factory.Ports.GetAsync(x => x.Code == code);
+
+            if (port == null)
+            {
+                LogMessage(Severity.Debug, $"Port with UN/LOCODE {code} not found");
+                return NotFound();
+            }
+
+            return port;
+        }
+
         [HttpPost]
         [Route("")]
         public async Task<ActionResult<Port>> AddPortAsync([FromBody] Port template)

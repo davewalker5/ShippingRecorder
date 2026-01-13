@@ -8,5 +8,6 @@
         public const string ActionImport = "Import";
         public const string ActionExport = "Export";
         public const string ActionCancel = "Cancel";
+        public const string ActionAdd = "Add";
     }
 }

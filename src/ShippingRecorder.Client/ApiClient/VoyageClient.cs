@@ -24,17 +24,33 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the voyage with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<Voyage> GetAsync(long id)
+        {
+            var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            var route = $"{baseRoute}/{id}";
+            var json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var voyage = Deserialize<Voyage>(json);
+            return voyage;
+        }
+
+        /// <summary>
         /// Add a new voyage to the database
         /// </summary>
         /// <param
         /// <param name="operatorId"></param>
+        /// <param name="vesselId"></param>
         /// <param name="number"></param>
         /// <returns></returns>
-        public async Task<Voyage> AddAsync(long operatorId, string number)
+        public async Task<Voyage> AddAsync(long operatorId, long vesselId, string number)
         {
             dynamic template = new
             {
                 OperatorId = operatorId,
+                VesselId = vesselId,
                 Number = number
             };
 
@@ -49,15 +65,17 @@ namespace ShippingRecorder.Client.ApiClient
         /// Update an existing voyage
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="code"></param>
-        /// <param name="name"></param>
+        /// <param name="operatorId"></param>
+        /// <param name="vesselId"></param>
+        /// <param name="number"></param>
         /// <returns></returns>
-        public async Task<Voyage> UpdateAsync(long id, long operatorId, string number)
+        public async Task<Voyage> UpdateAsync(long id, long operatorId, long vesselId, string number)
         {
             dynamic template = new
             {
                 Id = id,
                 OperatorId = operatorId,
+                VesselId = vesselId,
                 Number = number
             };
 
@@ -83,14 +101,15 @@ namespace ShippingRecorder.Client.ApiClient
         /// <summary>
         /// Return a list of voyages
         /// </summary>
+        /// <param name="operatorId"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Voyage>> ListAsync(int pageNumber, int pageSize)
+        public async Task<List<Voyage>> ListAsync(long operatorId, int pageNumber, int pageSize)
         {
             // Request a list of voyages
             string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
-            var route = $"{baseRoute}/{pageNumber}/{pageSize}";
+            var route = $"{baseRoute}/{operatorId}/{pageNumber}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
 
             // The returned JSON will be empty if there are no voyages in the database

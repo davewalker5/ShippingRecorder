@@ -2,7 +2,8 @@ namespace ShippingRecorder.Entities.Db
 {
     public enum VoyageEventType
     {
-        Depart = 0,
-        Arrive = 1
+        None = 0,
+        Depart = 1,
+        Arrive = 2
     }
 }

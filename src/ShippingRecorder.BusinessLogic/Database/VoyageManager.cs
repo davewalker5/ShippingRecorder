@@ -41,9 +41,19 @@ namespace ShippingRecorder.BusinessLogic.Database
                             .Where(predicate)
                             .Include(x => x.Events
                                 .OrderBy(e => e.Date)
-                                .ThenBy(e => e.EventType))
+                                .ThenByDescending(e => e.EventType))
                                 .ThenInclude(e => e.Port)
+                                    .ThenInclude(p => p.Country)
                             .Include(x => x.Operator)
+                            .Include(x => x.Vessel)
+                                .ThenInclude(x => x.RegistrationHistory)
+                                    .ThenInclude(h => h.VesselType)
+                            .Include(x => x.Vessel)
+                                .ThenInclude(x => x.RegistrationHistory)
+                                    .ThenInclude(h => h.Flag)
+                            .Include(x => x.Vessel)
+                                .ThenInclude(x => x.RegistrationHistory)
+                                    .ThenInclude(h => h.Operator)
                             .OrderBy(x => x.Operator.Name)
                             .ThenBy(x => x.Number)
                             .Skip((pageNumber - 1) * pageSize)
@@ -54,14 +64,15 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// Add a voyage
         /// </summary>
         /// <param name="operatorId"></param>
+        /// <param name="vesselId"></param>
         /// <param name="number"></param>
         /// <returns></returns>
-        public async Task<Voyage> AddAsync(long operatorId, string number)
+        public async Task<Voyage> AddAsync(long operatorId, long vesselId, string number)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Adding voyage: Operator ID = {operatorId}, Number = {number}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding voyage: Operator ID = {operatorId}, Vessel ID = {operatorId}, Number = {number}");
 
             // Add the voyage and save changes
-            var voyage = new Voyage { OperatorId = operatorId, Number = number.CleanCode() };
+            var voyage = new Voyage { OperatorId = operatorId, VesselId = vesselId, Number = number.CleanCode() };
             await Context.Voyages.AddAsync(voyage);
             await Context.SaveChangesAsync();
 
@@ -78,12 +89,13 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// </summary>
         /// <param name="id"></param>
         /// <param name="operatorId"></param>
+        /// <param name="vesselId"></param>
         /// <param name="number"></param>
         /// <returns></returns>
         /// <exception cref="VoyageNotFoundException"></exception>
-        public async Task<Voyage> UpdateAsync(long id, long operatorId, string number)
+        public async Task<Voyage> UpdateAsync(long id, long operatorId, long vesselId, string number)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Updating voyage: ID = {id}, Operator ID = {operatorId}, Number = {number}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating voyage: ID = {id}, Operator ID = {operatorId}, Vessel ID = {operatorId}, Number = {number}");
 
             // Retrieve the voyage
             var voyage = await Context.Voyages.FirstOrDefaultAsync(x => x.Id == id);
@@ -95,6 +107,7 @@ namespace ShippingRecorder.BusinessLogic.Database
 
             // Update the voyage properties and save changes
             voyage.OperatorId = operatorId;
+            voyage.VesselId = vesselId;
             voyage.Number = number.CleanCode();
             await Context.SaveChangesAsync();
 
@@ -122,6 +135,14 @@ namespace ShippingRecorder.BusinessLogic.Database
             {
                 var message = $"Voyage with ID {id} not found";
                 throw new VoyageNotFoundException(message);
+            }
+
+            // Remove the associated voyage events
+            var events = Context.VoyageEvents.Where(x => x.VoyageId == id);
+            if (events.Any())
+            {
+                Context.VoyageEvents.RemoveRange(events);
+                await Context.SaveChangesAsync();
             }
 
             // Remove the voyage

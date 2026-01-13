@@ -86,6 +86,7 @@ namespace ShippingRecorder.Mvc
             services.AddSingleton<ILocationClient, LocationClient>();
             services.AddSingleton<IOperatorClient, OperatorClient>();
             services.AddSingleton<IPortClient, PortClient>();
+            services.AddSingleton<IPortsRetriever, PortClient>();
             services.AddSingleton<IRegistrationHistoryClient, RegistrationHistoryClient>();
             services.AddSingleton<ISightingClient, SightingClient>();
             services.AddSingleton<IVesselClient, VesselClient>();
@@ -103,6 +104,7 @@ namespace ShippingRecorder.Mvc
             services.AddScoped<IOperatorListGenerator, OperatorListGenerator>();
             services.AddScoped<IVesselTypeListGenerator, VesselTypeListGenerator>();
             services.AddScoped<ILocationListGenerator, LocationListGenerator>();
+            services.AddScoped<IVesselListGenerator, VesselListGenerator>();
 
             // Configure the sightings wizard
             services.AddScoped<AddSightingWizard>();

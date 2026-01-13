@@ -391,9 +391,15 @@ namespace ShippingRecorder.Data.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("operator_id");
 
+                    b.Property<long>("VesselId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("vessel_id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OperatorId");
+
+                    b.HasIndex("VesselId");
 
                     b.ToTable("VOYAGE", (string)null);
                 });
@@ -407,7 +413,7 @@ namespace ShippingRecorder.Data.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("DATETIME")
-                        .HasColumnName("arrival");
+                        .HasColumnName("date");
 
                     b.Property<int>("EventType")
                         .HasColumnType("INTEGER")
@@ -616,7 +622,15 @@ namespace ShippingRecorder.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ShippingRecorder.Entities.Db.Vessel", "Vessel")
+                        .WithMany()
+                        .HasForeignKey("VesselId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Operator");
+
+                    b.Navigation("Vessel");
                 });
 
             modelBuilder.Entity("ShippingRecorder.Entities.Db.VoyageEvent", b =>

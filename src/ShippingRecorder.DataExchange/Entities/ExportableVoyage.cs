@@ -16,7 +16,10 @@ namespace ShippingRecorder.DataExchange.Entities
         /// Port UN/LOCODE
         /// Date
         /// </summary>
-        public const string CsvRecordPattern = @"^(?:""(?!\s*"")[\s\S]*"",){3}""[A-Za-z]{2}[A-Za-z0-9]{3}"",""[0-9]{2}-[A-Za-z]{3}-[0-9]{4}"".?$";
+        public const string CsvRecordPattern = @"^""\d{7}"",(?:""(?!\s*"")[\s\S]*"",){3}""[A-Za-z]{2}[A-Za-z0-9]{3}"",""[0-9]{2}-[A-Za-z]{3}-[0-9]{4}"".?$";
+
+        [Export("IMO", 1)]
+        public string IMO { get; set; }
 
         [Export("Operator", 1)]
         public string Operator { get; set; }
@@ -38,11 +41,12 @@ namespace ShippingRecorder.DataExchange.Entities
             string[] words = record.Split(["\",\""], StringSplitOptions.None);
             return new ExportableVoyage
             {
-                Operator = words[0].Replace("\"", "").Trim().TitleCase(),
-                Number = words[1].Replace("\"", "").Trim().CleanCode(),
-                EventType = words[2].Replace("\"", "").Trim(),
-                Port = words[3].Replace("\"", "").Trim().CleanCode(),
-                Date = words[4].Replace("\"", "").Trim()
+                IMO = words[0].Replace("\"", "").Trim().CleanCode(),
+                Operator = words[1].Replace("\"", "").Trim().TitleCase(),
+                Number = words[2].Replace("\"", "").Trim().CleanCode(),
+                EventType = words[3].Replace("\"", "").Trim(),
+                Port = words[4].Replace("\"", "").Trim().CleanCode(),
+                Date = words[5].Replace("\"", "").Trim()
             };
         }
     }

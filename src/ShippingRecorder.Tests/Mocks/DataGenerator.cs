@@ -137,7 +137,7 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static Voyage CreateVoyage()
-            => new() { Id = RandomId(), OperatorId = RandomId(), Number = RandomWord() };
+            => new() { Id = RandomId(), OperatorId = RandomId(), VesselId = RandomId(), Number = RandomWord() };
 
         /// <summary>
         /// Return a random voyage

@@ -4,6 +4,7 @@ using ShippingRecorder.Entities.Interfaces;
 using ShippingRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace ShippingRecorder.Api.Controllers
 {
@@ -23,7 +24,10 @@ namespace ShippingRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Retrieving list of voyages (page {pageNumber}, page size {pageSize})");
 
-            List<Voyage> voyages = await Factory.Voyages.ListAsync(x => x.OperatorId == operatorId, pageNumber, pageSize).ToListAsync();
+            // If the operator's 0 or less, just return all voyages. Otherwise, return only voyages for the specified
+            // operator ID
+            Expression<Func<Voyage, bool>> predicate = x => operatorId > 0 ? x.OperatorId == operatorId : true;
+            List<Voyage> voyages = await Factory.Voyages.ListAsync(predicate, pageNumber, pageSize).ToListAsync();
 
             LogMessage(Severity.Debug, $"Retrieved {voyages.Count} voyage(s)");
 
@@ -57,7 +61,7 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<Voyage>> AddVoyageAsync([FromBody] Voyage template)
         {
             LogMessage(Severity.Debug, $"Adding voyage: Operator ID = {template.OperatorId}, Number = {template.Number}");
-            Voyage voyage = await Factory.Voyages.AddAsync(template.OperatorId, template.Number);
+            Voyage voyage = await Factory.Voyages.AddAsync(template.OperatorId, template.VesselId, template.Number);
             LogMessage(Severity.Debug, $"Voyage added: {voyage}");
             return voyage;
         }
@@ -67,7 +71,7 @@ namespace ShippingRecorder.Api.Controllers
         public async Task<ActionResult<Voyage>> UpdateVoyageAsync([FromBody] Voyage template)
         {
             LogMessage(Severity.Debug, $"Updating voyage: ID = {template.Id}, Number = {template.Number}");
-            Voyage voyage = await Factory.Voyages.UpdateAsync(template.Id, template.OperatorId, template.Number);
+            Voyage voyage = await Factory.Voyages.UpdateAsync(template.Id, template.OperatorId, template.VesselId, template.Number);
             LogMessage(Severity.Debug, $"Voyage updated: {voyage}");
             return voyage;
         }

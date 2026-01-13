@@ -1,0 +1,58 @@
+﻿@model ShippingRecorder.Mvc.Models.VoyageEventViewModel
+
+@Html.AntiForgeryToken()
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.VoyageId)
+
+<div class="row">
+    <div class="col-md">
+        <strong>@Html.LabelFor(m => m.VoyageNumber)</strong>
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.VoyageNumber, new { @class = "form-control", @disabled = "" })
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.VoyageNumber, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-2">
+        <strong>@Html.LabelFor(m => m.Date)</strong>
+        <div class="input-group">
+            @Html.EditorFor(m => m.Date, new { @class = "form-control" })
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Date, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.Port)</strong>
+        <div class="input-group">
+            @Html.EditorFor(m => m.Port, new { @class = "form-control" })
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.Port, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-2">
+        <strong>@Html.LabelFor(m => m.EventType)</strong>
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.EventType, Model.EventTypes, new { @class = "form-control" })
+        </div>
+        <span>@Html.ValidationMessageFor(m => m.EventType, "", new { @class = "text-danger" })</span>
+    </div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-md">
+        <div class="input-group">
+            <a class="btn btn-primary" role="button" asp-area="" asp-controller="VoyageBuilder" asp-action="Index" asp-route-id="@Model.VoyageId" style="margin-right: 10px">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</div>

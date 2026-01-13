@@ -26,7 +26,9 @@ namespace ShippingRecorder.Data
 
             // Use the configuration object to read the connection string
             var optionsBuilder = new DbContextOptionsBuilder<ShippingRecorderDbContext>();
-            optionsBuilder.UseSqlite(configuration.GetConnectionString("ShippingRecorderDB"));
+            optionsBuilder.UseSqlite(
+                configuration.GetConnectionString("ShippingRecorderDB"),
+                options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
 
             // Construct and return a database context
             return new ShippingRecorderDbContext(optionsBuilder.Options);

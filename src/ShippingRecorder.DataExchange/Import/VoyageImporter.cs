@@ -13,6 +13,7 @@ namespace ShippingRecorder.DataExchange.Import
     public sealed class VoyageImporter : CsvImporter<ExportableVoyage>, IVoyageImporter
     {
         private List<Operator> _operators;
+        private List<Vessel> _vessels;
 
         public VoyageImporter(IShippingRecorderFactory factory, string format) : base(factory, format)
         {
@@ -27,6 +28,7 @@ namespace ShippingRecorder.DataExchange.Import
         {
             await base.Prepare();
             _operators = await _factory.Operators.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
+            _vessels = await _factory.Vessels.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
         }
 
         /// <summary>
@@ -47,6 +49,7 @@ namespace ShippingRecorder.DataExchange.Import
         protected override void Validate(ExportableVoyage voyage, int recordCount)
         {
             ValidateField<string>(x => CheckOperatorExists(x), voyage.Operator,  "Operator", recordCount);
+            ValidateField<string>(x => CheckVesselExists(x), voyage.IMO,  "IMO", recordCount);
             ValidateField<string>(x => CheckPortExists(x), voyage.Port,  "Port", recordCount);
             ValidateField<string>(x => Enum.TryParse<VoyageEventType>(x, out _), voyage.EventType, "EventType", recordCount);
             ValidateField<string>(x => CheckDateFormat(x), voyage.Date, "Date", recordCount);
@@ -62,8 +65,9 @@ namespace ShippingRecorder.DataExchange.Import
         {
             // Load/create the voyage
             var op = _operators.First(x => x.Name == voyage.Operator);
-            var imported = await _factory.Voyages.GetAsync(x => (x.OperatorId == op.Id) && (x.Number == voyage.Number));
-            imported ??= await _factory.Voyages.AddAsync(op.Id, voyage.Number);
+            var vessel = _vessels.First(x => x.IMO == voyage.IMO);
+            var imported = await _factory.Voyages.GetAsync(x => (x.OperatorId == op.Id) && (x.VesselId == vessel.Id) && (x.Number == voyage.Number));
+            imported ??= await _factory.Voyages.AddAsync(op.Id, vessel.Id, voyage.Number);
 
             // Add the event
             var port = await _factory.Ports.GetAsync(x => x.Code == voyage.Port);
@@ -79,6 +83,14 @@ namespace ShippingRecorder.DataExchange.Import
         /// <returns></returns>
         private bool CheckOperatorExists(string name)
             => _operators.FirstOrDefault(x => x.Name == name) != null;
+
+        /// <summary>
+        /// Check a vessel exists
+        /// </summary>
+        /// <param name="imo"></param>
+        /// <returns></returns>
+        private bool CheckVesselExists(string imo)
+            => _vessels.FirstOrDefault(x => x.IMO == imo) != null;
 
         /// <summary>
         /// Check a port exists

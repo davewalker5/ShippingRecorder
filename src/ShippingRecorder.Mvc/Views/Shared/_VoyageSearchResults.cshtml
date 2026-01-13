@@ -1,0 +1,67 @@
+@using ShippingRecorder.Entities.Db
+@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.VoyageSearchViewModel
+
+@{
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+@Html.HiddenFor(m => m.PageNumber)
+
+@if (Model.Voyages?.Count > 0)
+{
+    <table class="table">
+        <tr>
+            <th>Number</th>
+            <th>Operator</th>
+            <th>Vessel</th>
+            <th>From</th>
+            <th>Depart</th>
+            <th>Country</th>
+            <th>To</th>
+            <th>Arrive</th>
+            <th>Country</th>
+            <th />
+            <th />
+        </tr>
+        @foreach (var voyage in Model.Voyages)
+        {
+            var vesselName = voyage.Vessel.ActiveRegistrationHistory?.Name ?? "";
+            if (string.IsNullOrEmpty(vesselName))
+            {
+                vesselName = voyage.Vessel.IMO;
+            }
+
+            VoyageEvent firstEvent = voyage.FirstEvent();
+            VoyageEvent lastEvent = voyage.LastEvent();
+
+            <tr>
+                <td valign="center">@voyage.Number</td>
+                <td valign="center">@voyage.Operator.Name</td>
+                <td valign="center">@vesselName</td>
+                <td valign="center">@firstEvent?.Date.ToShortDateString()</td>
+                <td valign="center">@firstEvent?.Port.Name</td>
+                <td valign="center">@firstEvent?.Port.Country.Name</td>
+                <td valign="center">@lastEvent?.Date.ToShortDateString()</td>
+                <td valign="center">@lastEvent?.Port.Name</td>
+                <td valign="center">@lastEvent?.Port.Country.Name</td>
+                <td valign="center">
+                    <a class="btn btn-lg" asp-area="" asp-controller="VoyageBuilder" asp-action="Index" asp-route-id="@voyage.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+                <td valign="center">
+                    <a class="btn btn-lg" href="javascript:submitDeleteForm(@voyage.Id)">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else if (Model.HasNoMatchingResults)
+{
+    <hr />
+    @Html.Raw("No matching voyages")
+}

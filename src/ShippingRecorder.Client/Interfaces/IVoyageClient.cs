@@ -6,9 +6,10 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface IVoyageClient
     {
-        Task<Voyage> AddAsync(long operatorId, string number);
+        Task<Voyage> GetAsync(long id);
+        Task<Voyage> AddAsync(long operatorId, long vesselId, string number);
         Task DeleteAsync(long id);
-        Task<List<Voyage>> ListAsync(int pageNumber, int pageSize);
-        Task<Voyage> UpdateAsync(long id, long operatorId, string number);
+        Task<List<Voyage>> ListAsync(long operatorId, int pageNumber, int pageSize);
+        Task<Voyage> UpdateAsync(long id, long operatorId, long vesselId, string number);
     }
 }
