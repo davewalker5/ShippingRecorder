@@ -86,11 +86,11 @@
                 @foreach (var record in Model.Records)
                 {
                     <tr>
-                        <td valign="center">@record.FormattedDate</td>
-                        <td valign="center">@record.Location</td>
-                        <td valign="center">@record.IMO</td>
-                        <td valign="center">@record.Vessel</td>
-                        <td valign="center">
+                        <td valign="middle">@record.FormattedDate</td>
+                        <td valign="middle">@record.Location</td>
+                        <td valign="middle">@record.IMO</td>
+                        <td valign="middle">@record.Vessel</td>
+                        <td valign="middle">
                             <a class="btn btn-lg" href="javascript:LoadModalContent(@record.VesselId, '/Vessels/ShowVesselDetails')">
                                 <i class="fas fa-info-circle"></i>
                             </a>

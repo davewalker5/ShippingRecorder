@@ -33,8 +33,8 @@
             @foreach (var op in Model.Operators)
             {
                 <tr>
-                    <td valign="center">@op.Name</td>
-                    <td valign="center">
+                    <td valign="middle">@op.Name</td>
+                    <td valign="middle">
                         <a class="btn btn-lg" asp-area="" asp-controller="Operators" asp-action="Edit" asp-route-id="@op.Id">
                             <i class="fas fa-edit"></i>
                         </a>

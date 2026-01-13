@@ -1,4 +1,5 @@
-﻿@using ShippingRecorder.Mvc.Entities
+﻿@using ShippingRecorder.Entities.Db
+@using ShippingRecorder.Mvc.Entities
 @model ShippingRecorder.Mvc.Models.SightingSearchViewModelBase
 @{
     string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
@@ -15,8 +16,8 @@
             <th>IMO</th>
             <th>Name</th>
             <th>Date</th>
+            <th>Voyage</th>
             <th>My Voyage</th>
-            <th></th>
             <th />
         </tr>
         @foreach (var sighting in Model.Sightings)
@@ -24,22 +25,39 @@
             var activeRegistration = sighting.Vessel.RegistrationHistory.FirstOrDefault(x => x.IsActive);
             var vesselName = activeRegistration?.Name ?? "";
             <tr>
-                <td valign="center">@sighting.Location.Name</td>
-                <td valign="center">@sighting.Vessel.IMO</td>
-                <td valign="center">@vesselName</td>
-                <td valign="center">@sighting.FormattedDate</td>
-                <td align="center" valign="center">
+                <td valign="middle">@sighting.Location.Name</td>
+                <td valign="middle">
+                    @sighting.Vessel.IMO
+                    <a class="btn btn-lg" href="javascript:LoadModalContent(@sighting.VesselId, '/Vessels/ShowVesselDetails')">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </td>
+                <td valign="middle">
+                    @vesselName
+                    @if (!string.IsNullOrEmpty(vesselName))
+                    {
+                        <a class="btn btn-lg" href="javascript:LoadModalContent(@sighting.VesselId, '/Vessels/ShowVesselDetails')">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    }
+                </td>
+                <td valign="middle">@sighting.FormattedDate</td>
+                <td valign="middle">
+                    @sighting.Voyage?.Number
+                    @if (sighting.Voyage != null)
+                    {
+                        <a class="btn btn-lg" href="javascript:LoadModalContent(@sighting.VoyageId, '/VoyageBuilder/ShowVoyageDetails')">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    }
+                </td>
+                <td valign="middle" style="text-align: left;">
                     @if (sighting.IsMyVoyage)
                     {
                         <span style="color: green"><i class="fas fa-check-circle"></i></span>
                     }
                 </td>
-                <td valign="center">
-                    <a class="btn btn-lg" href="javascript:LoadModalContent(@sighting.VesselId, '/Vessels/ShowVesselDetails')">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                </td>
-                <td valign="center">
+                <td valign="middle">
                     <a class="btn btn-lg" asp-area="" asp-controller="SightingDetails" asp-action="Index" asp-route-id="@sighting.Id">
                         <i class="fas fa-edit"></i>
                     </a>

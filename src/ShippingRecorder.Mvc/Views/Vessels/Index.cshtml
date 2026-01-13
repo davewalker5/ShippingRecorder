@@ -39,13 +39,13 @@
             {
                 var vesselName = vessel?.ActiveRegistrationHistory?.Name ?? "";
                 <tr>
-                    <td valign="center">@vessel.IMO</td>
-                    <td valign="center">@vesselName</td>
-                    <td valign="center">@vessel.Built</td>
-                    <td valign="center">@vessel.Draught</td>
-                    <td valign="center">@vessel.Length</td>
-                    <td valign="center">@vessel.Beam</td>
-                    <td valign="center">
+                    <td valign="middle">@vessel.IMO</td>
+                    <td valign="middle">@vesselName</td>
+                    <td valign="middle">@vessel.Built</td>
+                    <td valign="middle">@vessel.Draught</td>
+                    <td valign="middle">@vessel.Length</td>
+                    <td valign="middle">@vessel.Beam</td>
+                    <td valign="middle">
                         <a class="btn btn-lg" asp-area="" asp-controller="Vessels" asp-action="Edit" asp-route-id="@vessel.Id">
                             <i class="fas fa-edit"></i>
                         </a>
