@@ -10,6 +10,9 @@ namespace ShippingRecorder.Mvc.Models
         [DisplayName("Location")]
         public string Location { get; set; }
 
+        [DisplayName("Voyage")]
+        public string Voyage { get; set; }
+
         [DisplayName("My Voyage")]
         public bool IsMyVoyage { get; set; }
 

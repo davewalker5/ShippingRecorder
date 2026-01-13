@@ -18,6 +18,7 @@ namespace ShippingRecorder.Mvc.Wizard
         private readonly ICountryListGenerator _countryListGenerator;
         private readonly IOperatorListGenerator _operatorListGenerator;
         private readonly IVesselClient _vesselClient;
+        private readonly IVoyageClient _voyageClient;
         private readonly IRegistrationHistoryClient _registrationHistoryClient;
         private readonly ISightingClient _sightingClient;
         private readonly IShippingRecorderApplicationSettings _settings;
@@ -30,6 +31,7 @@ namespace ShippingRecorder.Mvc.Wizard
             ICountryListGenerator countries,
             IOperatorListGenerator operators,
             IVesselClient vessels,
+            IVoyageClient voyages,
             IRegistrationHistoryClient registrationHistory,
             ISightingClient sightings,
             IShippingRecorderApplicationSettings settings,
@@ -41,6 +43,7 @@ namespace ShippingRecorder.Mvc.Wizard
             _countryListGenerator = countries;
             _operatorListGenerator = operators;
             _vesselClient = vessels;
+            _voyageClient = voyages;
             _registrationHistoryClient = registrationHistory;
             _sightingClient = sightings;
             _settings = settings;
@@ -54,6 +57,13 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <returns></returns>
         public async Task<List<Location>> GetLocationsAsync()
             => await _locationClient.ListAsync(1, int.MaxValue);
+        
+        /// <summary>
+        /// Return the available voyages
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Voyage>> GetVoyagesAsync()
+            => await _voyageClient.ListAsync(0, 1, int.MaxValue);
 
         /// <summary>
         /// Retrieve or construct the sighting details model
@@ -100,6 +110,10 @@ namespace ShippingRecorder.Mvc.Wizard
             // Set the available locations
             List<Location> locations = await GetLocationsAsync();
             model.SetLocations(locations);
+
+            // Set the available voyages
+            List<Voyage> voyages = await GetVoyagesAsync();
+            model.SetVoyages(voyages);
 
             _logger.LogDebug($"Resolved sighting details model: {model}");
 
@@ -189,6 +203,13 @@ namespace ShippingRecorder.Mvc.Wizard
                 Operators = await _operatorListGenerator.Create()
             };
 
+            // Get the voyage, if specified
+            if (sighting.VoyageId > 0)
+            {
+                Voyage voyage = await _voyageClient.GetAsync(sighting.VoyageId);
+                model.Voyage = voyage.Number;
+            }
+
             // For the location, if we have a new location specified then use that as the
             // location. Otherwise, look up the location by its ID
             if (sighting.LocationId == 0)
@@ -234,6 +255,9 @@ namespace ShippingRecorder.Mvc.Wizard
                     details.LocationId = location.Id;
                 }
 
+                // Determine the ID for the selected voyage
+                long? voyageId = details.VoyageId > 0 ? details.VoyageId : null;
+
                 // If an existing sighting is being edited, then update it. Otherwise, create a new one
                 if (details.SightingId != null)
                 {
@@ -242,7 +266,7 @@ namespace ShippingRecorder.Mvc.Wizard
                     sighting = await _sightingClient.UpdateAsync(
                         details.SightingId ?? 0,
                         details.LocationId,
-                        null,
+                        voyageId,
                         vessel.Id,
                         details.Date ?? DateTime.Now,
                         details.IsMyVoyage);
@@ -253,7 +277,7 @@ namespace ShippingRecorder.Mvc.Wizard
 
                     sighting = await _sightingClient.AddAsync(
                         details.LocationId,
-                        null,
+                        voyageId,
                         vessel.Id,
                         details.Date ?? DateTime.Now,
                         details.IsMyVoyage);
