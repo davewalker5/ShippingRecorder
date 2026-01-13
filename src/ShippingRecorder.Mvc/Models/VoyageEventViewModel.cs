@@ -18,7 +18,7 @@ namespace ShippingRecorder.Mvc.Models
         [DisplayName("Date")]
         [UIHint("DatePicker")]
         [Required(ErrorMessage = "You must provide an event date")]
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Today;
 
         [DisplayName("Port UN/LOCODE")]
         [UNLOCODE]

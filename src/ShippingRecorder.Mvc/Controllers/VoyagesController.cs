@@ -37,7 +37,7 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index(int id = 0)
+        public async Task<IActionResult> Index(long id = 0)
         {
             // Create the model
             var model = new VoyageSearchViewModel
@@ -49,6 +49,7 @@ namespace ShippingRecorder.Mvc.Controllers
             // If we have an operator, retrieve the voyages associated with them
             if (id > 0)
             {
+                _logger.LogDebug($"Retrieving voyages for operator with ID {id}");
                 List<Voyage> voyages = await _client.ListAsync(id, 1, _settings.SearchPageSize);
                 model.OperatorId = id;
                 model.SetVoyages(voyages, 1, _settings.SearchPageSize);
@@ -154,7 +155,7 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             // Delete the item
             _logger.LogDebug($"Deleting food item: ID = {id}");

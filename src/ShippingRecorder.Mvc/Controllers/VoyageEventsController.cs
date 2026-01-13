@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShippingRecorder.Client.Interfaces;
-using ShippingRecorder.Entities.Db;
 using ShippingRecorder.Entities.Interfaces;
 using ShippingRecorder.Mvc.Interfaces;
 using ShippingRecorder.Mvc.Models;
@@ -28,16 +27,52 @@ namespace ShippingRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Serve the voyage/event addition/editing page
+        /// </summary>
+        /// <param name="voyageId"></param>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Index(long voyageId, long eventId = 0)
+            => eventId > 0 ?
+                RedirectToAction("Edit", new { voyageId = voyageId, eventId = eventId }) :
+                RedirectToAction("Add", new { voyageId = voyageId });
+
+        /// <summary>
+        /// Serve the voyage/event addition page
+        /// </summary>
+        /// <param name="voyageId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Add(long voyageId)
+        {
+            _logger.LogDebug($"Adding new event to voyage {voyageId}");
+            var model = await BuildModel(voyageId, 0);
+            return View(model);
+        }
+
+        /// <summary>
         /// Serve the voyage/event editing page
         /// </summary>
         /// <param name="voyageId"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index(long voyageId, long eventId = 0)
+        public async Task<IActionResult> Edit(long voyageId, long eventId = 0)
         {
             _logger.LogDebug($"Editing event {eventId} for voyage {voyageId}");
+            var model = await BuildModel(voyageId, eventId);
+            return View(model);
+        }
 
+        /// <summary>
+        /// Build a voyage/event model
+        /// </summary>
+        /// <param name="voyageId"></param>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        private async Task<VoyageEventViewModel> BuildModel(long voyageId, long eventId)
+        {
             // Load the voyage
             var voyage = await _voyageClient.GetAsync(voyageId);
             _logger.LogDebug($"Retrieved voyage : {voyage}");
@@ -49,7 +84,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 VoyageNumber = voyage.Number
             };
 
-            // If we have an existing event ID, set the event properties on the model from that event
+            // Set the event properties on the model from the specified event
             var evt = eventId > 0 ? voyage.Events.FirstOrDefault(x => x.Id == eventId) : null;
             if (evt != null)
             {
@@ -59,7 +94,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 model.EventType = evt.EventType;
             }
 
-            return View(model);
+            return model;
         }
     }
 }

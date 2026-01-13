@@ -26,7 +26,7 @@ namespace ShippingRecorder.Api.Controllers
 
             // If the operator's 0 or less, just return all voyages. Otherwise, return only voyages for the specified
             // operator ID
-            Expression<Func<Voyage, bool>> predicate = x => operatorId > 0 ? x.Id == operatorId : true;
+            Expression<Func<Voyage, bool>> predicate = x => operatorId > 0 ? x.OperatorId == operatorId : true;
             List<Voyage> voyages = await Factory.Voyages.ListAsync(predicate, pageNumber, pageSize).ToListAsync();
 
             LogMessage(Severity.Debug, $"Retrieved {voyages.Count} voyage(s)");

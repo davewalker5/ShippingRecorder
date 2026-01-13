@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShippingRecorder.Client.Interfaces;
-using ShippingRecorder.Entities.Interfaces;
 using ShippingRecorder.Mvc.Interfaces;
 using ShippingRecorder.Mvc.Models;
 
@@ -13,20 +12,17 @@ namespace ShippingRecorder.Mvc.Controllers
         private readonly IVoyageClient _client;
         private readonly IOperatorListGenerator _operatorListGenerator;
         private readonly IVesselListGenerator _vesselListGenerator;
-        private readonly IShippingRecorderApplicationSettings _settings;
 
         public VoyageBuilderController(
             IVoyageClient client,
             IOperatorListGenerator operatorListGenerator,
             IVesselListGenerator vesselListGenerator,
-            IShippingRecorderApplicationSettings settings,
             IPartialViewToStringRenderer renderer,
             ILogger<VoyagesController> logger) : base (renderer, logger)
         {
             _client = client;
             _operatorListGenerator = operatorListGenerator;
             _vesselListGenerator = vesselListGenerator;
-            _settings = settings;
         }
 
         /// <summary>
