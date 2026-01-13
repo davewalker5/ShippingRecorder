@@ -15,6 +15,7 @@ namespace ShippingRecorder.Client.ApiClient
 {
     public abstract class ShippingRecorderClientBase
     {
+        private const int MaximumLoggedResponseContentLength = 100;
         private readonly JsonSerializerOptions _serializerOptions = new ()
         {
             PropertyNameCaseInsensitive = true
@@ -117,7 +118,8 @@ namespace ShippingRecorder.Client.ApiClient
                 // Extract the response content and log it
                 json = await response.Content.ReadAsStringAsync();
                 var content = json ?? "No Content";
-                Logger.LogDebug($"Response content = '{content}'");
+                var suffix = content.Length > MaximumLoggedResponseContentLength ? " ..." : "";
+                Logger.LogDebug($"Response content = '{content[..Math.Min(MaximumLoggedResponseContentLength, content.Length)]}{suffix}'");
 
                 // If the request didn't succeed, try to extract an error message from the response content and, if
                 // successful, log it and raise an exception

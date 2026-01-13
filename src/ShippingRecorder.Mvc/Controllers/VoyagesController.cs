@@ -55,6 +55,9 @@ namespace ShippingRecorder.Mvc.Controllers
                 model.SetVoyages(voyages, 1, _settings.SearchPageSize);
             }
 
+            // Clear model state
+            ModelState.Clear();
+
             return View(model);
         }
 
@@ -204,8 +207,12 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(long id)
+        public async Task<IActionResult> Delete([FromForm] long id)
         {
+            // Retrieve the voyage
+            var voyage = await _client.GetAsync(id);
+            _logger.LogDebug($"Retrieved voyage {voyage}");
+
             // Delete the item
             _logger.LogDebug($"Deleting voyage: ID = {id}");
             await _client.DeleteAsync(id);
@@ -215,8 +222,13 @@ namespace ShippingRecorder.Mvc.Controllers
             {
                 PageNumber = 1,
                 Operators = await _operatorListGenerator.Create(),
-                Message = "Voyage successfully deleted"
+                OperatorId = voyage.OperatorId,
+                Message = $"Voyage {voyage.Number} successfully deleted"
             };
+
+            // Load the remaining voyages for the operator and add them to the model
+            var voyages = await _client.ListAsync(voyage.OperatorId, 1, _settings.SearchPageSize);
+            model.SetVoyages(voyages, 1, _settings.SearchPageSize);
 
             return View("Index", model);
         }

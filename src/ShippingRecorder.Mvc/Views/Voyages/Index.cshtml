@@ -23,10 +23,10 @@
     @using (Html.BeginForm("Delete", "Voyages", FormMethod.Post, new { name = "delete-form", id = "delete-form" }))
     {
         @Html.AntiForgeryToken()
-        @Html.Hidden("id", 0)
+        @Html.Hidden("id", "0")
     }
 
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Index", "Voyages", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 

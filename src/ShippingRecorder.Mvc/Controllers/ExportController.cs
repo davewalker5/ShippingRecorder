@@ -61,7 +61,6 @@ namespace ShippingRecorder.Mvc.Controllers
                 }
             }
 
-
             // If the model's still valid, proceed with the export
             if (ModelState.IsValid)
             {

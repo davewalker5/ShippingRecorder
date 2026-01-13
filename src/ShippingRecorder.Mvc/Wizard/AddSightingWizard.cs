@@ -22,7 +22,7 @@ namespace ShippingRecorder.Mvc.Wizard
         private readonly IRegistrationHistoryClient _registrationHistoryClient;
         private readonly ISightingClient _sightingClient;
         private readonly IShippingRecorderApplicationSettings _settings;
-        private readonly ICacheWrapper _cache;
+        private readonly IShippingRecorderCache _cache;
         private readonly ILogger<AddSightingWizard> _logger;
 
         public AddSightingWizard(
@@ -35,7 +35,7 @@ namespace ShippingRecorder.Mvc.Wizard
             IRegistrationHistoryClient registrationHistory,
             ISightingClient sightings,
             IShippingRecorderApplicationSettings settings,
-            ICacheWrapper cache,
+            IShippingRecorderCache cache,
             ILogger<AddSightingWizard> logger)
         {
             _locationClient = locations;
@@ -75,7 +75,7 @@ namespace ShippingRecorder.Mvc.Wizard
             _logger.LogDebug($"Resolving sighting details model for sighting ID {sightingId} for user {userName}");
 
             // Retrieve the model from the cache
-            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
             if ((model == null) || (model.SightingId != sightingId))
             {
@@ -93,6 +93,7 @@ namespace ShippingRecorder.Mvc.Wizard
                         LastSightingAdded = lastAdded,
                         Date = sighting.Date,
                         LocationId = sighting.LocationId,
+                        VoyageId = sighting.VoyageId.Value,
                         IMO = sighting.Vessel.IMO
                     };
                 }
@@ -130,14 +131,14 @@ namespace ShippingRecorder.Mvc.Wizard
             _logger.LogDebug($"Resolving vessel details model for user {userName}");
 
             // Retrieve the model from the cache
-            string key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(VesselDetailsKeyPrefix, userName);
             VesselDetailsViewModel model = _cache.Get<VesselDetailsViewModel>(key);
             if (model == null)
             {
                 _logger.LogDebug($"Creating new vessel details model");
 
                 // Not cached, so create a new one, using the cached sighting details model to supply the vessel IMO
-                key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+                key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
                 SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
                 model = new VesselDetailsViewModel();
                 model.Vessel.IMO = sighting.IMO;
@@ -180,13 +181,13 @@ namespace ShippingRecorder.Mvc.Wizard
             _logger.LogDebug($"Creating confirm details model for user {userName}");
 
             // Retrieve the sighting details model from the cache
-            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
 
             _logger.LogDebug($"Retrieved sighting details: {sighting}");
 
             // Retrieve the vessel details model from the cache
-            key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            key = _cache.GetCacheKey(VesselDetailsKeyPrefix, userName);
             VesselDetailsViewModel vesselDetails = _cache.Get<VesselDetailsViewModel>(key);
 
             _logger.LogDebug($"Retrieved vessel details: {vesselDetails}");
@@ -240,7 +241,7 @@ namespace ShippingRecorder.Mvc.Wizard
             ClearCachedLastSightingAdded(userName);
 
             // Retrieve the sighting details model from the cache
-            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel details = _cache.Get<SightingDetailsViewModel>(key);
 
             if (details != null)
@@ -284,10 +285,10 @@ namespace ShippingRecorder.Mvc.Wizard
                 }
 
                 // Cache the sighting details and other properties that are cached to improve data entry speed
-                key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
+                key = _cache.GetCacheKey(LastSightingAddedKeyPrefix, userName);
                 _cache.Set<Sighting>(key, sighting, _settings.CacheLifetimeSeconds);
 
-                key = GetCacheKey(DefaultDateKeyPrefix, userName);
+                key = _cache.GetCacheKey(DefaultDateKeyPrefix, userName);
                 _cache.Set<DateTime>(key, sighting.Date, _settings.CacheLifetimeSeconds);
             }
 
@@ -311,7 +312,7 @@ namespace ShippingRecorder.Mvc.Wizard
             _logger.LogDebug($"Creating or retrieving vessel for {userName}");
 
             // Retrieve the aircraft details from the cache
-            string key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(VesselDetailsKeyPrefix, userName);
             VesselDetailsViewModel details = _cache.Get<VesselDetailsViewModel>(key);
             if (details != null)
             {
@@ -368,7 +369,7 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <returns></returns>
         public Sighting GetLastSightingAdded(string userName)
         {
-            string key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
+            string key = _cache.GetCacheKey(LastSightingAddedKeyPrefix, userName);
             return _cache.Get<Sighting>(key);
         }
 
@@ -379,7 +380,7 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <param name="model"></param>
         public void CacheSightingDetailsModel(SightingDetailsViewModel model, string userName)
         {
-            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
             _cache.Set<SightingDetailsViewModel>(key, model, _settings.CacheLifetimeSeconds);
         }
 
@@ -390,7 +391,7 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <param name="model"></param>
         public void CacheVesselDetailsModel(VesselDetailsViewModel model, string userName)
         {
-            string key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(VesselDetailsKeyPrefix, userName);
             _cache.Set<VesselDetailsViewModel>(key, model, _settings.CacheLifetimeSeconds);
         }
 
@@ -400,7 +401,7 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <param name="userName"></param>
         public void ClearCachedSightingDetailsModel(string userName)
         {
-            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
             _cache.Remove(key);
         }
 
@@ -410,7 +411,7 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <param name="userName"></param>
         public void ClearCachedVesselDetailsModel(string userName)
         {
-            string key = GetCacheKey(VesselDetailsKeyPrefix, userName);
+            string key = _cache.GetCacheKey(VesselDetailsKeyPrefix, userName);
             _cache.Remove(key);
         }
 
@@ -420,7 +421,7 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <param name="userName"></param>
         public void ClearCachedLastSightingAdded(string userName)
         {
-            string key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
+            string key = _cache.GetCacheKey(LastSightingAddedKeyPrefix, userName);
             _cache.Remove(key);
         }
 
@@ -443,21 +444,9 @@ namespace ShippingRecorder.Mvc.Wizard
         /// <returns></returns>
         private DateTime GetDefaultDate(string userName)
         {
-            string key = GetCacheKey(DefaultDateKeyPrefix, userName);
+            string key = _cache.GetCacheKey(DefaultDateKeyPrefix, userName);
             DateTime? defaultDate = _cache.Get<DateTime?>(key);
             return defaultDate ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-        }
-
-        /// <summary>
-        /// Construct a key for caching data
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <param name="prefix"></param>
-        /// <returns></returns>
-        private static string GetCacheKey(string prefix, string userName)
-        {
-            string key = $"{prefix}.{userName}";
-            return key;
         }
     }
 }

@@ -59,6 +59,10 @@ namespace ShippingRecorder.Mvc.Controllers
 
                 List<Location> locations = await _wizard.GetLocationsAsync();
                 model.SetLocations(locations);
+
+                List<Voyage> voyages = await _wizard.GetVoyagesAsync();
+                model.SetVoyages(voyages);
+
                 result = View(model);
             }
 

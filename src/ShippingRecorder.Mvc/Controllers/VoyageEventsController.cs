@@ -11,15 +11,19 @@ namespace ShippingRecorder.Mvc.Controllers
     [Authorize]
     public class VoyageEventsController : ShippingRecorderControllerBase
     {
+        private const string DateCacheKey = "EventDate";
+
         private readonly IVoyageClient _voyageClient;
         private readonly IPortClient _portClient;
         private readonly IVoyageEventClient _voyageEventClient;
+        private readonly IShippingRecorderCache _cache;
         private readonly IShippingRecorderApplicationSettings _settings;
 
         public VoyageEventsController(
             IVoyageClient voyageClient,
             IPortClient portClient,
             IVoyageEventClient voyageEventClient,
+            IShippingRecorderCache cache,
             IShippingRecorderApplicationSettings settings,
             IPartialViewToStringRenderer renderer,
             ILogger<VoyagesController> logger) : base (renderer, logger)
@@ -27,6 +31,7 @@ namespace ShippingRecorder.Mvc.Controllers
             _voyageClient = voyageClient;
             _portClient = portClient;
             _voyageEventClient = voyageEventClient;
+            _cache = cache;
             _settings = settings;
         }
 
@@ -64,6 +69,17 @@ namespace ShippingRecorder.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddVoyageEventViewModel model)
         {
+            // If the model's nominally valid, perform some additional checks
+            if (ModelState.IsValid)
+            {
+                // Check the data exchange type isn't the default selection, "None"
+                _logger.LogDebug($"Import data type = {model.EventType}");
+                if (model.EventType == VoyageEventType.None)
+                {
+                    ModelState.AddModelError("EventType", "You must select an event type type");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _logger.LogDebug($"Adding voyage event: " + 
@@ -72,13 +88,25 @@ namespace ShippingRecorder.Mvc.Controllers
                     $"Port = {model.Port}, " + 
                     $"EventType = {model.EventType}");
 
+                // Add the event
                 Port port = await _portClient.GetAsync(model.Port);
                 _ = await _voyageEventClient.AddAsync(model.VoyageId, model.EventType, port.Id, model.Date);
+
+                // If the "add same day departure" flag is set and the event we just added was an arrival, add a 
+                // departure on the same date
+                if (model.AddSameDayDeparture && (model.EventType == VoyageEventType.Arrive))
+                {
+                    _ = await _voyageEventClient.AddAsync(model.VoyageId, VoyageEventType.Depart, port.Id, model.Date);
+                }
+
+                // Cache the event date
+                _cache.SetEventDate(User.Identity.Name, model.Date);
                 return RedirectToAction("Index", "VoyageBuilder", new { id = model.VoyageId });
             }
             else
             {
                 LogModelState();
+                await PopulateVoyageDetails<AddVoyageEventViewModel>(model, model.VoyageId);
             }
 
             return View(model);
@@ -107,6 +135,17 @@ namespace ShippingRecorder.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditVoyageEventViewModel model)
         {
+            // If the model's nominally valid, perform some additional checks
+            if (ModelState.IsValid)
+            {
+                // Check the data exchange type isn't the default selection, "None"
+                _logger.LogDebug($"Import data type = {model.EventType}");
+                if (model.EventType == VoyageEventType.None)
+                {
+                    ModelState.AddModelError("EventType", "You must select an event type type");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _logger.LogDebug($"Editing voyage event: " + 
@@ -116,13 +155,18 @@ namespace ShippingRecorder.Mvc.Controllers
                     $"Port = {model.Port}, " + 
                     $"EventType = {model.EventType}");
 
+                // Save the event
                 Port port = await _portClient.GetAsync(model.Port);
                 _ = await _voyageEventClient.UpdateAsync(model.Id, model.VoyageId, model.EventType, port.Id, model.Date);
+
+                // Cache the event date
+                _cache.SetEventDate(User.Identity.Name, model.Date);
                 return RedirectToAction("Index", "VoyageBuilder", new { id = model.VoyageId });
             }
             else
             {
                 LogModelState();
+                await PopulateVoyageDetails<EditVoyageEventViewModel>(model, model.VoyageId);
             }
 
             return View(model);
@@ -150,6 +194,24 @@ namespace ShippingRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Assign the voyage ID and number to a view model
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="voyageId"></param>
+        /// <returns></returns>
+        private async Task PopulateVoyageDetails<T>(T model, long voyageId)  where T : VoyageEventViewModel
+        {
+            // Load the voyage
+            var voyage = await _voyageClient.GetAsync(voyageId);
+            _logger.LogDebug($"Retrieved voyage : {voyage}");
+
+            // Assign the voyage properties
+            model.VoyageId = voyageId;
+            model.VoyageNumber = voyage.Number;
+        }
+
+        /// <summary>
         /// Build a voyage/event model
         /// </summary>
         /// <param name="voyageId"></param>
@@ -162,11 +224,8 @@ namespace ShippingRecorder.Mvc.Controllers
             _logger.LogDebug($"Retrieved voyage : {voyage}");
 
             // Create the model
-            var model = new T()
-            {
-                VoyageId = voyageId,
-                VoyageNumber = voyage.Number
-            };
+            var model = new T();
+            await PopulateVoyageDetails<T>(model, voyageId);
 
             // Set the event properties on the model from the specified event
             var evt = eventId > 0 ? voyage.Events.FirstOrDefault(x => x.Id == eventId) : null;
@@ -177,6 +236,10 @@ namespace ShippingRecorder.Mvc.Controllers
                 model.Date = evt.Date;
                 model.Port = evt.Port.Code;
                 model.EventType = evt.EventType;
+            }
+            else
+            {
+                model.Date = _cache.GetEventDate(User.Identity.Name);
             }
 
             return model;

@@ -26,8 +26,11 @@ namespace ShippingRecorder.Mvc.Models
         public string Port { get; set; }
 
         [DisplayName("Event Type")]
-        [Required(ErrorMessage = "You must provide an event type")]
+        [Required(ErrorMessage = "You must select an event type")]
         public VoyageEventType EventType { get; set; }
+
+        [DisplayName("Add Same Day Departure")]
+        public bool AddSameDayDeparture { get; set; }
         
         public IList<SelectListItem> EventTypes { get; set; } = [];
 
