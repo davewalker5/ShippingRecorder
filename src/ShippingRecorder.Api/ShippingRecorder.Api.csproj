@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <ReleaseVersion>1.7.0.0</ReleaseVersion>
-    <FileVersion>1.7.0.0</FileVersion>
+    <ReleaseVersion>1.8.0.0</ReleaseVersion>
+    <FileVersion>1.8.0.0</FileVersion>
     <ProductVersion>1.0.0</ProductVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
