@@ -92,6 +92,13 @@ namespace ShippingRecorder.Mvc.Controllers
                 Port port = await _portClient.GetAsync(model.Port);
                 _ = await _voyageEventClient.AddAsync(model.VoyageId, model.EventType, port.Id, model.Date);
 
+                // If the "add same day departure" flag is set and the event we just added was an arrival, add a 
+                // departure on the same date
+                if (model.AddSameDayDeparture && (model.EventType == VoyageEventType.Arrive))
+                {
+                    _ = await _voyageEventClient.AddAsync(model.VoyageId, VoyageEventType.Depart, port.Id, model.Date);
+                }
+
                 // Cache the event date
                 _cache.SetEventDate(User.Identity.Name, model.Date);
                 return RedirectToAction("Index", "VoyageBuilder", new { id = model.VoyageId });
