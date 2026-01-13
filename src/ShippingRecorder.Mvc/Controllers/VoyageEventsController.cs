@@ -79,6 +79,7 @@ namespace ShippingRecorder.Mvc.Controllers
             else
             {
                 LogModelState();
+                await PopulateVoyageDetails<AddVoyageEventViewModel>(model, model.VoyageId);
             }
 
             return View(model);
@@ -123,6 +124,7 @@ namespace ShippingRecorder.Mvc.Controllers
             else
             {
                 LogModelState();
+                await PopulateVoyageDetails<EditVoyageEventViewModel>(model, model.VoyageId);
             }
 
             return View(model);
@@ -150,6 +152,24 @@ namespace ShippingRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Assign the voyage ID and number to a view model
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="voyageId"></param>
+        /// <returns></returns>
+        private async Task PopulateVoyageDetails<T>(T model, long voyageId)  where T : VoyageEventViewModel
+        {
+            // Load the voyage
+            var voyage = await _voyageClient.GetAsync(voyageId);
+            _logger.LogDebug($"Retrieved voyage : {voyage}");
+
+            // Assign the voyage properties
+            model.VoyageId = voyageId;
+            model.VoyageNumber = voyage.Number;
+        }
+
+        /// <summary>
         /// Build a voyage/event model
         /// </summary>
         /// <param name="voyageId"></param>
@@ -162,11 +182,8 @@ namespace ShippingRecorder.Mvc.Controllers
             _logger.LogDebug($"Retrieved voyage : {voyage}");
 
             // Create the model
-            var model = new T()
-            {
-                VoyageId = voyageId,
-                VoyageNumber = voyage.Number
-            };
+            var model = new T();
+            await PopulateVoyageDetails<T>(model, voyageId);
 
             // Set the event properties on the model from the specified event
             var evt = eventId > 0 ? voyage.Events.FirstOrDefault(x => x.Id == eventId) : null;
