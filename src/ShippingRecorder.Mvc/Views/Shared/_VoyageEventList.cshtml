@@ -27,7 +27,12 @@
                 @if (Model.Editable)
                 {
                     <td valign="center">
-                        <a class="btn btn-lg">
+                        <a class="btn btn-lg"
+                            asp-area=""
+                            asp-controller="VoyageEvents"
+                            asp-action="Index" 
+                            asp-route-voyageid="@Model.Voyage.Id"
+                            asp-route-eventid="@evt.Id">
                             <i class="fas fa-edit"></i>
                         </a>
                     </td>

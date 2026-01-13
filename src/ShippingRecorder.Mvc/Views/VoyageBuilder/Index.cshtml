@@ -28,7 +28,6 @@
         <p class="text-right">
             @if (Model.Editable)
             {
-                var closeHref = $"/Voyages/Index/{Model.Voyage.OperatorId}";
                 <button type="submit" name="Action" value="@ControllerActions.ActionAdd" class="btn btn-primary">Add Event</button>
                 <a class="btn btn-primary" role="button" asp-area="" asp-controller="Voyages" asp-action="Index" asp-route-id="@Model.Voyage.OperatorId">Close</a>
             }

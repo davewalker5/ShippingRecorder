@@ -32,9 +32,9 @@ namespace ShippingRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Serve the empty search sightings by date range
+        /// Serve the voyage search page
         /// </summary>
-        /// <param name="operatorId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Index(int id = 0)

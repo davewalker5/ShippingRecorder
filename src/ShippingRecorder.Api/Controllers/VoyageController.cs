@@ -4,6 +4,7 @@ using ShippingRecorder.Entities.Interfaces;
 using ShippingRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace ShippingRecorder.Api.Controllers
 {
@@ -23,7 +24,10 @@ namespace ShippingRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Retrieving list of voyages (page {pageNumber}, page size {pageSize})");
 
-            List<Voyage> voyages = await Factory.Voyages.ListAsync(x => x.OperatorId == operatorId, pageNumber, pageSize).ToListAsync();
+            // If the operator's 0 or less, just return all voyages. Otherwise, return only voyages for the specified
+            // operator ID
+            Expression<Func<Voyage, bool>> predicate = x => operatorId > 0 ? x.Id == operatorId : true;
+            List<Voyage> voyages = await Factory.Voyages.ListAsync(predicate, pageNumber, pageSize).ToListAsync();
 
             LogMessage(Severity.Debug, $"Retrieved {voyages.Count} voyage(s)");
 

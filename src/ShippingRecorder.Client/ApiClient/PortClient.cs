@@ -26,6 +26,24 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return a port given a UN/LOCODE
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public async Task<Port> GetAsync(string code)
+        {
+            // Request the specified port
+            string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
+            var route = $"{baseRoute}/unlocode/{code}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+
+            // TODO:
+            Port port = Deserialize<Port>(json);
+            return port;
+        }
+        
+
+        /// <summary>
         /// Add a new port to the database
         /// </summary>
         /// <param
@@ -101,8 +119,8 @@ namespace ShippingRecorder.Client.ApiClient
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
 
             // The returned JSON will be empty if there are no countries in the database
-            List<Port> countries = Deserialize<List<Port>>(json);
-            return countries;
+            List<Port> ports = Deserialize<List<Port>>(json);
+            return ports;
         }
 
         /// <summary>

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ShippingRecorder.Entities.Db;
+using ShippingRecorder.Entities.Interfaces;
 
 namespace ShippingRecorder.Client.Interfaces
 {
-    public interface IPortClient : IImporter
+    public interface IPortClient : IPortsRetriever, IImporter
     {
         Task<Port> AddAsync(long countryId, string code, string name);
         Task DeleteAsync(long id);

@@ -1,27 +1,20 @@
-﻿@using ShippingRecorder.Mvc.Entities
-@model ShippingRecorder.Mvc.Models.VoyageEventsViewModel
+﻿@model ShippingRecorder.Mvc.Models.VoyageEventViewModel
 
 @{
-    ViewData["Title"] = "Voyage Builder";
+    var title = Model.Id > 0 ? "Edit Voyage Event" : "Add Voyage Event";
+    ViewData["Title"] = title;
 }
-
-<p class="text-center font-weight-bold">
-    <span style="font-size: 1.2rem">
-        Voyage Builder
-    </span>
-    <br />
-    <small class="text-muted">
-        <em>
-            Manage the properties and events associated with a voyage
-        </em>
-    </small>
-</p>
-<hr />
 
 <div class="container-fluid">
     @using (Html.BeginForm())
     {
-        @Html.AntiForgeryToken()
-        @await Html.PartialAsync("_VoyageDetails", Model)
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>@title</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @await Html.PartialAsync("VoyageEvent", Model);
     }
 </div>

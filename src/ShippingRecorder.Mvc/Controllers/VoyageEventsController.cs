@@ -11,39 +11,54 @@ namespace ShippingRecorder.Mvc.Controllers
     [Authorize]
     public class VoyageEventsController : ShippingRecorderControllerBase
     {
-        private readonly IVoyageClient _client;
-        private readonly IOperatorListGenerator _operatorListGenerator;
-        private readonly IVesselListGenerator _vesselListGenerator;
+        private readonly IVoyageClient _voyageClient;
+        private readonly IVoyageEventClient _voyageEventClient;
         private readonly IShippingRecorderApplicationSettings _settings;
 
         public VoyageEventsController(
-            IVoyageClient client,
-            IOperatorListGenerator operatorListGenerator,
-            IVesselListGenerator vesselListGenerator,
+            IVoyageClient voyageClient,
+            IVoyageEventClient voyageEventClient,
             IShippingRecorderApplicationSettings settings,
             IPartialViewToStringRenderer renderer,
             ILogger<VoyagesController> logger) : base (renderer, logger)
         {
-            _client = client;
-            _operatorListGenerator = operatorListGenerator;
-            _vesselListGenerator = vesselListGenerator;
+            _voyageClient = voyageClient;
+            _voyageEventClient = voyageEventClient;
             _settings = settings;
         }
 
         /// <summary>
-        /// Serve the voyage builder page
+        /// Serve the voyage/event editing page
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="voyageId"></param>
+        /// <param name="eventId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(long voyageId, long eventId = 0)
         {
-            var model = new VoyageEventsViewModel
+            _logger.LogDebug($"Editing event {eventId} for voyage {voyageId}");
+
+            // Load the voyage
+            var voyage = await _voyageClient.GetAsync(voyageId);
+            _logger.LogDebug($"Retrieved voyage : {voyage}");
+
+            // Create the model
+            var model = new VoyageEventViewModel
             {
-                Voyage = await _client.GetAsync(id),
-                Operators = await _operatorListGenerator.Create(),
-                Vessels = await _vesselListGenerator.Create()
+                VoyageId = voyageId,
+                VoyageNumber = voyage.Number
             };
+
+            // If we have an existing event ID, set the event properties on the model from that event
+            var evt = eventId > 0 ? voyage.Events.FirstOrDefault(x => x.Id == eventId) : null;
+            if (evt != null)
+            {
+                _logger.LogDebug($"Setting properties for event: {evt}");
+                model.Date = evt.Date;
+                model.Port = evt.Port.Code;
+                model.EventType = evt.EventType;
+            }
+
             return View(model);
         }
     }

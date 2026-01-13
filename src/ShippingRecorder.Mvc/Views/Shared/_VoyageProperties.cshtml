@@ -2,7 +2,7 @@
 @model ShippingRecorder.Mvc.Models.VoyageBuilderViewModel
 
 @{
-    var htmlAttributes = HtmlAttributesBuilder.IntegerAttributes(Model.Editable);
+    var htmlAttributes = HtmlAttributesBuilder.FormControlAttributes(Model.Editable);
 }
 
 @Html.HiddenFor(m => m.Voyage.Id)

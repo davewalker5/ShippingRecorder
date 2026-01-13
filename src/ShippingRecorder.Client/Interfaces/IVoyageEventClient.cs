@@ -7,6 +7,7 @@ namespace ShippingRecorder.Client.Interfaces
 {
     public interface IVoyageEventClient
     {
+        Task<VoyageEvent> GetAsync(long id);
         Task<VoyageEvent> AddAsync(long voyageId, VoyageEventType eventType, long portId, DateTime date);
         Task DeleteAsync(long id);
         Task<List<VoyageEvent>> ListAsync(long voyageId, int pageNumber, int pageSize);
