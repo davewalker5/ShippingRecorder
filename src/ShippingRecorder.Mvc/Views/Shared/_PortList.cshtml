@@ -1,0 +1,9 @@
+@using ShippingRecorder.Entities.Db
+@model IEnumerable<Port>
+
+<select id="PortList" name="PortList" size="8" class="form-control">
+    @foreach (var port in Model)
+    {
+        <option value="@port.Code">@port.Name - @port.Code</option>
+    }
+</select>

@@ -6,6 +6,7 @@ using ShippingRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShippingRecorder.Entities.Interfaces;
+using HealthTracker.Mvc.Attributes;
 
 namespace ShippingRecorder.Mvc.Controllers
 {
@@ -283,6 +284,7 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <param name="identifier"></param>
         /// <returns></returns>
         [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> ShowVesselDetails(long identifier)
         {
             var vessel = await _vesselClient.GetAsync(identifier);

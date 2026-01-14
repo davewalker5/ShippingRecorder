@@ -38,8 +38,8 @@
         <p class="text-right">
             @if (Model.Editable)
             {
+                <a class="btn btn-secondary" role="button" asp-area="" asp-controller="Voyages" asp-action="Index" asp-route-id="@Model.Voyage.OperatorId">Close</a>
                 <a class="btn btn-primary" role="button" asp-area="" asp-controller="VoyageEvents" asp-action="Index" asp-route-voyageid="@Model.Voyage.Id" asp-route-eventid="0">Add Event</a>
-                <a class="btn btn-primary" role="button" asp-area="" asp-controller="Voyages" asp-action="Index" asp-route-id="@Model.Voyage.OperatorId">Close</a>
             }
         </p>
     }
