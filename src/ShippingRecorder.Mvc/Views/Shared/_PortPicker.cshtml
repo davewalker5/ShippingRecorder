@@ -1,0 +1,102 @@
+@model ShippingRecorder.Mvc.Models.PortPickerViewModel
+
+@Html.AntiForgeryToken()
+@Html.HiddenFor(m => m.DestinationControl)
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md">
+            <strong>@Html.Label("Country")</strong>
+            <div class="input-group">
+                @Html.DropDownList("PortPickerCountryId", Model.Countries, "", new {
+                    @class = "form-control",
+                    onchange = "javascript:LoadPortPickerPorts()"
+                })
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md">
+            <strong>@Html.Label("Port")</strong>
+            <div class="input-group">
+                @Html.TextBox("PortPickerSearchTerm", "", new {
+                    @class = "form-control",
+                    onkeyup = "javascript:LoadPortPickerPorts()"
+                })
+                <div class="input-group-text">
+                    <a href="javascript:LoadPortPickerPorts()">
+                        <i class="fas fa-search"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md">
+            <div class="input-group">
+                <select id="PortPickerPortList" name="PortPickerPortList" size="8" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <hr />
+    <p class="text-right">
+        <button class="btn btn-secondary" onclick="javascript:CloseAjaxModal()">Cancel</button>
+        <button id="PortPickerOK" name="PortPickerOK" class="btn btn-primary" onclick="javascript:SelectPort()" disabled>OK</button>
+    </p>
+</div>
+
+<script type="text/javascript">
+    function LoadPortPickerPorts() {
+        var countryId = parseInt($("#PortPickerCountryId").val());
+        if (countryId > 0) {
+            $('html, body').css("cursor", "wait");
+            var searchTerm = $("#PortPickerSearchTerm").val();
+            $.ajax({
+                url: "/PortPicker/Ports?id=" + countryId + "&searchTerm=" + searchTerm,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    // Set the port list content
+                    $("#PortPickerPortList").html(result);
+
+                    // Wire up the change handler to enable/disable OK
+                    $("#PortPickerPortList").on("change", function() {
+                        var port = $(this).val();
+                        if (!port) {
+                            $("#PortPickerOK").prop("disabled", true);
+                        } else {
+                            $("#PortPickerOK").prop("disabled", false);
+                        }
+                    });
+
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#PortPickerPortList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#PortPickerPortList").html("<select id='PortPickerPortList' name='PortPickerPortList' size='8' class='form-control'></select>");
+            $("#PortPickerSearchTerm").val("");
+        }
+
+        // Disable the OK button when the list refreshes
+        $("#PortPickerOK").prop("disabled", true);
+    }
+
+    function SelectPort() {
+        var port = $("#PortPickerPortList").val();
+        var selector = "#" + $("#DestinationControl").val();
+        $(selector).val(port);
+        CloseAjaxModal();
+    }
+</script>

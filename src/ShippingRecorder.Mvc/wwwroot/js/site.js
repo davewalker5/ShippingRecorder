@@ -23,3 +23,7 @@
         }
     });
 }
+
+function CloseAjaxModal() {
+    $("#AjaxModal").modal("hide");
+}

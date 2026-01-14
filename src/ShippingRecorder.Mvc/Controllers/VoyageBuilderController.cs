@@ -1,3 +1,4 @@
+using HealthTracker.Mvc.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShippingRecorder.Client.Interfaces;
@@ -48,6 +49,7 @@ namespace ShippingRecorder.Mvc.Controllers
         /// <param name="identifier"></param>
         /// <returns></returns>
         [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> ShowVoyageDetails(long identifier)
         {
             var model = new VoyageBuilderViewModel()

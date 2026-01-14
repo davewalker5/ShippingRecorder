@@ -37,6 +37,11 @@
                 pattern = "[A-Z]{2}[A-Z0-9]{3}",
                 oninput = "let v=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');let r='';for(let i=0;i<v.length && r.length<5;i++){let c=v.charAt(i);if(r.length<2){if(/[A-Z]/.test(c))r+=c;}else{r+=c;}}this.value=r;"
             })
+            <div class="input-group-text">
+                <a href="javascript:loadPortPicker()">
+                    <i class="fas fa-search"></i>
+                </a>
+            </div>
         </div>
         <span>@Html.ValidationMessageFor(m => m.Port, "", new { @class = "text-danger" })</span>
     </div>
@@ -94,5 +99,30 @@
             $("#SamedDayDeparture").hide();
             $("#SamedDayDeparture").prop("checked", false);
         }
+    }
+
+    function loadPortPicker() {
+        $('html, body').css("cursor", "wait");
+        $("#AjaxModalTitle").text("Loading ...");
+        $("#AjaxModalBody").html("<p class='text-muted'>Please wait ...</p>");
+
+        $.ajax({
+            url: "/PortPicker?destinationControl=Port",
+            method: "GET",
+            dataType: "json",
+            cache: false,
+            success: function (result) {
+                $("#AjaxModalTitle").text(result.title);
+                $("#AjaxModalBody").html(result.htmlContent);
+                $("#AjaxModal").modal("show");
+                $('html, body').css("cursor", "auto");
+            },
+            error: function (xhr, status, error) {
+                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                $("#AjaxModalTitle").text("Error");
+                $("#AjaxModalBody").html("<div class='text-danger'>" + errorMessage + "</div>");
+                $('html, body').css("cursor", "auto");
+            }
+        });
     }
 </script>
