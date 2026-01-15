@@ -2,8 +2,11 @@
 @model IEnumerable<Port>
 
 <select id="PortList" name="PortList" size="8" class="form-control">
-    @foreach (var port in Model)
+    @if (Model?.Count() > 0)
     {
-        <option value="@port.Code">@port.Name - @port.Code</option>
+        foreach (var port in Model)
+        {
+            <option value="@port.Code">@port.Name - @port.Code</option>
+        }
     }
 </select>

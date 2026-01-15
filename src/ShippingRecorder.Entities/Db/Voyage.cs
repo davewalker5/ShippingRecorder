@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 
 namespace ShippingRecorder.Entities.Db
 {
@@ -43,6 +44,24 @@ namespace ShippingRecorder.Entities.Db
             => OrderedEvents()?.LastOrDefault();
 
         public override string ToString()
-            => $"{Operator?.Name ?? OperatorId.ToString()} : {Number}";
+        {
+            // Start with the operator name
+            StringBuilder builder = new();
+            builder.Append(Operator?.Name ?? OperatorId.ToString());
+
+            // If we have any events, add the first event date
+            var evt = FirstEvent();
+            if (evt != null)
+            {
+                builder.Append(" : ");
+                builder.Append(FirstEvent()?.Date.ToShortDateString());
+            }
+
+            // Finish with the voyage number
+            builder.Append(" : ");
+            builder.Append(Number);
+
+            return builder.ToString();
+        }
     }
 }

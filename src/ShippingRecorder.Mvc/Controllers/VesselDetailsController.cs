@@ -77,7 +77,8 @@ namespace ShippingRecorder.Mvc.Controllers
             else if (model.Action == ControllerActions.ActionPreviousPage)
             {
                 _wizard.ClearCachedVesselDetailsModel(User.Identity.Name);
-                result = RedirectToAction("Index", "SightingDetails");
+                long? sightingId = _wizard.GetCurrentSightingId(User.Identity.Name);
+                result = RedirectToAction("Index", "SightingDetails", new { id = sightingId });
             }
             else
             {

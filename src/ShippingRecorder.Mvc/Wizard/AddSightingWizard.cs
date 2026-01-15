@@ -66,6 +66,21 @@ namespace ShippingRecorder.Mvc.Wizard
             => await _voyageClient.ListAsync(0, 1, int.MaxValue);
 
         /// <summary>
+        /// Get the sighting ID for the current sighting being edited, which will
+        /// be null for new sightings
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public long? GetCurrentSightingId(string userName)
+        {
+            _logger.LogDebug($"Retrieving current sighting ID for user {userName}");
+            string key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
+            SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
+            _logger.LogDebug($"Current sighting ID for user {userName} = {model?.SightingId}");
+            return model?.SightingId;
+        }
+
+        /// <summary>
         /// Retrieve or construct the sighting details model
         /// </summary>
         /// <param name="userName"></param>
@@ -79,6 +94,8 @@ namespace ShippingRecorder.Mvc.Wizard
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
             if ((model == null) || (model.SightingId != sightingId))
             {
+                _logger.LogDebug($"Loading existing sighting with ID {sightingId}");
+
                 // Not cached or the ID has changed, so create a new one and set the "last sighting added" message
                 Sighting lastAdded = GetLastSightingAdded(userName);
                 ClearCachedLastSightingAdded(userName);
@@ -94,6 +111,7 @@ namespace ShippingRecorder.Mvc.Wizard
                         Date = sighting.Date,
                         LocationId = sighting.LocationId,
                         VoyageId = sighting.VoyageId ?? 0,
+                        VoyageName = sighting.Voyage?.ToString() ?? "",
                         IMO = sighting.Vessel.IMO
                     };
                 }
