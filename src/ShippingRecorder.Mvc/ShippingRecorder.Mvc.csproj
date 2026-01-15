@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <ReleaseVersion>1.7.3.0</ReleaseVersion>
-    <FileVersion>1.7.3.0</FileVersion>
+    <ReleaseVersion>1.7.4.0</ReleaseVersion>
+    <FileVersion>1.7.4.0</FileVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <NoWarn>NU1900</NoWarn>

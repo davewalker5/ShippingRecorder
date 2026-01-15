@@ -12,6 +12,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.SightingId)
+        @Html.HiddenFor(m => m.VoyageId)
 
         <div class="row">
             <div class="col-md">
@@ -96,7 +97,17 @@
             </div>
             <div class="col">
                 <div class="input-group">
-                    @Html.DropDownListFor(m => m.VoyageId, Model.Voyages, new { @class = "form-control" })
+                    @Html.TextBoxFor(m => m.VoyageName, new {
+                        @class = "form-control normal-disabled",
+                        onkeydown = "return false;",
+                        onpaste = "return false;",
+                        ondrop = "return false;"
+                    })
+                    <div class="input-group-text">
+                        <a href="javascript:loadVoyagePicker()">
+                            <i class="fas fa-search"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -141,4 +152,30 @@
             }
         });
     });
+</script>
+<script type="text/javascript">
+    function loadVoyagePicker() {
+        $('html, body').css("cursor", "wait");
+        $("#AjaxModalTitle").text("Loading ...");
+        $("#AjaxModalBody").html("<p class='text-muted'>Please wait ...</p>");
+
+        $.ajax({
+            url: "/VoyagePicker?destinationId=VoyageId&destinationName=VoyageName",
+            method: "GET",
+            dataType: "json",
+            cache: false,
+            success: function (result) {
+                $("#AjaxModalTitle").text(result.title);
+                $("#AjaxModalBody").html(result.htmlContent);
+                $("#AjaxModal").modal("show");
+                $('html, body').css("cursor", "auto");
+            },
+            error: function (xhr, status, error) {
+                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                $("#AjaxModalTitle").text("Error");
+                $("#AjaxModalBody").html("<div class='text-danger'>" + errorMessage + "</div>");
+                $('html, body').css("cursor", "auto");
+            }
+        });
+    }
 </script>

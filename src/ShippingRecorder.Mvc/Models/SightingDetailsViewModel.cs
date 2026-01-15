@@ -29,6 +29,7 @@ namespace ShippingRecorder.Mvc.Models
 
         [DisplayName("Voyage")]
         public long VoyageId { get; set; }
+        public string VoyageName { get; set; }
 
         [DisplayName("My Voyage")]
         public bool IsMyVoyage { get; set; }

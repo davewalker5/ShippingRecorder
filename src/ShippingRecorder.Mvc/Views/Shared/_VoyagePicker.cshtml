@@ -1,0 +1,92 @@
+@model ShippingRecorder.Mvc.Models.VoyagePickerViewModel
+
+@Html.AntiForgeryToken()
+@Html.HiddenFor(m => m.DestinationIdControl)
+@Html.HiddenFor(m => m.DestinationNameControl)
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md">
+            <strong>@Html.Label("Operator")</strong>
+            <div class="input-group">
+                @Html.DropDownList("VoyagePickerOperatorId", Model.Operators, "", new {
+                    @class = "form-control",
+                    onchange = "javascript:LoadVoyagePickerVoyages()"
+                })
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md">
+            <strong>@Html.Label("Voyage")</strong>
+            <div class="input-group">
+                <select id="VoyagePickerVoyageList" name="VoyagePickerVoyageList" size="8" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <hr />
+    <p class="text-right">
+        <button class="btn btn-secondary" onclick="javascript:CloseAjaxModal()">Cancel</button>
+        <button id="VoyagePickerOK" name="VoyagePickerOK" class="btn btn-primary" onclick="javascript:SelectVoyage()" disabled>OK</button>
+    </p>
+</div>
+
+<script type="text/javascript">
+    function LoadVoyagePickerVoyages() {
+        var operatorId = parseInt($("#VoyagePickerOperatorId").val());
+        if (operatorId > 0) {
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: "/VoyagePicker/Voyages?id=" + operatorId,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    // Set the voyage list content
+                    $("#VoyagePickerVoyageList").html(result);
+
+                    // Wire up the change handler to enable/disable OK
+                    $("#VoyagePickerVoyageList").on("change", function() {
+                        var voyageId = $(this).val();
+                        if (!voyageId) {
+                            $("#VoyagePickerOK").prop("disabled", true);
+                        } else {
+                            $("#VoyagePickerOK").prop("disabled", false);
+                        }
+                    });
+
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#VoyagePickerVoyageList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#VoyagePickerVoyageList").html("<select id='VoyagePickerVoyageList' name='VoyagePickerVoyageList' size='8' class='form-control'></select>");
+        }
+
+        // Disable the OK button when the list refreshes
+        $("#VoyagePickerOK").prop("disabled", true);
+    }
+
+    function SelectVoyage() {
+        // Get the values to write back to the destination controls
+        var voyageId = $("#VoyagePickerVoyageList").val();
+        var voyageName = $("#VoyagePickerVoyageList option:selected").text();
+
+        // Get the selectors for the destination controls
+        var idSelector = "#" + $("#DestinationIdControl").val();
+        var nameSelector = "#" + $("#DestinationNameControl").val();
+
+        // Copy the values across and close the dialog
+        $(idSelector).val(voyageId);
+        $(nameSelector).val(voyageName);
+        CloseAjaxModal();
+    }
+</script>
