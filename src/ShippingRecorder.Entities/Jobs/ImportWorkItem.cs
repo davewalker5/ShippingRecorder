@@ -9,6 +9,6 @@ namespace ShippingRecorder.Entities.Jobs
         public string Content { get; set; }
 
         public override string ToString()
-            => $"{base.ToString()}, FileName = {FileName}, Content Length = {Content.Length}";
+            => $"{base.ToString()}, FileName = {FileName}, Content Length = {Content?.Length ?? 0}";
     }
 }

@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
-using System.Web;
+using System.IO;
+using System.Linq;
+using ShippingRecorder.DataExchange.Entities;
 using System;
 
 namespace ShippingRecorder.Tests.Client
@@ -21,12 +23,15 @@ namespace ShippingRecorder.Tests.Client
         private readonly string ApiToken = "An API Token";
         private readonly MockShippingRecorderHttpClient _httpClient = new();
         private ISightingClient _client;
+        private string _filePath;
 
         private readonly ShippingRecorderApplicationSettings _settings = new()
         {
             ApiUrl = "http://server/",
             ApiRoutes = [
-                new() { Name = "Sighting", Route = "/sightings" }
+                new() { Name = "Sighting", Route = "/sightings" },
+                new() { Name = "ImportSighting", Route = "/import/sightings" },
+                new() { Name = "ExportSighting", Route = "/export/sightings" }
             ]
         };
 
@@ -38,6 +43,15 @@ namespace ShippingRecorder.Tests.Client
             var logger = new Mock<ILogger<SightingClient>>();
             var cache = new Mock<ICacheWrapper>();
             _client = new SightingClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            if (!string.IsNullOrEmpty(_filePath) && File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+            }
         }
 
         [TestMethod]
@@ -59,7 +73,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Sighting").Route, _httpClient.Requests[0].Uri);
 
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(added);
@@ -82,7 +96,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Put, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Sighting").Route, _httpClient.Requests[0].Uri);
 
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(updated);
@@ -102,7 +116,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Delete, _httpClient.Requests[0].Method);
-            Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
+            Assert.AreEqual($"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
         }
@@ -115,7 +129,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var retrieved = await _client.GetAsync(sighting.Id);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{sighting.Id}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/{sighting.Id}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -141,7 +155,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var retrieved = await _client.GetMostRecentVesselSightingAsync(imo);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/vessel/{imo}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/vessel/{imo}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -166,7 +180,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var sightings = await _client.ListAsync(1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -192,7 +206,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var sightings = await _client.ListSightingsByVesselAsync(sighting.VesselId, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/vessel/{sighting.VesselId}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/vessel/{sighting.VesselId}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -218,7 +232,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var sightings = await _client.ListSightingsByLocationAsync(sighting.LocationId, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/location/{sighting.LocationId}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/location/{sighting.LocationId}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -247,7 +261,7 @@ namespace ShippingRecorder.Tests.Client
             var to = sighting.Date.AddDays(1);
 
             var sightings = await _client.ListSightingsByDateAsync(from, to, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/date/";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/date/";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -274,7 +288,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var sightings = await _client.ListMyVoyagesAsync(1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/mine/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/mine/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -290,6 +304,47 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual(sighting.VesselId, sightings[0].VesselId);
             Assert.AreEqual(sighting.Date, sightings[0].Date);
             Assert.AreEqual(sighting.IsMyVoyage, sightings[0].IsMyVoyage);
+        }
+
+        [TestMethod]
+        public async Task ImportFromFileTest()
+        {
+            var date = DateTime.Today;
+            var sighting = DataGenerator.CreateSighting();
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{sighting.Location.Name}"",""{sighting.Vessel.IMO}"",""False""";
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            File.WriteAllLines(_filePath, ["", record]);
+            _httpClient.AddResponse("");
+
+            var content = File.ReadAllText(_filePath);
+            var json = JsonSerializer.Serialize(new { Content = content });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ImportSighting").Route;
+
+            await _client.ImportFromFileAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
+        }
+
+        [TestMethod]
+        public async Task ExportTest()
+        {
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            _httpClient.AddResponse("");
+
+            var json = JsonSerializer.Serialize(new { FileName = _filePath });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ExportSighting").Route;
+
+            await _client.ExportAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
         }
     }
 }

@@ -65,6 +65,13 @@ namespace ShippingRecorder.Manager.Logic
         }
 
         /// <summary>
+        /// Handle the country export command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleCountryExportAsync()
+            => await HandleExport<CountryExporter, ExportableCountry, Country>(CommandLineOptionType.ExportCountries);
+
+        /// <summary>
         /// Handle the location export command
         /// </summary>
         /// <returns></returns>

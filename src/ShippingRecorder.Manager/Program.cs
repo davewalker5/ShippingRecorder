@@ -99,6 +99,12 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandleSightingImportAsync();
                 }
 
+                // If a countries export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportCountries))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleCountryExportAsync();
+                }
+
                 // If a locations export has been requested, run the export
                 if (parser.IsPresent(CommandLineOptionType.ExportLocations))
                 {

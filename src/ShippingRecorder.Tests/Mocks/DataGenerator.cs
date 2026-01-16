@@ -123,7 +123,7 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static Country CreateCountry()
-            => new() { Id = RandomId(), Code = RandomAlphaWord(2, 2).CleanCode(), Name = RandomWord() };
+            => new() { Id = RandomId(), Code = RandomAlphaWord(2, 2).CleanCode(), Name = RandomWord().TitleCase() };
 
         /// <summary>
         /// Return a random port

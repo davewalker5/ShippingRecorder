@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
-using System;
+using System.Linq;
+using System.IO;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -20,12 +21,15 @@ namespace ShippingRecorder.Tests.Client
         private readonly string ApiToken = "An API Token";
         private readonly MockShippingRecorderHttpClient _httpClient = new();
         private IPortClient _client;
+        private string _filePath;
 
         private readonly ShippingRecorderApplicationSettings _settings = new()
         {
             ApiUrl = "http://server/",
             ApiRoutes = [
-                new() { Name = "Port", Route = "/ports" }
+                new() { Name = "Port", Route = "/ports" },
+                new() { Name = "ImportPort", Route = "/import/ports" },
+                new() { Name = "ExportPort", Route = "/export/ports" }
             ]
         };
 
@@ -37,6 +41,15 @@ namespace ShippingRecorder.Tests.Client
             var logger = new Mock<ILogger<PortClient>>();
             var cache = new Mock<ICacheWrapper>();
             _client = new PortClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            if (!string.IsNullOrEmpty(_filePath) && File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+            }
         }
 
         [TestMethod]
@@ -51,7 +64,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Port").Route, _httpClient.Requests[0].Uri);
 
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(added);
@@ -72,7 +85,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Put, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Port").Route, _httpClient.Requests[0].Uri);
 
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(updated);
@@ -91,7 +104,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Delete, _httpClient.Requests[0].Method);
-            Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
+            Assert.AreEqual($"{_settings.ApiRoutes.First(x => x.Name == "Port").Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
         }
@@ -104,7 +117,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var ports = await _client.ListAsync(port.CountryId, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{port.CountryId}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Port").Route}/{port.CountryId}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -115,8 +128,53 @@ namespace ShippingRecorder.Tests.Client
             Assert.IsNotNull(ports);
             Assert.HasCount(1, ports);
             Assert.AreEqual(port.Id, ports[0].Id);
+            Assert.AreEqual(port.CountryId, ports[0].CountryId);
             Assert.AreEqual(port.Code, ports[0].Code);
             Assert.AreEqual(port.Name, ports[0].Name);
+        }
+
+        [TestMethod]
+        public async Task GetTest()
+        {
+            var port = DataGenerator.CreatePort();
+            var json = JsonSerializer.Serialize(port);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(port.Code);
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Port").Route}/unlocode/{port.Code}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(port.Id, retrieved.Id);
+            Assert.AreEqual(port.CountryId, retrieved.CountryId);
+            Assert.AreEqual(port.Code, retrieved.Code);
+            Assert.AreEqual(port.Name, retrieved.Name);
+        }
+
+        [TestMethod]
+        public async Task ImportFromFileTest()
+        {
+            var port = DataGenerator.CreatePort();
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            File.WriteAllLines(_filePath, ["", $"""{port.Name}"""]);
+            _httpClient.AddResponse("");
+
+            var content = File.ReadAllText(_filePath);
+            var json = JsonSerializer.Serialize(new { Content = content });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ImportPort").Route;
+
+            await _client.ImportFromFileAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
         }
     }
 }

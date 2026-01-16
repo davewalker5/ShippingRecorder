@@ -1,11 +1,13 @@
 ﻿using ShippingRecorder.Entities.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace ShippingRecorder.Entities.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+    [ExcludeFromCodeCoverage]
     public class UNLOCODEAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)

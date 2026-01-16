@@ -4,6 +4,7 @@ using ShippingRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Threading.Tasks;
+using ShippingRecorder.Entities.Exceptions;
 
 namespace ShippingRecorder.Tests
 {
@@ -78,5 +79,9 @@ namespace ShippingRecorder.Tests
             Assert.IsNotNull(status.End);
             Assert.AreEqual(Error, status.Error);
         }
+
+        [TestMethod]
+        public async Task UpdateMissingAsyncTest()
+            => await Assert.ThrowsAsync<JobStatusNotFoundException>(() => _factory.JobStatuses.UpdateAsync(-1, Error));
     }
 }
