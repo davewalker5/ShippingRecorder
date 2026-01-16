@@ -10,6 +10,7 @@ namespace ShippingRecorder.BusinessLogic.Config
             Add(CommandLineOptionType.Help, false, "--help", "-h", "Show command line help", 0, 0);
             Add(CommandLineOptionType.Update, false, "--update", "-u", "Apply the latest database migrations", 0, 0);
             Add(CommandLineOptionType.ImportCountries, false, "--import-countries", "-ic", "Import countries from a CSV file", 1, 1);
+            Add(CommandLineOptionType.ImportLocations, false, "--import-locations", "-il", "Import locations from a CSV file", 1, 1);
             Add(CommandLineOptionType.ImportOperators, false, "--import-operators", "-io", "Import operators from a CSV file", 1, 1);
             Add(CommandLineOptionType.ImportVesselTypes, false, "--import-vessel-types", "-ivt", "Import vessel types from a CSV file", 1, 1);
             Add(CommandLineOptionType.ImportVessels, false, "--import-vessels", "-iv", "Import vessels from a CSV file", 1, 1);
