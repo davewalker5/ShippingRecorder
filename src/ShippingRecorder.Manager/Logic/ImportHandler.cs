@@ -68,6 +68,14 @@ namespace ShippingRecorder.Manager.Logic
         public async Task HandleCountryImportAsync()
             => await HandleImport<CountryImporter, ExportableCountry>(CommandLineOptionType.ImportCountries, ExportableCountry.CsvRecordPattern);
 
+
+        /// <summary>
+        /// Handle the locations import command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleLocationImportAsync()
+            => await HandleImport<LocationImporter, ExportableLocation>(CommandLineOptionType.ImportLocations, ExportableLocation.CsvRecordPattern);
+
         /// <summary>
         /// Handle the operators import command
         /// </summary>

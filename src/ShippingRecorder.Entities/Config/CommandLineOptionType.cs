@@ -12,6 +12,7 @@ namespace ShippingRecorder.Entities.Config
         ExportVesselTypes,
         Help,
         ImportCountries,
+        ImportLocations,
         ImportOperators,
         ImportPorts,
         ImportSightings,

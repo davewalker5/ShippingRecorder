@@ -69,6 +69,12 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandleCountryImportAsync();
                 }
 
+                // If a CSV file containing locations details has been supplied, import it
+                if (parser.IsPresent(CommandLineOptionType.ImportLocations))
+                {
+                    await new ImportHandler(settings, parser, factory).HandleLocationImportAsync();
+                }
+
                 // If a CSV file containing operator details has been supplied, import it
                 if (parser.IsPresent(CommandLineOptionType.ImportOperators))
                 {
