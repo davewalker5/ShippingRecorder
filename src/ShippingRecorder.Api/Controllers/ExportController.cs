@@ -11,6 +11,7 @@ namespace HealthTracker.Api.Controllers
     [Route("[controller]")]
     public class ExportController : Controller
     {
+        private readonly IBackgroundQueue<CountryExportWorkItem> _countryQueue;
         private readonly IBackgroundQueue<LocationExportWorkItem> _locationQueue;
         private readonly IBackgroundQueue<OperatorExportWorkItem> _operatorQueue;
         private readonly IBackgroundQueue<VesselExportWorkItem> _vesselQueue;
@@ -18,17 +19,28 @@ namespace HealthTracker.Api.Controllers
         private readonly IBackgroundQueue<SightingExportWorkItem> _sightingQueue;
 
         public ExportController(
+            IBackgroundQueue<CountryExportWorkItem> countryQueue,
             IBackgroundQueue<LocationExportWorkItem> locationQueue,
             IBackgroundQueue<OperatorExportWorkItem> operatorQueue,
             IBackgroundQueue<VesselExportWorkItem> vesselQueue,
             IBackgroundQueue<VesselTypeExportWorkItem> vesselTypeQueue,
             IBackgroundQueue<SightingExportWorkItem> sightingQueue)
         {
+            _countryQueue = countryQueue;
             _locationQueue = locationQueue;
             _operatorQueue = operatorQueue;
             _vesselQueue = vesselQueue;
             _vesselTypeQueue = vesselTypeQueue;
             _sightingQueue = sightingQueue;
+        }
+
+        [HttpPost]
+        [Route("countries")]
+        public IActionResult ExportCountris([FromBody] CountryExportWorkItem item)
+        {
+            item.JobName = "Country Export";
+            _countryQueue.Enqueue(item);
+            return Accepted();
         }
 
         [HttpPost]

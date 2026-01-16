@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
+using System.IO;
+using System.Linq;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -19,12 +21,15 @@ namespace ShippingRecorder.Tests.Client
         private readonly string ApiToken = "An API Token";
         private readonly MockShippingRecorderHttpClient _httpClient = new();
         private IVesselClient _client;
+        private string _filePath;
 
         private readonly ShippingRecorderApplicationSettings _settings = new()
         {
             ApiUrl = "http://server/",
             ApiRoutes = [
-                new() { Name = "Vessel", Route = "/vessels" }
+                new() { Name = "Vessel", Route = "/vessels" },
+                new() { Name = "ImportVessel", Route = "/import/vessels" },
+                new() { Name = "ExportVessel", Route = "/export/vessels" }
             ]
         };
 
@@ -36,6 +41,15 @@ namespace ShippingRecorder.Tests.Client
             var logger = new Mock<ILogger<VesselClient>>();
             var cache = new Mock<ICacheWrapper>();
             _client = new VesselClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            if (!string.IsNullOrEmpty(_filePath) && File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+            }
         }
 
         [TestMethod]
@@ -57,7 +71,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Vessel").Route, _httpClient.Requests[0].Uri);
 
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(added);
@@ -80,7 +94,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Put, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Vessel").Route, _httpClient.Requests[0].Uri);
 
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(updated);
@@ -101,7 +115,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Delete, _httpClient.Requests[0].Method);
-            Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
+            Assert.AreEqual($"{_settings.ApiRoutes.First(x => x.Name == "Vessel").Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
         }
@@ -114,7 +128,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var retrieved = await _client.GetAsync(vessel.Id);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{vessel.Id}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Vessel").Route}/{vessel.Id}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -139,7 +153,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var retrieved = await _client.GetAsync(vessel.IMO);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/imo/{vessel.IMO}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Vessel").Route}/imo/{vessel.IMO}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -164,7 +178,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var vessels = await _client.ListAsync(1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Vessel").Route}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -180,6 +194,46 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual(vessel.Draught, vessels[0].Draught);
             Assert.AreEqual(vessel.Length, vessels[0].Length);
             Assert.AreEqual(vessel.Beam, vessels[0].Beam);
+        }
+
+        [TestMethod]
+        public async Task ImportFromFileTest()
+        {
+            var vessel = DataGenerator.CreateVessel();
+            var record = $@"""{vessel.IMO}"",""{vessel.Built}"",""{vessel.Draught}"",""{vessel.Length}"",""{vessel.Beam}"",""{vessel.ActiveRegistrationHistory.Tonnage}"",""{vessel.ActiveRegistrationHistory.Passengers}"",""{vessel.ActiveRegistrationHistory.Crew}"",""{vessel.ActiveRegistrationHistory.Decks}"",""{vessel.ActiveRegistrationHistory.Cabins}"",""{vessel.ActiveRegistrationHistory.Name}"",""{vessel.ActiveRegistrationHistory.Callsign}"",""{vessel.ActiveRegistrationHistory.MMSI}"",""{vessel.ActiveRegistrationHistory.VesselType.Name}"",""{vessel.ActiveRegistrationHistory.Flag}"",""{vessel.ActiveRegistrationHistory.Operator.Name}""";
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            File.WriteAllLines(_filePath, ["", record]);
+            _httpClient.AddResponse("");
+
+            var content = File.ReadAllText(_filePath);
+            var json = JsonSerializer.Serialize(new { Content = content });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ImportVessel").Route;
+
+            await _client.ImportFromFileAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
+        }
+
+        [TestMethod]
+        public async Task ExportTest()
+        {
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            _httpClient.AddResponse("");
+
+            var json = JsonSerializer.Serialize(new { FileName = _filePath });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ExportVessel").Route;
+
+            await _client.ExportAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
         }
     }
 }

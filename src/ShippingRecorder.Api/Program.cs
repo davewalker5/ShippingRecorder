@@ -82,6 +82,10 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<IBackgroundQueue<CountryImportWorkItem>, BackgroundQueue<CountryImportWorkItem>>();
             builder.Services.AddHostedService<CountryImportService>();
 
+            // Add the country exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<CountryExportWorkItem>, BackgroundQueue<CountryExportWorkItem>>();
+            builder.Services.AddHostedService<CountryExportService>();
+
             // Add the operator importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<OperatorImportWorkItem>, BackgroundQueue<OperatorImportWorkItem>>();
             builder.Services.AddHostedService<OperatorImportService>();

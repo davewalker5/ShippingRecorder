@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
+using System.IO;
+using System.Linq;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -17,14 +19,18 @@ namespace ShippingRecorder.Tests.Client
     public class CountryClientTest
     {
         private readonly string ApiToken = "An API Token";
+        private const string FileName = "a-file-name.csv";
         private readonly MockShippingRecorderHttpClient _httpClient = new();
         private ICountryClient _client;
+        private string _filePath;
 
         private readonly ShippingRecorderApplicationSettings _settings = new()
         {
             ApiUrl = "http://server/",
             ApiRoutes = [
-                new() { Name = "Country", Route = "/countries" }
+                new() { Name = "Country", Route = "/countries" },
+                new() { Name = "ImportCountry", Route = "/import/countries" },
+                new() { Name = "ExportCountry", Route = "/export/countries" }
             ]
         };
 
@@ -36,6 +42,15 @@ namespace ShippingRecorder.Tests.Client
             var logger = new Mock<ILogger<CountryClient>>();
             var cache = new Mock<ICacheWrapper>();
             _client = new CountryClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            if (!string.IsNullOrEmpty(_filePath) && File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+            }
         }
 
         [TestMethod]
@@ -50,7 +65,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Country").Route, _httpClient.Requests[0].Uri);
 
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(added);
@@ -70,7 +85,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Put, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Country").Route, _httpClient.Requests[0].Uri);
 
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(updated);
@@ -88,7 +103,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Delete, _httpClient.Requests[0].Method);
-            Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
+            Assert.AreEqual($"{_settings.ApiRoutes.First(x => x.Name == "Country").Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
         }
@@ -101,7 +116,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var retrieved = await _client.GetAsync(country.Id);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{country.Id}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Country").Route}/{country.Id}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -123,7 +138,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var countries = await _client.ListAsync(1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Country").Route}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -136,6 +151,45 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual(country.Id, countries[0].Id);
             Assert.AreEqual(country.Code, countries[0].Code);
             Assert.AreEqual(country.Name, countries[0].Name);
+        }
+
+        [TestMethod]
+        public async Task ImportFromFileTest()
+        {
+            var country = DataGenerator.CreateCountry();
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            File.WriteAllLines(_filePath, ["", $"""{country.Code}"",""{country.Name}"""]);
+            _httpClient.AddResponse("");
+
+            var content = File.ReadAllText(_filePath);
+            var json = JsonSerializer.Serialize(new { Content = content });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ImportCountry").Route;
+
+            await _client.ImportFromFileAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
+        }
+
+        [TestMethod]
+        public async Task ExportTest()
+        {
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            _httpClient.AddResponse("");
+
+            var json = JsonSerializer.Serialize(new { FileName = _filePath });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ExportCountry").Route;
+
+            await _client.ExportAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
         }
     }
 }

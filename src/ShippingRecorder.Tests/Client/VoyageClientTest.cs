@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
-using System;
+using System.Linq;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -51,7 +51,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Voyage").Route, _httpClient.Requests[0].Uri);
 
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(added);
@@ -71,7 +71,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Put, _httpClient.Requests[0].Method);
-            Assert.AreEqual(_settings.ApiRoutes[0].Route, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(_settings.ApiRoutes.First(x => x.Name == "Voyage").Route, _httpClient.Requests[0].Uri);
 
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(updated);
@@ -89,9 +89,32 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
             Assert.AreEqual(HttpMethod.Delete, _httpClient.Requests[0].Method);
-            Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
+            Assert.AreEqual($"{_settings.ApiRoutes.First(x => x.Name == "Voyage").Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
+        }
+
+        [TestMethod]
+        public async Task GetTest()
+        {
+            var voyage = DataGenerator.CreateVoyage();
+            var json = JsonSerializer.Serialize(voyage);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(voyage.Id);
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Voyage").Route}/{voyage.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(voyage.Id, retrieved.Id);
+            Assert.AreEqual(voyage.OperatorId, retrieved.OperatorId);
+            Assert.AreEqual(voyage.VesselId, retrieved.VesselId);
+            Assert.AreEqual(voyage.Number, retrieved.Number);
         }
 
         [TestMethod]
@@ -102,7 +125,7 @@ namespace ShippingRecorder.Tests.Client
             _httpClient.AddResponse(json);
 
             var voyages = await _client.ListAsync(voyage.OperatorId, 1, int.MaxValue);
-            var expectedRoute = $"{_settings.ApiRoutes[0].Route}/{voyage.OperatorId}/1/{int.MaxValue}";
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Voyage").Route}/{voyage.OperatorId}/1/{int.MaxValue}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());

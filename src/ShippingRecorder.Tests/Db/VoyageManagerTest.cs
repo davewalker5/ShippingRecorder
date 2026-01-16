@@ -5,6 +5,8 @@ using ShippingRecorder.Data;
 using ShippingRecorder.Entities.Exceptions;
 using ShippingRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ShippingRecorder.Entities.Db;
+using System;
 
 namespace ShippingRecorder.Tests.Db
 {
@@ -94,11 +96,28 @@ namespace ShippingRecorder.Tests.Db
             => await Assert.ThrowsAsync<VoyageNotFoundException>(() => _factory.Voyages.UpdateAsync(-1, _secondOperatorId, _secondVesselId, SecondNumber));
 
         [TestMethod]
-        public async Task DeleteTestAsync()
+        public async Task DeleteWithNoEventsTestAsync()
         {
             var entity = await _factory.Voyages.GetAsync(e => (e.OperatorId == _operatorId) && (e.Number == Number));
             await _factory.Voyages.DeleteAsync(entity.Id);
             var count = _factory.GetContext<ShippingRecorderDbContext>().Sightings.Count();
+            Assert.AreEqual(0, count);
+        }
+
+        [TestMethod]
+        public async Task DeleteWithEventsTestAsync()
+        {
+            var entity = await _factory.Voyages.GetAsync(e => (e.OperatorId == _operatorId) && (e.Number == Number));
+            var country = await _factory.Countries.AddAsync("GB", "United Kingdom");
+            var port = await _factory.Ports.AddAsync(country.Id, "GBSOU", "Sounthampton");
+            _ = await _factory.VoyageEvents.AddAsync(entity.Id, port.Id, VoyageEventType.Depart, DateTime.Today);
+
+            await _factory.Voyages.DeleteAsync(entity.Id);
+
+            var count = _factory.GetContext<ShippingRecorderDbContext>().Voyages.Count();
+            Assert.AreEqual(0, count);
+
+            count = _factory.GetContext<ShippingRecorderDbContext>().VoyageEvents.Count();
             Assert.AreEqual(0, count);
         }
 

@@ -8,15 +8,6 @@ namespace ShippingRecorder.Mvc.Models
 {
     public class ExportViewModel : DataExchangeViewModel
     {
-        private static readonly List<DataExchangeType> _exportTypes = [
-            DataExchangeType.None,
-            DataExchangeType.Locations,
-            DataExchangeType.Operators,
-            DataExchangeType.Sightings,
-            DataExchangeType.Vessels,
-            DataExchangeType.VesselTypes
-        ];
-
         public List<SelectListItem> ExportTypes { get; private set; } = [];
 
         [DisplayName("File Name")]
@@ -27,7 +18,7 @@ namespace ShippingRecorder.Mvc.Models
 
         public ExportViewModel()
         {
-            foreach (var exportType in _exportTypes)
+            foreach (var exportType in Enum.GetValues<DataExchangeType>())
             {
                 var importTypeName = exportType.ToName();
                 ExportTypes.Add(new SelectListItem() { Text = $"{importTypeName}", Value = exportType.ToString() });

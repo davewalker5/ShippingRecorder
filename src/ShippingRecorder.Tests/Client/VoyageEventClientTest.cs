@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
+using System.Linq;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -102,6 +103,30 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual($"{_settings.ApiRoutes[0].Route}/{id}", _httpClient.Requests[0].Uri);
 
             Assert.IsNull(_httpClient.Requests[0].Content);
+        }
+
+        [TestMethod]
+        public async Task GetTest()
+        {
+            var voyageEvent = DataGenerator.CreateVoyageEvent();
+            var json = JsonSerializer.Serialize(voyageEvent);
+            _httpClient.AddResponse(json);
+
+            var retrieved = await _client.GetAsync(voyageEvent.Id);
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "VoyageEvent").Route}/{voyageEvent.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(voyageEvent.Id, retrieved.Id);
+            Assert.AreEqual(voyageEvent.VoyageId, retrieved.VoyageId);
+            Assert.AreEqual(voyageEvent.EventType, retrieved.EventType);
+            Assert.AreEqual(voyageEvent.PortId, retrieved.PortId);
+            Assert.AreEqual(voyageEvent.Date, retrieved.Date);
         }
 
         [TestMethod]
