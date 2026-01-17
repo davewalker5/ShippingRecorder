@@ -56,7 +56,7 @@ namespace ShippingRecorder.Tests.Export
         public void FromCsvRecordTest()
         {
             var isMyVoyage = _sighting.IsMyVoyage ? "True" : "False";
-            var record = $@"""{_sighting.Date.ToString(ExportableEntityBase.DateFormat)}"",""{_sighting.Location.Name}"",""{_sighting.Vessel.IMO}"",""{isMyVoyage}""";
+            var record = $@"""{_sighting.Date.ToString(ExportableEntityBase.DateFormat)}"",""{_sighting.Location.Name}"",""{_sighting.Vessel.IMO}"","""",""{isMyVoyage}""";
             var exportable = ExportableSighting.FromCsv(record);
             Assert.AreEqual(_sighting.Date, exportable.Date);
             Assert.AreEqual(_sighting.Location.Name, exportable.Location);
