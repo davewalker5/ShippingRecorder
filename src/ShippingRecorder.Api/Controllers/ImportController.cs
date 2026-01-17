@@ -77,6 +77,15 @@ namespace ShippingRecorder.Api.Controllers
         }
 
         [HttpPost]
+        [Route("sightings")]
+        public IActionResult ImportSightings([FromBody] SightingImportWorkItem item)
+        {
+            item.JobName = "Sighting Import";
+            _sightingQueue.Enqueue(item);
+            return Accepted();
+        }
+
+        [HttpPost]
         [Route("vessels")]
         public IActionResult ImportVessels([FromBody] VesselImportWorkItem item)
         {
@@ -91,15 +100,6 @@ namespace ShippingRecorder.Api.Controllers
         {
             item.JobName = "Vessel Type Import";
             _vesselTypeQueue.Enqueue(item);
-            return Accepted();
-        }
-
-        [HttpPost]
-        [Route("sightings")]
-        public IActionResult ImportSightings([FromBody] SightingImportWorkItem item)
-        {
-            item.JobName = "Sighting Import";
-            _sightingQueue.Enqueue(item);
             return Accepted();
         }
 
