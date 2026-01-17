@@ -27,6 +27,21 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return a port given its ID
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public async Task<Port> GetAsync(long id)
+        {
+            // Request the specified port
+            string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
+            var route = $"{baseRoute}/{id}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            Port port = Deserialize<Port>(json);
+            return port;
+        }
+
+        /// <summary>
         /// Return a port given a UN/LOCODE
         /// </summary>
         /// <param name="code"></param>
@@ -40,7 +55,6 @@ namespace ShippingRecorder.Client.ApiClient
             Port port = Deserialize<Port>(json);
             return port;
         }
-        
 
         /// <summary>
         /// Add a new port to the database
@@ -110,11 +124,11 @@ namespace ShippingRecorder.Client.ApiClient
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Port>> ListAsync(long countryId, int pageNumber, int pageSize)
+        public async Task<List<Port>> ListAsync(long? countryId, int pageNumber, int pageSize)
         {
             // Request a list of countries
             string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
-            var route = $"{baseRoute}/{countryId}/{pageNumber}/{pageSize}";
+            var route = $"{baseRoute}/{countryId ?? 0}/{pageNumber}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
 
             // The returned JSON will be empty if there are no countries in the database

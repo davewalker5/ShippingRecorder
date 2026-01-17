@@ -140,6 +140,29 @@ namespace ShippingRecorder.Tests.Client
             var json = JsonSerializer.Serialize(port);
             _httpClient.AddResponse(json);
 
+            var retrieved = await _client.GetAsync(port.Id);
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Port").Route}/{port.Id}";
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Get, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+
+            Assert.IsNull(_httpClient.Requests[0].Content);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(port.Id, retrieved.Id);
+            Assert.AreEqual(port.CountryId, retrieved.CountryId);
+            Assert.AreEqual(port.Code, retrieved.Code);
+            Assert.AreEqual(port.Name, retrieved.Name);
+        }
+
+        [TestMethod]
+        public async Task GetByCodeTest()
+        {
+            var port = DataGenerator.CreatePort();
+            var json = JsonSerializer.Serialize(port);
+            _httpClient.AddResponse(json);
+
             var retrieved = await _client.GetAsync(port.Code);
             var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Port").Route}/unlocode/{port.Code}";
 

@@ -42,7 +42,7 @@ namespace HealthTracker.Mvc.Helpers
             {
                 foreach (var country in countries)
                 {
-                    list.Add(new SelectListItem() { Text = country.Name, Value = country.Id.ToString() });
+                    list.Add(new SelectListItem() { Text = $"{country.Name} ({country.Code})", Value = country.Id.ToString() });
                 }
             }
 
