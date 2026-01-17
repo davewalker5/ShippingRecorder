@@ -122,6 +122,14 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<IBackgroundQueue<PortImportWorkItem>, BackgroundQueue<PortImportWorkItem>>();
             builder.Services.AddHostedService<PortImportService>();
 
+            // Add the voyage importer hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VoyageImportWorkItem>, BackgroundQueue<VoyageImportWorkItem>>();
+            builder.Services.AddHostedService<VoyageImportService>();
+
+            // Add the voyage exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<VoyageExportWorkItem>, BackgroundQueue<VoyageExportWorkItem>>();
+            builder.Services.AddHostedService<VoyageExportService>();
+
             // Configure JWT
             byte[] key = Encoding.ASCII.GetBytes(settings!.Secret);
             builder.Services.AddAuthentication(x =>

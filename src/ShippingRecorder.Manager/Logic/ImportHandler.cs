@@ -105,6 +105,13 @@ namespace ShippingRecorder.Manager.Logic
             => await HandleImport<VesselImporter, ExportableVessel>(CommandLineOptionType.ImportVessels, ExportableVessel.CsvRecordPattern);
 
         /// <summary>
+        /// Handle the voyage import command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleVoyageImportAsync()
+            => await HandleImport<VoyageImporter, ExportableVoyage>(CommandLineOptionType.ImportVoyages, ExportableVoyage.CsvRecordPattern);
+
+        /// <summary>
         /// Handle the sightings import command
         /// </summary>
         /// <returns></returns>

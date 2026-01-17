@@ -13,6 +13,7 @@ namespace ShippingRecorder.DataExchange.Import
     {
         private List<Location> _locations;
         private List<Vessel> _vessels;
+        private List<Voyage> _voyages;
 
         public SightingImporter(IShippingRecorderFactory factory, string format) : base(factory, format)
         {
@@ -27,6 +28,7 @@ namespace ShippingRecorder.DataExchange.Import
             await base.Prepare();
             _locations = await _factory.Locations.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
             _vessels = await _factory.Vessels.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
+            _voyages = await _factory.Voyages.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
         }
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace ShippingRecorder.DataExchange.Import
             ValidateField<DateTime>(x => x <= DateTime.Now, sighting.Date, "Date", recordCount);
             ValidateField<string>(x => CheckLocationExists(x), sighting.Location, "Location", recordCount);
             ValidateField<string>(x => CheckVesselExists(x), sighting.IMO, "IMO", recordCount);
+            ValidateField<string>(x => CheckVoyageExists(x), sighting.VoyageNumber, "VoyageNumber", recordCount);
         }
 #pragma warning restore CS1998
 
@@ -61,7 +64,8 @@ namespace ShippingRecorder.DataExchange.Import
         {
             var location = _locations.First(x => x.Name == sighting.Location);
             var vessel = _vessels.First(x => x.IMO == sighting.IMO);
-            await _factory.Sightings.AddAsync(location.Id, null, vessel.Id, sighting.Date, sighting.IsMyVoyage);
+            long? voyageId = string.IsNullOrEmpty(sighting.VoyageNumber) ? null : _voyages.First(x => x.Number == sighting.VoyageNumber).Id;
+            await _factory.Sightings.AddAsync(location.Id, voyageId, vessel.Id, sighting.Date, sighting.IsMyVoyage);
         }
 
         /// <summary>
@@ -79,5 +83,13 @@ namespace ShippingRecorder.DataExchange.Import
         /// <returns></returns>
         private bool CheckVesselExists(string imo)
             => _vessels.FirstOrDefault(x => x.IMO == imo) != null;
+
+        /// <summary>
+        /// Check a voyage exists
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        private bool CheckVoyageExists(string number)
+            => string.IsNullOrEmpty(number) || _voyages.FirstOrDefault(x => x.Number == number) != null;
     }
 }

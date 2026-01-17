@@ -6,12 +6,15 @@ using ShippingRecorder.Entities.Db;
 using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ShippingRecorder.Client.ApiClient
 {
     public class VoyageClient : ShippingRecorderClientBase, IVoyageClient
     {
         private const string RouteKey = "Voyage";
+        private const string ImportRouteKey = "ImportVoyage";
+        private const string ExportRouteKey = "ExportVoyage";
 
         public VoyageClient(
             IShippingRecorderHttpClient client,
@@ -115,6 +118,39 @@ namespace ShippingRecorder.Client.ApiClient
             // The returned JSON will be empty if there are no voyages in the database
             List<Voyage> countries = Deserialize<List<Voyage>>(json);
             return countries;
+        }
+
+        /// <summary>
+        /// Request an import of voyages from the content of a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileContentAsync(string content)
+        {
+            dynamic data = new{ Content = content };
+            var json = Serialize(data);
+            await SendIndirectAsync(ImportRouteKey, json, HttpMethod.Post);
+        }
+
+        /// <summary>
+        /// Request an import of voyages given the path to a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ImportFromFileAsync(string filePath)
+            => await ImportFromFileContentAsync(File.ReadAllText(filePath));
+
+        /// <summary>
+        /// Request an export of voyages to a named file in the export voyage
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task ExportAsync(string fileName)
+        {
+            dynamic data = new{ FileName = fileName };
+            var json = Serialize(data);
+            await SendIndirectAsync(ExportRouteKey, json, HttpMethod.Post);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace ShippingRecorder.Mvc.Controllers
             ISightingClient sightingClient,
             IVesselClient vesselClient,
             IVesselTypeClient vesselTypeClient,
+            IVoyageClient voyageClient,
             IPartialViewToStringRenderer renderer,
             ILogger<ImportController> logger) : base(
                 countryClient,
@@ -30,6 +31,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 sightingClient,
                 vesselClient,
                 vesselTypeClient,
+                voyageClient,
                 renderer,
                 logger
             )

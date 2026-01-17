@@ -1,7 +1,5 @@
 using System;
 using System.Text;
-using DocumentFormat.OpenXml.ExtendedProperties;
-using DocumentFormat.OpenXml.Wordprocessing;
 using ShippingRecorder.BusinessLogic.Extensions;
 using ShippingRecorder.Entities.Db;
 
@@ -130,28 +128,65 @@ namespace ShippingRecorder.Tests.Mocks
         /// </summary>
         /// <returns></returns>
         public static Port CreatePort()
-            => new() { Id = RandomId(), CountryId = RandomId(), Code = RandomWord(2, 2), Name = RandomWord() };
+        {
+            var country = CreateCountry();
+            return new()
+            {
+                Id = RandomId(), 
+                CountryId = country.Id,
+                Country = country,
+                Code = RandomWord(5, 5).CleanCode(),
+                Name = RandomWord()
+            };
+        }
 
         /// <summary>
         /// Return a random voyage
         /// </summary>
         /// <returns></returns>
         public static Voyage CreateVoyage()
-            => new() { Id = RandomId(), OperatorId = RandomId(), VesselId = RandomId(), Number = RandomWord() };
+        {
+            var op = CreateOperator();
+            var vessel = CreateVessel();
+            var evt = CreateVoyageEvent(RandomId());
+            return new()
+            {
+                Id = evt.VoyageId,
+                OperatorId = op.Id,
+                Operator = op,
+                VesselId = vessel.Id,
+                Vessel = vessel,
+                Number = RandomWord().CleanCode(),
+                Events = [evt]
+            };
+        }
 
         /// <summary>
-        /// Return a random voyage
+        /// Return a random voyage event for the voyage with the specified Id
         /// </summary>
+        /// <param name="voyageId"></param>
         /// <returns></returns>
-        public static VoyageEvent CreateVoyageEvent()
-            => new()
+        public static VoyageEvent CreateVoyageEvent(long voyageId)
+        {
+            var port = CreatePort();
+            return new()
             {
                 Id = RandomId(),
-                VoyageId = RandomId(),
+                VoyageId = voyageId,
                 EventType = RandomInt(0, 100) < 50 ? VoyageEventType.Depart : VoyageEventType.Arrive,
-                PortId = RandomId(),
+                PortId = port.Id,
+                Port = port,
                 Date = DateTime.Now
             };
+        }
+
+        /// <summary>
+        /// Return a random voyage event
+        /// </summary>
+        /// <param name="voyageId"></param>
+        /// <returns></returns>
+        public static VoyageEvent CreateVoyageEvent()
+            => CreateVoyageEvent(RandomId());
 
         /// <summary>
         /// Create a random vessel registration history

@@ -9,6 +9,7 @@ namespace ShippingRecorder.Mvc.Enumerations
         Ports,
         Sightings,
         Vessels,
-        VesselTypes
+        VesselTypes,
+        Voyages
     }
 }

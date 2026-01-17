@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Collections.Generic;
 using ShippingRecorder.Entities.Db;
 using System.Linq;
+using System.IO;
+using ShippingRecorder.DataExchange.Entities;
 
 namespace ShippingRecorder.Tests.Client
 {
@@ -20,12 +22,15 @@ namespace ShippingRecorder.Tests.Client
         private readonly string ApiToken = "An API Token";
         private readonly MockShippingRecorderHttpClient _httpClient = new();
         private IVoyageClient _client;
+        private string _filePath;
 
         private readonly ShippingRecorderApplicationSettings _settings = new()
         {
             ApiUrl = "http://server/",
             ApiRoutes = [
-                new() { Name = "Voyage", Route = "/voyages" }
+                new() { Name = "Voyage", Route = "/voyages" },
+                new() { Name = "ImportVoyage", Route = "/import/voyages" },
+                new() { Name = "ExportVoyage", Route = "/export/voyages" }
             ]
         };
 
@@ -37,6 +42,15 @@ namespace ShippingRecorder.Tests.Client
             var logger = new Mock<ILogger<VoyageClient>>();
             var cache = new Mock<ICacheWrapper>();
             _client = new VoyageClient(_httpClient, _settings, provider.Object, cache.Object, logger.Object);
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            if (!string.IsNullOrEmpty(_filePath) && File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+            }
         }
 
         [TestMethod]
@@ -138,6 +152,46 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual(voyage.Id, voyages[0].Id);
             Assert.AreEqual(voyage.OperatorId, voyages[0].OperatorId);
             Assert.AreEqual(voyage.Number, voyages[0].Number);
+        }
+
+        [TestMethod]
+        public async Task ImportFromFileTest()
+        {
+            var voyage = DataGenerator.CreateVoyage();
+            var record = $@"""{voyage.Vessel.IMO}"",""{voyage.Operator.Name}"",""{voyage.Number}"",""{voyage.Events.First().EventType}"",""{voyage.Events.First().Port.Code}"",""{voyage.Events.First().Date.ToString(ExportableVoyage.DateFormat)}""";
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            File.WriteAllLines(_filePath, ["", record]);
+            _httpClient.AddResponse("");
+
+            var content = File.ReadAllText(_filePath);
+            var json = JsonSerializer.Serialize(new { Content = content });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ImportVoyage").Route;
+
+            await _client.ImportFromFileAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
+        }
+
+        [TestMethod]
+        public async Task ExportTest()
+        {
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            _httpClient.AddResponse("");
+
+            var json = JsonSerializer.Serialize(new { FileName = _filePath });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ExportVoyage").Route;
+
+            await _client.ExportAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
         }
     }
 }

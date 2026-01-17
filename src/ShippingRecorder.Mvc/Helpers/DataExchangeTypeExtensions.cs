@@ -21,6 +21,7 @@ namespace ShippingRecorder.Mvc.Helpers
                 DataExchangeType.Sightings => "Sightings",
                 DataExchangeType.Vessels => "Vessels",
                 DataExchangeType.VesselTypes => "Vessel Types",
+                DataExchangeType.Voyages => "Voyages",
                 _ => "",
             };
         }

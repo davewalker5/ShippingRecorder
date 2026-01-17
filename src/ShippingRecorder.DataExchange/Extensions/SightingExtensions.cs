@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using ShippingRecorder.DataExchange.Entities;
 using ShippingRecorder.Entities.Db;
 
@@ -18,6 +17,7 @@ namespace ShippingRecorder.DataExchange.Extensions
                     Date = sighting.Date,
                     Location = sighting.Location.Name,
                     IMO = sighting.Vessel.IMO,
+                    VoyageNumber = sighting.Voyage?.Number,
                     IsMyVoyage = sighting.IsMyVoyage
                 };
 
