@@ -14,7 +14,8 @@ namespace ShippingRecorder.Mvc.Controllers
             { DataExchangeType.Ports, "Port" },
             { DataExchangeType.Sightings, "Sighting" },
             { DataExchangeType.Vessels, "Vessel" },
-            { DataExchangeType.VesselTypes, "VesselType" }
+            { DataExchangeType.VesselTypes, "VesselType" },
+            { DataExchangeType.Voyages, "Voyage" }
         };
 
         protected readonly Dictionary<DataExchangeType, IImporter> _importers = new();
@@ -28,6 +29,7 @@ namespace ShippingRecorder.Mvc.Controllers
             ISightingClient sightingClient,
             IVesselClient vesselClient,
             IVesselTypeClient vesselTypeClient,
+            IVoyageClient voyageClient,
             IPartialViewToStringRenderer renderer,
             ILogger logger) : base(renderer, logger)
         {
@@ -38,6 +40,7 @@ namespace ShippingRecorder.Mvc.Controllers
             _importers.Add(DataExchangeType.Sightings, sightingClient);
             _importers.Add(DataExchangeType.Vessels, vesselClient);
             _importers.Add(DataExchangeType.VesselTypes, vesselTypeClient);
+            _importers.Add(DataExchangeType.Voyages, voyageClient);
 
             _exporters.Add(DataExchangeType.Countries, countryClient);
             _exporters.Add(DataExchangeType.Locations, locationClient);
@@ -45,6 +48,7 @@ namespace ShippingRecorder.Mvc.Controllers
             _exporters.Add(DataExchangeType.Sightings, sightingClient);
             _exporters.Add(DataExchangeType.Vessels, vesselClient);
             _exporters.Add(DataExchangeType.VesselTypes, vesselTypeClient);
+            _exporters.Add(DataExchangeType.Voyages, voyageClient);
         }
 
         /// <summary>

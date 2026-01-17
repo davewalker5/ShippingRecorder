@@ -30,7 +30,7 @@ namespace ShippingRecorder.DataExchange.Entities
         [Export("Event Type", 3)]
         public string EventType { get; set; }
 
-        [Export("Callsign", 4)]
+        [Export("Port", 4)]
         public string Port { get; set; }
 
         [Export("Date", 5)]

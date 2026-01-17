@@ -99,6 +99,12 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandleVesselImportAsync();
                 }
 
+                // If a CSV file containing voyage details has been supplied, import it
+                if (parser.IsPresent(CommandLineOptionType.ImportVoyages))
+                {
+                    await new ImportHandler(settings, parser, factory).HandleVoyageImportAsync();
+                }
+
                 // If a CSV file containing sighting details has been supplied, import it
                 if (parser.IsPresent(CommandLineOptionType.ImportSightings))
                 {
@@ -139,6 +145,12 @@ namespace ShippingRecorder.Manager
                 if (parser.IsPresent(CommandLineOptionType.ExportVessels))
                 {
                     await new ExportHandler(settings, parser, factory).HandleVesselExportAsync();
+                }
+
+                // If a voyage export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportVoyages))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleVoyageExportAsync();
                 }
 
                 // Handle user addition

@@ -9,7 +9,7 @@ namespace ShippingRecorder.DataExchange.Entities
     [ExcludeFromCodeCoverage]
     public class ExportableSighting : ExportableEntityBase
     {
-        public const string CsvRecordPattern = @"^""[0-9]+-[A-Za-z]+-[0-9]+"",""(?!\s*"")[\s\S]*"",""\d{7}"",""True|False"".?$";
+        public const string CsvRecordPattern = @"^""[0-9]+-[A-Za-z]+-[0-9]+"",""(?!\s*"")[\s\S]*"",""\d{7}"","".*"",""True|False"".?$";
 
         [Export("Date", 1)]
         public DateTime Date { get; set; }
@@ -20,7 +20,10 @@ namespace ShippingRecorder.DataExchange.Entities
         [Export("IMO", 3)]
         public string IMO { get; set; }
 
-        [Export("My Voyage", 4)]
+        [Export("Voyage", 4)]
+        public string VoyageNumber { get; set; }
+
+        [Export("My Voyage", 5)]
         public bool IsMyVoyage { get; set; }
 
         public static ExportableSighting FromCsv(string record)
@@ -31,7 +34,8 @@ namespace ShippingRecorder.DataExchange.Entities
                 Date = DateTime.ParseExact(words[0].Replace("\"", "").Trim(), DateFormat, CultureInfo.CurrentCulture),
                 Location = words[1].Replace("\"", "").Trim(),
                 IMO = words[2].Replace("\"", "").Trim().CleanCode(),
-                IsMyVoyage = words[3].Replace("\"", "").Trim().Equals("True", StringComparison.OrdinalIgnoreCase)
+                VoyageNumber = words[3].Replace("\"", "").Trim().Clean(),
+                IsMyVoyage = words[4].Replace("\"", "").Trim().Equals("True", StringComparison.OrdinalIgnoreCase)
             };
         }
     }

@@ -2,7 +2,7 @@
 
 // Tool to create the payload for a data import job based on an existing file
 const string FilePath = @"data.csv";
-const string JobName = @"Port Import";
+const string JobName = @"Voyage Import";
 
 // Construct the payload
 dynamic data = new{ Content = File.ReadAllText(FilePath), JobName = JobName };

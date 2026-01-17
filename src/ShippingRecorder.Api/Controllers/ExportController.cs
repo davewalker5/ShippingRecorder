@@ -16,6 +16,7 @@ namespace HealthTracker.Api.Controllers
         private readonly IBackgroundQueue<OperatorExportWorkItem> _operatorQueue;
         private readonly IBackgroundQueue<VesselExportWorkItem> _vesselQueue;
         private readonly IBackgroundQueue<VesselTypeExportWorkItem> _vesselTypeQueue;
+        private readonly IBackgroundQueue<VoyageExportWorkItem> _voyageQueue;
         private readonly IBackgroundQueue<SightingExportWorkItem> _sightingQueue;
 
         public ExportController(
@@ -24,6 +25,7 @@ namespace HealthTracker.Api.Controllers
             IBackgroundQueue<OperatorExportWorkItem> operatorQueue,
             IBackgroundQueue<VesselExportWorkItem> vesselQueue,
             IBackgroundQueue<VesselTypeExportWorkItem> vesselTypeQueue,
+            IBackgroundQueue<VoyageExportWorkItem> voyageQueue,
             IBackgroundQueue<SightingExportWorkItem> sightingQueue)
         {
             _countryQueue = countryQueue;
@@ -31,6 +33,7 @@ namespace HealthTracker.Api.Controllers
             _operatorQueue = operatorQueue;
             _vesselQueue = vesselQueue;
             _vesselTypeQueue = vesselTypeQueue;
+            _voyageQueue = voyageQueue;
             _sightingQueue = sightingQueue;
         }
 
@@ -85,6 +88,15 @@ namespace HealthTracker.Api.Controllers
         {
             item.JobName = "Sighting Export";
             _sightingQueue.Enqueue(item);
+            return Accepted();
+        }
+
+        [HttpPost]
+        [Route("voyages")]
+        public IActionResult ExportVoyages([FromBody] VoyageExportWorkItem item)
+        {
+            item.JobName = "Voyage Export";
+            _voyageQueue.Enqueue(item);
             return Accepted();
         }
     }

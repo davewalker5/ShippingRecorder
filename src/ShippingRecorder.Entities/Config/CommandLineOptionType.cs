@@ -10,6 +10,7 @@ namespace ShippingRecorder.Entities.Config
         ExportSightings,
         ExportVessels,
         ExportVesselTypes,
+        ExportVoyages,
         Help,
         ImportCountries,
         ImportLocations,
@@ -18,6 +19,7 @@ namespace ShippingRecorder.Entities.Config
         ImportSightings,
         ImportVessels,
         ImportVesselTypes,
+        ImportVoyages,
         SetPassword,
         Update
     }
