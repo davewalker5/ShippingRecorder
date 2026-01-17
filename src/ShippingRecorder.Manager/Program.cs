@@ -87,10 +87,10 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandlePortImportAsync();
                 }
 
-                // If a CSV file containing vessel type details has been supplied, import it
-                if (parser.IsPresent(CommandLineOptionType.ImportVesselTypes))
+                // If a CSV file containing sighting details has been supplied, import it
+                if (parser.IsPresent(CommandLineOptionType.ImportSightings))
                 {
-                    await new ImportHandler(settings, parser, factory).HandleVesselTypeImportAsync();
+                    await new ImportHandler(settings, parser, factory).HandleSightingImportAsync();
                 }
 
                 // If a CSV file containing vessel details has been supplied, import it
@@ -99,16 +99,16 @@ namespace ShippingRecorder.Manager
                     await new ImportHandler(settings, parser, factory).HandleVesselImportAsync();
                 }
 
+                // If a CSV file containing vessel type details has been supplied, import it
+                if (parser.IsPresent(CommandLineOptionType.ImportVesselTypes))
+                {
+                    await new ImportHandler(settings, parser, factory).HandleVesselTypeImportAsync();
+                }
+
                 // If a CSV file containing voyage details has been supplied, import it
                 if (parser.IsPresent(CommandLineOptionType.ImportVoyages))
                 {
                     await new ImportHandler(settings, parser, factory).HandleVoyageImportAsync();
-                }
-
-                // If a CSV file containing sighting details has been supplied, import it
-                if (parser.IsPresent(CommandLineOptionType.ImportSightings))
-                {
-                    await new ImportHandler(settings, parser, factory).HandleSightingImportAsync();
                 }
 
                 // If a countries export has been requested, run the export
@@ -129,22 +129,28 @@ namespace ShippingRecorder.Manager
                     await new ExportHandler(settings, parser, factory).HandleOperatorExportAsync();
                 }
 
+                // If a ports export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportPorts))
+                {
+                    await new ExportHandler(settings, parser, factory).HandlePortExportAsync();
+                }
+
                 // If a sighting export has been requested, run the export
                 if (parser.IsPresent(CommandLineOptionType.ExportSightings))
                 {
                     await new ExportHandler(settings, parser, factory).HandleSightingExportAsync();
                 }
 
-                // If a vessel type export has been requested, run the export
-                if (parser.IsPresent(CommandLineOptionType.ExportVesselTypes))
-                {
-                    await new ExportHandler(settings, parser, factory).HandleVesselTypeExportAsync();
-                }
-
                 // If a vessel export has been requested, run the export
                 if (parser.IsPresent(CommandLineOptionType.ExportVessels))
                 {
                     await new ExportHandler(settings, parser, factory).HandleVesselExportAsync();
+                }
+
+                // If a vessel type export has been requested, run the export
+                if (parser.IsPresent(CommandLineOptionType.ExportVesselTypes))
+                {
+                    await new ExportHandler(settings, parser, factory).HandleVesselTypeExportAsync();
                 }
 
                 // If a voyage export has been requested, run the export

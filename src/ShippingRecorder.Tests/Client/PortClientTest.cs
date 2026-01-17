@@ -176,5 +176,23 @@ namespace ShippingRecorder.Tests.Client
             Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
         }
+
+        [TestMethod]
+        public async Task ExportTest()
+        {
+            _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            _httpClient.AddResponse("");
+
+            var json = JsonSerializer.Serialize(new { FileName = _filePath });
+            var expectedRoute = _settings.ApiRoutes.First(x => x.Name == "ExportPort").Route;
+
+            await _client.ExportAsync(_filePath);
+
+            Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
+            Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
+            Assert.AreEqual(HttpMethod.Post, _httpClient.Requests[0].Method);
+            Assert.AreEqual(expectedRoute, _httpClient.Requests[0].Uri);
+            Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
+        }
     }
 }

@@ -135,8 +135,8 @@ namespace ShippingRecorder.Tests.Mocks
                 Id = RandomId(), 
                 CountryId = country.Id,
                 Country = country,
-                Code = RandomWord(5, 5).CleanCode(),
-                Name = RandomWord()
+                Code = $"{country.Code}{RandomWord(3, 3)}".CleanCode(),
+                Name = RandomWord().TitleCase()
             };
         }
 

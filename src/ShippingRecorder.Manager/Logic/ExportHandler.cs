@@ -86,11 +86,11 @@ namespace ShippingRecorder.Manager.Logic
             => await HandleExport<OperatorExporter, ExportableOperator, Operator>(CommandLineOptionType.ExportOperators);
 
         /// <summary>
-        /// Handle the vessel type export command
+        /// Handle the port export command
         /// </summary>
         /// <returns></returns>
-        public async Task HandleVesselTypeExportAsync()
-            => await HandleExport<VesselTypeExporter, ExportableVesselType, VesselType>(CommandLineOptionType.ExportVesselTypes);
+        public async Task HandlePortExportAsync()
+            => await HandleExport<PortExporter, ExportablePort, Port>(CommandLineOptionType.ExportPorts);
 
         /// <summary>
         /// Handle the sightings export command
@@ -105,6 +105,13 @@ namespace ShippingRecorder.Manager.Logic
         /// <returns></returns>
         public async Task HandleVesselExportAsync()
             => await HandleExport<VesselExporter, ExportableVessel, Vessel>(CommandLineOptionType.ExportVessels);
+
+        /// <summary>
+        /// Handle the vessel type export command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleVesselTypeExportAsync()
+            => await HandleExport<VesselTypeExporter, ExportableVesselType, VesselType>(CommandLineOptionType.ExportVesselTypes);
 
         /// <summary>
         /// Handle the voyage export command

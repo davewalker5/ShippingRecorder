@@ -7,6 +7,7 @@ namespace ShippingRecorder.Entities.Config
         ExportCountries,
         ExportLocations,
         ExportOperators,
+        ExportPorts,
         ExportSightings,
         ExportVessels,
         ExportVesselTypes,

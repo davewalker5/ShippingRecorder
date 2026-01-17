@@ -9,6 +9,7 @@ namespace ShippingRecorder.DataExchange.Entities
     public class ExportablePort : ExportableEntityBase
     {
         /// <summary>
+        /// Country Code
         /// UN/LOCODE
         /// Port Name
         /// </summary>
