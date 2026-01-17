@@ -4,6 +4,7 @@ using ShippingRecorder.Entities.Interfaces;
 using ShippingRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace ShippingRecorder.Api.Controllers
 {
@@ -23,7 +24,10 @@ namespace ShippingRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Retrieving list of ports (page {pageNumber}, page size {pageSize})");
 
-            List<Port> ports = await Factory.Ports.ListAsync(x => x.CountryId == countryId, pageNumber, pageSize).ToListAsync();
+            // If the country's 0 or less, just return all ports. Otherwise, return only ports for the specified
+            // country ID
+            Expression<Func<Port, bool>> predicate = x => countryId > 0 ? x.CountryId == countryId : true;
+            List<Port> ports = await Factory.Ports.ListAsync(predicate, pageNumber, pageSize).ToListAsync();
 
             LogMessage(Severity.Debug, $"Retrieved {ports.Count} port(s)");
 

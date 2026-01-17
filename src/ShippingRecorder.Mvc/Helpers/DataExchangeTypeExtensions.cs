@@ -14,6 +14,7 @@ namespace ShippingRecorder.Mvc.Helpers
             return type switch
             {
                 DataExchangeType.None => "",
+                DataExchangeType.All => "All Data",
                 DataExchangeType.Countries => "Countries",
                 DataExchangeType.Locations => "Locations",
                 DataExchangeType.Operators => "Operators",

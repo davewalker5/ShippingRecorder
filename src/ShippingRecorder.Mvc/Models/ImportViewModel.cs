@@ -18,7 +18,7 @@ namespace ShippingRecorder.Mvc.Models
 
         public ImportViewModel()
         {
-            foreach (var importType in Enum.GetValues<DataExchangeType>())
+            foreach (var importType in Enum.GetValues<DataExchangeType>().Where(x => x != DataExchangeType.All))
             {
                 var importTypeName = importType.ToName();
                 ImportTypes.Add(new SelectListItem() { Text = $"{importTypeName}", Value = importType.ToString() });

@@ -72,7 +72,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                // Retrieve the matching airport records
+                // Retrieve the matching vessel type records
                 var vesselTypes = await _client.ListAsync(page, _settings.SearchPageSize);
                 model.SetVesselTypes(vesselTypes, page, _settings.SearchPageSize);
             }

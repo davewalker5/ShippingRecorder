@@ -1,0 +1,110 @@
+﻿@using ShippingRecorder.Mvc.Entities
+@model ShippingRecorder.Mvc.Models.PortListViewModel
+
+@{
+    ViewData["Title"] = "Ports";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Ports
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the locations at that can be associated with voyages
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm("Delete", "Ports", FormMethod.Post, new { name = "delete-form", id = "delete-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id", "0")
+    }
+
+    @using (Html.BeginForm("Index", "Ports", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PageNumber)
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.CountryId)</strong>
+                <div class="input-group">
+                    @Html.DropDownListFor(m => m.CountryId, Model.Countries, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.CountryId, "", new { @class = "text-danger" })</span>
+            </div>
+            <div class="col">
+                <strong><label>&nbsp;</label></strong>
+                <div class="input-group">
+                    <button type="submit" name="Action" value="@ControllerActions.ActionSearch" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        @if (Model.Ports?.Count() > 0)
+        {
+            <table class="table">
+                <tr>
+                    <th>Country Code</th>
+                    <th>Country</th>
+                    <th>UN/LOCODE</th>
+                    <th>Name</th>
+                    <th />
+                </tr>
+                @foreach (var port in Model.Ports)
+                {
+                    <tr>
+                        <td valign="middle">@port.Country.Code</td>
+                        <td valign="middle">@port.Country.Name</td>
+                        <td valign="middle">@port.Code</td>
+                        <td valign="middle">@port.Name</td>
+                        <td valign="middle">
+                            <a class="btn btn-lg" asp-area="" asp-controller="Ports" asp-action="Edit" asp-route-id="@port.Id">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                        <td valign="middle">
+                            <a class="btn btn-lg" href="javascript:submitDeleteForm(@port.Id)">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <hr />
+            <p class="text-right">
+                <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+                <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
+                <a class="btn btn-primary" href="/Ports/Add" role="button">Add</a>
+            </p>
+        }
+        else if (Model.HasNoMatchingResults)
+        {
+            <hr />
+            @Html.Raw("No matching ports")
+        }
+    }
+</div>
+
+<script type="text/javascript">
+    function submitDeleteForm(id) {
+        $.confirm({
+            text: "Are you sure?",
+            confirm: function(button) {
+                $("#delete-form #id").val(id);
+                $("#delete-form").submit()
+            },
+            cancel: function(button) {
+            },
+            confirmButton: "Yes",
+            cancelButton: "No"
+        });
+    }
+</script>
