@@ -15,6 +15,7 @@ namespace ShippingRecorder.Mvc.Controllers
 
         public ImportController(
             ICountryClient countryClient,
+            IExportClient exportClient,
             ILocationClient locationClient,
             IOperatorClient operatorClient,
             IPortClient portClient,
@@ -25,6 +26,7 @@ namespace ShippingRecorder.Mvc.Controllers
             IPartialViewToStringRenderer renderer,
             ILogger<ImportController> logger) : base(
                 countryClient,
+                exportClient,
                 locationClient,
                 operatorClient,
                 portClient,

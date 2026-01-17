@@ -86,6 +86,7 @@ namespace ShippingRecorder.Mvc
             services.AddSingleton<IShippingRecorderHttpClient>(provider => ShippingRecorderHttpClient.Instance);
             services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
             services.AddSingleton<ICountryClient, CountryClient>();
+            services.AddSingleton<IExportClient, ExportClient>();
             services.AddSingleton<ILocationClient, LocationClient>();
             services.AddSingleton<IOperatorClient, OperatorClient>();
             services.AddSingleton<IPortClient, PortClient>();

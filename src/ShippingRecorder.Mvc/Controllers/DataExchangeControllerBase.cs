@@ -23,6 +23,7 @@ namespace ShippingRecorder.Mvc.Controllers
 
         public DataExchangeControllerBase(
             ICountryClient countryClient,
+            IExportClient exportClient,
             ILocationClient locationClient,
             IOperatorClient operatorClient,
             IPortClient portClient,
@@ -42,6 +43,7 @@ namespace ShippingRecorder.Mvc.Controllers
             _importers.Add(DataExchangeType.VesselTypes, vesselTypeClient);
             _importers.Add(DataExchangeType.Voyages, voyageClient);
 
+            _exporters.Add(DataExchangeType.All, exportClient);
             _exporters.Add(DataExchangeType.Countries, countryClient);
             _exporters.Add(DataExchangeType.Locations, locationClient);
             _exporters.Add(DataExchangeType.Operators, operatorClient);
