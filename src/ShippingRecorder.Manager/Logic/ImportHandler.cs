@@ -91,11 +91,11 @@ namespace ShippingRecorder.Manager.Logic
             => await HandleImport<PortImporter, ExportablePort>(CommandLineOptionType.ImportPorts, ExportablePort.CsvRecordPattern);
 
         /// <summary>
-        /// Handle the vessel type import command
+        /// Handle the sightings import command
         /// </summary>
         /// <returns></returns>
-        public async Task HandleVesselTypeImportAsync()
-            => await HandleImport<VesselTypeImporter, ExportableVesselType>(CommandLineOptionType.ImportVesselTypes, ExportableVesselType.CsvRecordPattern);
+        public async Task HandleSightingImportAsync()
+            => await HandleImport<SightingImporter, ExportableSighting>(CommandLineOptionType.ImportSightings, ExportableSighting.CsvRecordPattern);
 
         /// <summary>
         /// Handle the vessels import command
@@ -105,17 +105,17 @@ namespace ShippingRecorder.Manager.Logic
             => await HandleImport<VesselImporter, ExportableVessel>(CommandLineOptionType.ImportVessels, ExportableVessel.CsvRecordPattern);
 
         /// <summary>
+        /// Handle the vessel type import command
+        /// </summary>
+        /// <returns></returns>
+        public async Task HandleVesselTypeImportAsync()
+            => await HandleImport<VesselTypeImporter, ExportableVesselType>(CommandLineOptionType.ImportVesselTypes, ExportableVesselType.CsvRecordPattern);
+
+        /// <summary>
         /// Handle the voyage import command
         /// </summary>
         /// <returns></returns>
         public async Task HandleVoyageImportAsync()
             => await HandleImport<VoyageImporter, ExportableVoyage>(CommandLineOptionType.ImportVoyages, ExportableVoyage.CsvRecordPattern);
-
-        /// <summary>
-        /// Handle the sightings import command
-        /// </summary>
-        /// <returns></returns>
-        public async Task HandleSightingImportAsync()
-            => await HandleImport<SightingImporter, ExportableSighting>(CommandLineOptionType.ImportSightings, ExportableSighting.CsvRecordPattern);
     }
 }

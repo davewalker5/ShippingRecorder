@@ -45,6 +45,7 @@ namespace ShippingRecorder.Mvc.Controllers
             _exporters.Add(DataExchangeType.Countries, countryClient);
             _exporters.Add(DataExchangeType.Locations, locationClient);
             _exporters.Add(DataExchangeType.Operators, operatorClient);
+            _exporters.Add(DataExchangeType.Ports, portClient);
             _exporters.Add(DataExchangeType.Sightings, sightingClient);
             _exporters.Add(DataExchangeType.Vessels, vesselClient);
             _exporters.Add(DataExchangeType.VesselTypes, vesselTypeClient);

@@ -14,6 +14,7 @@ namespace ShippingRecorder.Client.ApiClient
     {
         private const string RouteKey = "Port";
         private const string ImportRouteKey = "ImportPort";
+        private const string ExportRouteKey = "ExportPort";
 
         public PortClient(
             IShippingRecorderHttpClient client,
@@ -36,8 +37,6 @@ namespace ShippingRecorder.Client.ApiClient
             string baseRoute = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}";
             var route = $"{baseRoute}/unlocode/{code}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-
-            // TODO:
             Port port = Deserialize<Port>(json);
             return port;
         }
@@ -142,5 +141,18 @@ namespace ShippingRecorder.Client.ApiClient
         /// <returns></returns>
         public async Task ImportFromFileAsync(string filePath)
             => await ImportFromFileContentAsync(File.ReadAllText(filePath));
+
+        /// <summary>
+        /// Request an export of ports to a named file in the export port
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task ExportAsync(string fileName)
+        {
+            dynamic data = new{ FileName = fileName };
+            var json = Serialize(data);
+            await SendIndirectAsync(ExportRouteKey, json, HttpMethod.Post);
+        }
     }
 }

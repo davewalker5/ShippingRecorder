@@ -1,0 +1,6 @@
+DELETE FROM PORT
+WHERE Code NOT IN (
+    SELECT DISTINCT( p.Code )
+    FROM PORT p
+    INNER JOIN VOYAGE_EVENT ve ON ve.Port_Id = p.Id
+);

@@ -122,6 +122,10 @@ namespace ShippingRecorder.Api
             builder.Services.AddSingleton<IBackgroundQueue<PortImportWorkItem>, BackgroundQueue<PortImportWorkItem>>();
             builder.Services.AddHostedService<PortImportService>();
 
+            // Add the port exporter hosted service
+            builder.Services.AddSingleton<IBackgroundQueue<PortExportWorkItem>, BackgroundQueue<PortExportWorkItem>>();
+            builder.Services.AddHostedService<PortExportService>();
+
             // Add the voyage importer hosted service
             builder.Services.AddSingleton<IBackgroundQueue<VoyageImportWorkItem>, BackgroundQueue<VoyageImportWorkItem>>();
             builder.Services.AddHostedService<VoyageImportService>();

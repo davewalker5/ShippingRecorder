@@ -19,15 +19,15 @@ namespace ShippingRecorder.DataExchange.Extensions
             };
 
         /// <summary>
-        /// Return a collection of exportable countrys from a collection of countrys
+        /// Return a collection of exportable countries from a collection of countries
         /// </summary>
-        /// <param name="countrys"></param>
+        /// <param name="countries"></param>
         /// <returns></returns>
-        public static IEnumerable<ExportableCountry> ToExportable(this IEnumerable<Country> countrys)
+        public static IEnumerable<ExportableCountry> ToExportable(this IEnumerable<Country> countries)
         {
             var exportable = new List<ExportableCountry>();
 
-            foreach (var country in countrys)
+            foreach (var country in countries)
             {
                 exportable.Add(country.ToExportable());
             }
