@@ -23,8 +23,8 @@ namespace ShippingRecorder.Entities.Db
         [Required(ErrorMessage = "You must provide a vessel identifier")]
         public string Identifier { get; set; }
 
-        [DisplayName("Is IMO")]
-        public bool IsIMO { get; set; } = true;
+        [DisplayName("Identifier is an IMO")]
+        public bool IsIMO { get; set; }
 
         [DisplayName("Built")]
         [YearRange(1900)]

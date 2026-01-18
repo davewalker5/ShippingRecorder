@@ -88,6 +88,7 @@ namespace ShippingRecorder.BusinessLogic.Database
             var vessel = new Vessel
             {
                 Identifier = identifier,
+                IsIMO = isIMO,
                 Built = built,
                 Draught = draught,
                 Length = length,
@@ -166,6 +167,7 @@ namespace ShippingRecorder.BusinessLogic.Database
 
             // Update the vessel properties and save changes
             vessel.Identifier = identifier;
+            vessel.IsIMO = isIMO;
             vessel.Built = built;
             vessel.Draught = draught;
             vessel.Length = length;

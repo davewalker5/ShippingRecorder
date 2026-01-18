@@ -8,7 +8,6 @@
 }
 
 @Html.HiddenFor(m => m.Vessel.Id)
-@Html.HiddenFor(m => m.Vessel.IsIMO)
 
 <div class="row">
     <div class="col">
@@ -16,6 +15,13 @@
         <div class="input-group">
             @Html.TextBoxFor(m => m.Vessel.Identifier, identifierAttributes)
         </div>
+        @if (Model.Editable)
+        {
+            <div class="form-check">
+                @Html.CheckBoxFor(m => m.Vessel.IsIMO, new { @class = "form-check-input" })
+                @Html.LabelFor(m => m.Vessel.IsIMO, new { @class = "form-check-label" })
+            </div>
+        }
         <span>@Html.ValidationMessageFor(m => m.Vessel.Identifier, "", new { @class = "text-danger" })</span>
     </div>
     <div class="col">
