@@ -37,17 +37,14 @@ namespace ShippingRecorder.Entities.Db
         public DateTime Date { get; set; }
 
         [DisplayName("Name")]
-        [Required(ErrorMessage = "You must provide a name")]
         public string Name { get; set; }
 
         [DisplayName("Callsign")]
-        [Required(ErrorMessage = "You must provide a callsign")]
         public string Callsign { get; set; }
 
         [DisplayName("MMSI")]
-        [StringLength(9, MinimumLength = 9, ErrorMessage = "IMO must be 7 digits long")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "IMO must contain digits only")]
-        [Required(ErrorMessage = "You must provide an MMSI")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "MMSI must be 7 digits long")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "MMSI must contain digits only")]
         public string MMSI { get; set; }
 
         [DisplayName("Tonnage")]

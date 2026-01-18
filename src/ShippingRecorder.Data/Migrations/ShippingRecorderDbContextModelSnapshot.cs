@@ -332,11 +332,14 @@ namespace ShippingRecorder.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("draught");
 
-                    b.Property<string>("IMO")
+                    b.Property<string>("Identifier")
                         .IsRequired()
-                        .HasMaxLength(7)
                         .HasColumnType("TEXT")
-                        .HasColumnName("imo");
+                        .HasColumnName("identifier");
+
+                    b.Property<bool>("IsIMO")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("is_imo");
 
                     b.Property<int?>("Length")
                         .HasColumnType("INTEGER")
@@ -344,15 +347,10 @@ namespace ShippingRecorder.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IMO")
+                    b.HasIndex("Identifier")
                         .IsUnique();
 
-                    b.ToTable("VESSEL", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_IMO_Length", "length(imo) = 7");
-
-                            t.HasCheckConstraint("CK_IMO_Numeric", "imo GLOB '[0-9]*'");
-                        });
+                    b.ToTable("VESSEL", (string)null);
                 });
 
             modelBuilder.Entity("ShippingRecorder.Entities.Db.VesselType", b =>
@@ -475,7 +473,7 @@ namespace ShippingRecorder.Data.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("IMO")
+                    b.Property<string>("Identifier")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Location")

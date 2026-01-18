@@ -49,10 +49,10 @@ namespace ShippingRecorder.DataExchange.Import
 #pragma warning disable CS1998
         protected override void Validate(ExportableVessel vessel, int recordCount)
         {
-            ValidateField<string>(x => x.ValidateNumeric(7, 7), vessel.IMO, "IMO", recordCount);
+            ValidateField<string>(x => x.ValidateNumeric(7, 7), vessel.Identifier, "Identifier", recordCount);
             ValidateField<string>(x => x.ValidateNumeric(9, 9), vessel.MMSI, "MMSI", recordCount);
             ValidateField<string>(x => x.ValidateAlpha(2, 2), vessel.Flag, "Flag", recordCount);
-            ValidateField<string>(x => CheckVesselDoesNotExist(x), vessel.IMO, "IMO", recordCount);
+            ValidateField<string>(x => CheckVesselDoesNotExist(x), vessel.Identifier, "Identifier", recordCount);
             ValidateField<string>(x => CheckVesselTypeExists(x), vessel.VesselType, "VesselType", recordCount);
             ValidateField<string>(x => CheckCountryExists(x), vessel.Flag, "Flag", recordCount);
             ValidateField<string>(x => CheckOperatorExists(x), vessel.Operator, "Operator", recordCount);
@@ -72,15 +72,15 @@ namespace ShippingRecorder.DataExchange.Import
 
             // If the vessel exists, update its properties. Otherwise, create a new vessel
             long id;
-            var existing = await _factory.Vessels.GetAsync(x => x.IMO == vessel.IMO);
+            var existing = await _factory.Vessels.GetAsync(x => x.Identifier == vessel.Identifier);
             if (existing != null)
             {
                 id = existing.Id;
-                await _factory.Vessels.UpdateAsync(id, vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+                await _factory.Vessels.UpdateAsync(id, vessel.Identifier, vessel.IsIMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
             }
             else
             {
-                id = (await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam)).Id;     
+                id = (await _factory.Vessels.AddAsync(vessel.Identifier, vessel.IsIMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam)).Id;     
             }
 
             // Add the registration history
@@ -102,11 +102,11 @@ namespace ShippingRecorder.DataExchange.Import
         /// <summary>
         /// Check a vessel exists
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
         /// <returns></returns>
-        private bool CheckVesselDoesNotExist(string imo)
+        private bool CheckVesselDoesNotExist(string identifier)
         {
-            var vessel = Task.Run(() => _factory.Vessels.GetAsync(x => x.IMO == imo)).Result;
+            var vessel = Task.Run(() => _factory.Vessels.GetAsync(x => x.Identifier == identifier)).Result;
             return vessel == null;
         }
 

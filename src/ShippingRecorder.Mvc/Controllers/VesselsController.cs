@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShippingRecorder.Entities.Interfaces;
 using HealthTracker.Mvc.Attributes;
+using System.Text.RegularExpressions;
 
 namespace ShippingRecorder.Mvc.Controllers
 {
     [Authorize]
     public class VesselsController : ShippingRecorderControllerBase
     {
+        private static readonly Regex _IMORegex = new Regex(@"^\d{7}$", RegexOptions.Compiled);
+        private static readonly Regex _nonIMORegex = new Regex(@"^[\s\S]+$", RegexOptions.Compiled);
+
         private readonly IVesselClient _vesselClient;
         private readonly IRegistrationHistoryClient _registrationClient;
         private readonly ICountryListGenerator _countryListGenerator;
@@ -121,11 +125,18 @@ namespace ShippingRecorder.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddVesselViewModel model)
         {
+            // If the model's nominally valid, validate the identifier
+            if (ModelState.IsValid && !IsValidVesselIdentifier(model.Vessel.Identifier, model.Vessel.IsIMO))
+            {
+                ModelState.AddModelError("Vessel.Identifier", "Invalid vessel identifier");
+            }
+
             if (ModelState.IsValid)
             {
                 _logger.LogDebug(
                     $"Adding vessel: " +
-                    $"IMO = {model.Vessel.IMO}, " +
+                    $"Identifier = {model.Vessel.Identifier}, " +
+                    $"Is IMO = {model.Vessel.IsIMO}, " +
                     $"Built = {model.Vessel.Built}, " +
                     $"Draught = {model.Vessel.Draught}, " +
                     $"Length = {model.Vessel.Length}, " +
@@ -144,7 +155,8 @@ namespace ShippingRecorder.Mvc.Controllers
                     $"Cabins = {model.Registration.Cabins}");
 
                 Vessel vessel = await _vesselClient.AddAsync(
-                    model.Vessel.IMO,
+                    model.Vessel.Identifier,
+                    model.Vessel.IsIMO,
                     model.Vessel.Built,
                     model.Vessel.Draught,
                     model.Vessel.Length,
@@ -167,7 +179,7 @@ namespace ShippingRecorder.Mvc.Controllers
     
                 ModelState.Clear();
                 model.Clear();
-                model.Message = $"Vessel '{vessel.IMO}' added successfully";
+                model.Message = $"Vessel '{vessel.Identifier}' added successfully";
             }
             else
             {
@@ -212,11 +224,18 @@ namespace ShippingRecorder.Mvc.Controllers
         {
             IActionResult result;
 
+            // If the model's nominally valid, validate the identifier
+            if (ModelState.IsValid && !IsValidVesselIdentifier(model.Vessel.Identifier, model.Vessel.IsIMO))
+            {
+                ModelState.AddModelError("Vessel.Identifier", "Invalid vessel identifier");
+            }
+
             if (ModelState.IsValid)
             {
                 _logger.LogDebug(
                     $"Updating vessel: ID = {model.Vessel.Id}, " +
-                    $"IMO = {model.Vessel.IMO}, " +
+                    $"Identifier = {model.Vessel.Identifier}, " +
+                    $"Is IMO = {model.Vessel.IsIMO}, " +
                     $"Built = {model.Vessel.Built}, " +
                     $"Draught = {model.Vessel.Draught}, " +
                     $"Length = {model.Vessel.Length}, " +
@@ -236,7 +255,8 @@ namespace ShippingRecorder.Mvc.Controllers
 
                 var vessel = await _vesselClient.UpdateAsync(
                     model.Vessel.Id,
-                    model.Vessel.IMO,
+                    model.Vessel.Identifier,
+                    model.Vessel.IsIMO,
                     model.Vessel.Built,
                     model.Vessel.Draught,
                     model.Vessel.Length,
@@ -298,8 +318,17 @@ namespace ShippingRecorder.Mvc.Controllers
                 Registration = vessel.ActiveRegistrationHistory ?? new() { Date = DateTime.Today }
             };
 
-            var title = $"Vessel Details for IMO {vessel.IMO}";
+            var title = $"Vessel Details for Vessel {vessel.Identifier}";
             return await LoadModalContent("_VesselDetails", model, title);
         }
+
+        /// <summary>
+        /// Validate a vessel identifier based on whether it's an IMO or not
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="isIMO"></param>
+        /// <returns></returns>
+        private static bool IsValidVesselIdentifier(string identifier, bool isIMO)
+            => isIMO ? _IMORegex.Matches(identifier.Trim()).Any() : _nonIMORegex.Matches(identifier.Trim()).Any();
     }
 }

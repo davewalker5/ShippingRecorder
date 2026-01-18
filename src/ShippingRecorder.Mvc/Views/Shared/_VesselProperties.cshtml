@@ -3,6 +3,7 @@
 
 @{
     var htmlAttributes = HtmlAttributesBuilder.IntegerAttributes(Model.Editable);
+    Dictionary<string, object> identifierAttributes = HtmlAttributesBuilder.FormControlAttributes(Model.Editable);
     var draughtAttributes = HtmlAttributesBuilder.DecimalAttributes(Model.Editable);
 }
 
@@ -10,11 +11,18 @@
 
 <div class="row">
     <div class="col">
-        <strong>@Html.LabelFor(m => m.Vessel.IMO)</strong>
+        <strong>@Html.LabelFor(m => m.Vessel.Identifier)</strong>
         <div class="input-group">
-            @Html.TextBoxFor(m => m.Vessel.IMO, htmlAttributes)
+            @Html.TextBoxFor(m => m.Vessel.Identifier, identifierAttributes)
         </div>
-        <span>@Html.ValidationMessageFor(m => m.Vessel.IMO, "", new { @class = "text-danger" })</span>
+        @if (Model.Editable)
+        {
+            <div class="form-check">
+                @Html.CheckBoxFor(m => m.Vessel.IsIMO, new { @class = "form-check-input" })
+                @Html.LabelFor(m => m.Vessel.IsIMO, new { @class = "form-check-label" })
+            </div>
+        }
+        <span>@Html.ValidationMessageFor(m => m.Vessel.Identifier, "", new { @class = "text-danger" })</span>
     </div>
     <div class="col">
         <strong>@Html.LabelFor(m => m.Vessel.Built)</strong>

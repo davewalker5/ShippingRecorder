@@ -17,8 +17,8 @@ namespace ShippingRecorder.DataExchange.Entities
         [Export("Location", 2)]
         public string Location { get; set; }
 
-        [Export("IMO", 3)]
-        public string IMO { get; set; }
+        [Export("Identifier", 3)]
+        public string Identifier { get; set; }
 
         [Export("Voyage", 4)]
         public string VoyageNumber { get; set; }
@@ -33,7 +33,7 @@ namespace ShippingRecorder.DataExchange.Entities
             {
                 Date = DateTime.ParseExact(words[0].Replace("\"", "").Trim(), DateFormat, CultureInfo.CurrentCulture),
                 Location = words[1].Replace("\"", "").Trim(),
-                IMO = words[2].Replace("\"", "").Trim().CleanCode(),
+                Identifier = words[2].Replace("\"", "").Trim().CleanCode(),
                 VoyageNumber = words[3].Replace("\"", "").Trim().Clean(),
                 IsMyVoyage = words[4].Replace("\"", "").Trim().Equals("True", StringComparison.OrdinalIgnoreCase)
             };

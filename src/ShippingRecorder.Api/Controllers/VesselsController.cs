@@ -53,16 +53,16 @@ namespace ShippingRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("imo/{imo}")]
-        public async Task<ActionResult<Vessel>> GetVesselByIMOAsync(string imo)
+        [Route("identifier/{identifier}")]
+        public async Task<ActionResult<Vessel>> GetVesselByIdentifierAsync(string identifier)
         {
-            LogMessage(Severity.Debug, $"Retrieving vessel with IMO {imo}");
+            LogMessage(Severity.Debug, $"Retrieving vessel with identifier {identifier}");
 
-            Vessel vessel = await Factory.Vessels.GetAsync(m => m.IMO == imo);
+            Vessel vessel = await Factory.Vessels.GetAsync(m => m.Identifier == identifier);
 
             if (vessel == null)
             {
-                LogMessage(Severity.Debug, $"Vessel with IMO {imo} not found");
+                LogMessage(Severity.Debug, $"Vessel with identifier {identifier} not found");
                 return NotFound();
             }
 
@@ -75,13 +75,14 @@ namespace ShippingRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug,
                 $"Adding vessel: " +
-                $"IMO = {template.IMO}, " +
+                $"Identifier = {template.Identifier}, " +
+                $"Is IMO = {template.IsIMO}, " +
                 $"Built = {template.Built}, " +
                 $"Draught = {template.Draught}, " +
                 $"Length = {template.Length}, " +
                 $"Beam = {template.Beam}");
 
-            Vessel vessel = await Factory.Vessels.AddAsync(template.IMO, template.Built, template.Draught, template.Length, template.Beam);
+            Vessel vessel = await Factory.Vessels.AddAsync(template.Identifier, template.IsIMO, template.Built, template.Draught, template.Length, template.Beam);
             LogMessage(Severity.Debug, $"Vessel added: {vessel}");
             return vessel;
         }
@@ -93,13 +94,14 @@ namespace ShippingRecorder.Api.Controllers
             LogMessage(Severity.Debug,
                 $"Adding vessel: " +
                 $"ID = {template.Id}, " +
-                $"IMO = {template.IMO}, " +
+                $"Identifier = {template.Identifier}, " +
+                $"Is IMO = {template.IsIMO}, " +
                 $"Built = {template.Built}, " +
                 $"Draught = {template.Draught}, " +
                 $"Length = {template.Length}, " +
                 $"Beam = {template.Beam}");
 
-            Vessel vessel = await Factory.Vessels.UpdateAsync(template.Id, template.IMO, template.Built, template.Draught, template.Length, template.Beam);
+            Vessel vessel = await Factory.Vessels.UpdateAsync(template.Id, template.Identifier, template.IsIMO, template.Built, template.Draught, template.Length, template.Beam);
             LogMessage(Severity.Debug, $"Vessel updated: {vessel}");
             return vessel;
         }

@@ -42,10 +42,10 @@ namespace HealthTracker.Mvc.Helpers
             {
                 foreach (var vessel in vessels)
                 {
-                    // Construct the list entry from the IMO and name, if available
+                    // Construct the list entry from the vessel identifier and name, if available
                     var text = vessel.ActiveRegistrationHistory != null ?
-                        $"{vessel.IMO} - {vessel.ActiveRegistrationHistory?.Name}" :
-                        vessel.IMO;
+                        $"{vessel.Identifier} - {vessel.ActiveRegistrationHistory?.Name}" :
+                        vessel.Identifier;
 
                     list.Add(new SelectListItem() { Text = text, Value = vessel.Id.ToString() });
                 }

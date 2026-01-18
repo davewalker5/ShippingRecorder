@@ -50,7 +50,7 @@ namespace ShippingRecorder.DataExchange.Import
         {
             ValidateField<DateTime>(x => x <= DateTime.Now, sighting.Date, "Date", recordCount);
             ValidateField<string>(x => CheckLocationExists(x), sighting.Location, "Location", recordCount);
-            ValidateField<string>(x => CheckVesselExists(x), sighting.IMO, "IMO", recordCount);
+            ValidateField<string>(x => CheckVesselExists(x), sighting.Identifier, "Identifier", recordCount);
             ValidateField<string>(x => CheckVoyageExists(x), sighting.VoyageNumber, "VoyageNumber", recordCount);
         }
 #pragma warning restore CS1998
@@ -63,7 +63,7 @@ namespace ShippingRecorder.DataExchange.Import
         protected override async Task AddAsync(ExportableSighting sighting)
         {
             var location = _locations.First(x => x.Name == sighting.Location);
-            var vessel = _vessels.First(x => x.IMO == sighting.IMO);
+            var vessel = _vessels.First(x => x.Identifier == sighting.Identifier);
             long? voyageId = string.IsNullOrEmpty(sighting.VoyageNumber) ? null : _voyages.First(x => x.Number == sighting.VoyageNumber).Id;
             await _factory.Sightings.AddAsync(location.Id, voyageId, vessel.Id, sighting.Date, sighting.IsMyVoyage);
         }
@@ -79,10 +79,10 @@ namespace ShippingRecorder.DataExchange.Import
         /// <summary>
         /// Check a vessel exists
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
         /// <returns></returns>
-        private bool CheckVesselExists(string imo)
-            => _vessels.FirstOrDefault(x => x.IMO == imo) != null;
+        private bool CheckVesselExists(string identifier)
+            => _vessels.FirstOrDefault(x => x.Identifier == identifier) != null;
 
         /// <summary>
         /// Check a voyage exists

@@ -149,13 +149,13 @@ namespace ShippingRecorder.Tests.Client
         [TestMethod]
         public async Task GetMostRecentTest()
         {
-            var imo = DataGenerator.RandomInt(0, 9999999).ToString();
+            var identifier = DataGenerator.RandomInt(0, 9999999).ToString();
             var sighting = DataGenerator.CreateSighting();
             var json = JsonSerializer.Serialize<List<Sighting>>([sighting]);
             _httpClient.AddResponse(json);
 
-            var retrieved = await _client.GetMostRecentVesselSightingAsync(imo);
-            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/vessel/{imo}";
+            var retrieved = await _client.GetMostRecentVesselSightingAsync(identifier);
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Sighting").Route}/vessel/{identifier}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -311,7 +311,7 @@ namespace ShippingRecorder.Tests.Client
         {
             var date = DateTime.Today;
             var sighting = DataGenerator.CreateSighting();
-            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{sighting.Location.Name}"",""{sighting.Vessel.IMO}"",""False""";
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{sighting.Location.Name}"",""{sighting.Vessel.Identifier}"",""False""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             _httpClient.AddResponse("");

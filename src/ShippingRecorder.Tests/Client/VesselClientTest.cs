@@ -58,7 +58,8 @@ namespace ShippingRecorder.Tests.Client
             var vessel = DataGenerator.CreateVessel();
             var json = JsonSerializer.Serialize(new
             {
-                vessel.IMO,
+                vessel.Identifier,
+                vessel.IsIMO,
                 vessel.Built,
                 vessel.Draught,
                 vessel.Length,
@@ -66,7 +67,7 @@ namespace ShippingRecorder.Tests.Client
             });
             _httpClient.AddResponse(json);
 
-            var added = await _client.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            var added = await _client.AddAsync(vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -75,7 +76,7 @@ namespace ShippingRecorder.Tests.Client
 
             Assert.AreEqual(json, await _httpClient.Requests[0].Content.ReadAsStringAsync());
             Assert.IsNotNull(added);
-            Assert.AreEqual(vessel.IMO, added.IMO);
+            Assert.AreEqual(vessel.Identifier, added.Identifier);
             Assert.AreEqual(vessel.Built, added.Built);
             Assert.AreEqual(vessel.Draught, added.Draught);
             Assert.AreEqual(vessel.Length, added.Length);
@@ -89,7 +90,7 @@ namespace ShippingRecorder.Tests.Client
             var json = JsonSerializer.Serialize(vessel);
             _httpClient.AddResponse(json);
 
-            var updated = await _client.UpdateAsync(vessel.Id, vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            var updated = await _client.UpdateAsync(vessel.Id, vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -99,7 +100,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.StartsWith((await _httpClient.Requests[0].Content.ReadAsStringAsync())[..^1], json);
             Assert.IsNotNull(updated);
             Assert.AreEqual(vessel.Id, updated.Id);
-            Assert.AreEqual(vessel.IMO, updated.IMO);
+            Assert.AreEqual(vessel.Identifier, updated.Identifier);
             Assert.AreEqual(vessel.Built, updated.Built);
             Assert.AreEqual(vessel.Draught, updated.Draught);
             Assert.AreEqual(vessel.Length, updated.Length);
@@ -138,7 +139,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.IsNull(_httpClient.Requests[0].Content);
             Assert.IsNotNull(retrieved);
             Assert.AreEqual(vessel.Id, retrieved.Id);
-            Assert.AreEqual(vessel.IMO, retrieved.IMO);
+            Assert.AreEqual(vessel.Identifier, retrieved.Identifier);
             Assert.AreEqual(vessel.Built, retrieved.Built);
             Assert.AreEqual(vessel.Draught, retrieved.Draught);
             Assert.AreEqual(vessel.Length, retrieved.Length);
@@ -146,14 +147,14 @@ namespace ShippingRecorder.Tests.Client
         }
 
         [TestMethod]
-        public async Task GetByIMOTest()
+        public async Task GetByIdentifierTest()
         {
             var vessel = DataGenerator.CreateVessel();
             var json = JsonSerializer.Serialize(vessel);
             _httpClient.AddResponse(json);
 
-            var retrieved = await _client.GetAsync(vessel.IMO);
-            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Vessel").Route}/imo/{vessel.IMO}";
+            var retrieved = await _client.GetAsync(vessel.Identifier);
+            var expectedRoute = $"{_settings.ApiRoutes.First(x => x.Name == "Vessel").Route}/identifier/{vessel.Identifier}";
 
             Assert.AreEqual($"Bearer {ApiToken}", _httpClient.DefaultRequestHeaders.Authorization.ToString());
             Assert.AreEqual($"{_settings.ApiUrl}", _httpClient.BaseAddress.ToString());
@@ -163,7 +164,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.IsNull(_httpClient.Requests[0].Content);
             Assert.IsNotNull(retrieved);
             Assert.AreEqual(vessel.Id, retrieved.Id);
-            Assert.AreEqual(vessel.IMO, retrieved.IMO);
+            Assert.AreEqual(vessel.Identifier, retrieved.Identifier);
             Assert.AreEqual(vessel.Built, retrieved.Built);
             Assert.AreEqual(vessel.Draught, retrieved.Draught);
             Assert.AreEqual(vessel.Length, retrieved.Length);
@@ -189,7 +190,7 @@ namespace ShippingRecorder.Tests.Client
             Assert.IsNotNull(vessels);
             Assert.HasCount(1, vessels);
             Assert.AreEqual(vessel.Id, vessels[0].Id);
-            Assert.AreEqual(vessel.IMO, vessels[0].IMO);
+            Assert.AreEqual(vessel.Identifier, vessels[0].Identifier);
             Assert.AreEqual(vessel.Built, vessels[0].Built);
             Assert.AreEqual(vessel.Draught, vessels[0].Draught);
             Assert.AreEqual(vessel.Length, vessels[0].Length);
@@ -200,7 +201,7 @@ namespace ShippingRecorder.Tests.Client
         public async Task ImportFromFileTest()
         {
             var vessel = DataGenerator.CreateVessel();
-            var record = $@"""{vessel.IMO}"",""{vessel.Built}"",""{vessel.Draught}"",""{vessel.Length}"",""{vessel.Beam}"",""{vessel.ActiveRegistrationHistory.Tonnage}"",""{vessel.ActiveRegistrationHistory.Passengers}"",""{vessel.ActiveRegistrationHistory.Crew}"",""{vessel.ActiveRegistrationHistory.Decks}"",""{vessel.ActiveRegistrationHistory.Cabins}"",""{vessel.ActiveRegistrationHistory.Name}"",""{vessel.ActiveRegistrationHistory.Callsign}"",""{vessel.ActiveRegistrationHistory.MMSI}"",""{vessel.ActiveRegistrationHistory.VesselType.Name}"",""{vessel.ActiveRegistrationHistory.Flag}"",""{vessel.ActiveRegistrationHistory.Operator.Name}""";
+            var record = $@"""{vessel.Identifier}"",""{vessel.Built}"",""{vessel.Draught}"",""{vessel.Length}"",""{vessel.Beam}"",""{vessel.ActiveRegistrationHistory.Tonnage}"",""{vessel.ActiveRegistrationHistory.Passengers}"",""{vessel.ActiveRegistrationHistory.Crew}"",""{vessel.ActiveRegistrationHistory.Decks}"",""{vessel.ActiveRegistrationHistory.Cabins}"",""{vessel.ActiveRegistrationHistory.Name}"",""{vessel.ActiveRegistrationHistory.Callsign}"",""{vessel.ActiveRegistrationHistory.MMSI}"",""{vessel.ActiveRegistrationHistory.VesselType.Name}"",""{vessel.ActiveRegistrationHistory.Flag}"",""{vessel.ActiveRegistrationHistory.Operator.Name}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             _httpClient.AddResponse("");

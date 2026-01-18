@@ -7,10 +7,10 @@ namespace ShippingRecorder.Client.Interfaces
     public interface IVesselClient : IImporter, IExporter
     {
         Task<Vessel> GetAsync(long id);
-        Task<Vessel> GetAsync(string imo);
-        Task<Vessel> AddAsync(string imo, int? built, decimal? draught, int? length, int? beam);
+        Task<Vessel> GetAsync(string identifier);
+        Task<Vessel> AddAsync(string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam);
         Task DeleteAsync(long id);
         Task<List<Vessel>> ListAsync(int pageNumber, int pageSize);
-        Task<Vessel> UpdateAsync(long id, string imo, int? built, decimal? draught, int? length, int? beam);
+        Task<Vessel> UpdateAsync(long id, string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam);
     }
 }

@@ -11,7 +11,7 @@ namespace ShippingRecorder.Tests.Db
     [TestClass]
     public class RegistrationHistoryManagerTest
     {
-        private const string IMO = "9226906";
+        private const string VesselIdentifier = "9226906";
         private const string VesselType = "Passenger (Cruise) Ship";
         private const string UpdatedVesselType = "Vista-Class Cruise Ship";
         private const string CountryCode = "BM";
@@ -48,7 +48,7 @@ namespace ShippingRecorder.Tests.Db
         {
             var context = ShippingRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new ShippingRecorderFactory(context, new MockFileLogger());
-            _vesselId = (await _factory.Vessels.AddAsync(IMO, null, null, null, null)).Id;
+            _vesselId = (await _factory.Vessels.AddAsync(VesselIdentifier, true, null, null, null, null)).Id;
 
             _vesselTypeId = (await _factory.VesselTypes.AddAsync(VesselType)).Id;
             _updatedVesselTypeId = (await _factory.Operators.AddAsync(UpdatedVesselType)).Id;

@@ -10,7 +10,7 @@ namespace ShippingRecorder.Entities.Reporting
     {
         public DateTime Date { get; set; }
         public string Location { get; set; }
-        public string IMO { get; set; }
+        public string Identifier { get; set; }
         public string Vessel { get; set; }
         public long VesselId { get; set; }
 

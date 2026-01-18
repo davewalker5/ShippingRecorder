@@ -37,7 +37,7 @@ namespace ShippingRecorder.Tests.Export
             var exportable = _sighting.ToExportable();
             Assert.AreEqual(_sighting.Date, exportable.Date);
             Assert.AreEqual(_sighting.Location.Name, exportable.Location);
-            Assert.AreEqual(_sighting.Vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_sighting.Vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_sighting.IsMyVoyage, exportable.IsMyVoyage);
         }
 
@@ -48,7 +48,7 @@ namespace ShippingRecorder.Tests.Export
             var exportable = sightings.ToExportable();
             Assert.AreEqual(_sighting.Date, exportable.First().Date);
             Assert.AreEqual(_sighting.Location.Name, exportable.First().Location);
-            Assert.AreEqual(_sighting.Vessel.IMO, exportable.First().IMO);
+            Assert.AreEqual(_sighting.Vessel.Identifier, exportable.First().Identifier);
             Assert.AreEqual(_sighting.IsMyVoyage, exportable.First().IsMyVoyage);
         }
 
@@ -56,11 +56,11 @@ namespace ShippingRecorder.Tests.Export
         public void FromCsvRecordTest()
         {
             var isMyVoyage = _sighting.IsMyVoyage ? "True" : "False";
-            var record = $@"""{_sighting.Date.ToString(ExportableEntityBase.DateFormat)}"",""{_sighting.Location.Name}"",""{_sighting.Vessel.IMO}"","""",""{isMyVoyage}""";
+            var record = $@"""{_sighting.Date.ToString(ExportableEntityBase.DateFormat)}"",""{_sighting.Location.Name}"",""{_sighting.Vessel.Identifier}"","""",""{isMyVoyage}""";
             var exportable = ExportableSighting.FromCsv(record);
             Assert.AreEqual(_sighting.Date, exportable.Date);
             Assert.AreEqual(_sighting.Location.Name, exportable.Location);
-            Assert.AreEqual(_sighting.Vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_sighting.Vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_sighting.IsMyVoyage, exportable.IsMyVoyage);
         }
 
@@ -91,7 +91,7 @@ namespace ShippingRecorder.Tests.Export
             var exportable = ExportableSighting.FromCsv(records[1]);
             Assert.AreEqual(_sighting.Date, exportable.Date);
             Assert.AreEqual(_sighting.Location.Name, exportable.Location);
-            Assert.AreEqual(_sighting.Vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_sighting.Vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_sighting.IsMyVoyage, exportable.IsMyVoyage);
         }
     }

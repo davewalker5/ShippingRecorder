@@ -8,11 +8,13 @@ namespace ShippingRecorder.Data.Migrations
 {
     /// <inheritdoc />
     [ExcludeFromCodeCoverage]
-    public partial class InitialCreation : Migration
+    public partial class NonIMOVesselIdentifier : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("PRAGMA foreign_keys = ON;");
+
             migrationBuilder.CreateTable(
                 name: "COUNTRY",
                 columns: table => new
@@ -30,6 +32,37 @@ namespace ShippingRecorder.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FlagStatistics",
+                columns: table => new
+                {
+                    Code = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Sightings = table.Column<int>(type: "INTEGER", nullable: true),
+                    Locations = table.Column<int>(type: "INTEGER", nullable: true),
+                    Vessels = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JOB_STATUS",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    name = table.Column<string>(type: "TEXT", nullable: false),
+                    parameters = table.Column<string>(type: "TEXT", nullable: true),
+                    start = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    end = table.Column<DateTime>(type: "DATETIME", nullable: true),
+                    error = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JOB_STATUS", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LOCATION",
                 columns: table => new
                 {
@@ -43,6 +76,32 @@ namespace ShippingRecorder.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LocationStatistics",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Sightings = table.Column<int>(type: "INTEGER", nullable: true),
+                    Vessels = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MyVoyages",
+                columns: table => new
+                {
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Location = table.Column<string>(type: "TEXT", nullable: true),
+                    Identifier = table.Column<string>(type: "TEXT", nullable: true),
+                    Vessel = table.Column<string>(type: "TEXT", nullable: true),
+                    VesselId = table.Column<long>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OPERATOR",
                 columns: table => new
                 {
@@ -53,6 +112,33 @@ namespace ShippingRecorder.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OPERATOR", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OperatorStatistics",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Sightings = table.Column<int>(type: "INTEGER", nullable: true),
+                    Locations = table.Column<int>(type: "INTEGER", nullable: true),
+                    Vessels = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SightingsByMonth",
+                columns: table => new
+                {
+                    Year = table.Column<int>(type: "INTEGER", nullable: false),
+                    Month = table.Column<int>(type: "INTEGER", nullable: false),
+                    Sightings = table.Column<int>(type: "INTEGER", nullable: true),
+                    Locations = table.Column<int>(type: "INTEGER", nullable: true),
+                    Vessels = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
                 });
 
             migrationBuilder.CreateTable(
@@ -75,7 +161,8 @@ namespace ShippingRecorder.Data.Migrations
                 {
                     id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    imo = table.Column<string>(type: "TEXT", maxLength: 7, nullable: false),
+                    identifier = table.Column<string>(type: "TEXT", nullable: false),
+                    is_imo = table.Column<bool>(type: "INTEGER", nullable: false),
                     built = table.Column<int>(type: "INTEGER", nullable: true),
                     draught = table.Column<decimal>(type: "TEXT", nullable: true),
                     length = table.Column<int>(type: "INTEGER", nullable: true),
@@ -84,8 +171,6 @@ namespace ShippingRecorder.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VESSEL", x => x.id);
-                    table.CheckConstraint("CK_IMO_Length", "length(imo) = 7");
-                    table.CheckConstraint("CK_IMO_Numeric", "imo GLOB '[0-9]*'");
                 });
 
             migrationBuilder.CreateTable(
@@ -99,6 +184,19 @@ namespace ShippingRecorder.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VESSEL_TYPE", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VesselTypeStatistics",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Sightings = table.Column<int>(type: "INTEGER", nullable: true),
+                    Locations = table.Column<int>(type: "INTEGER", nullable: true),
+                    Vessels = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
                 });
 
             migrationBuilder.CreateTable(
@@ -131,6 +229,7 @@ namespace ShippingRecorder.Data.Migrations
                     id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     operator_id = table.Column<long>(type: "INTEGER", nullable: false),
+                    vessel_id = table.Column<long>(type: "INTEGER", nullable: false),
                     number = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -142,6 +241,12 @@ namespace ShippingRecorder.Data.Migrations
                         principalTable: "OPERATOR",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_VOYAGE_VESSEL_vessel_id",
+                        column: x => x.vessel_id,
+                        principalTable: "VESSEL",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -241,7 +346,7 @@ namespace ShippingRecorder.Data.Migrations
                     voyage_id = table.Column<long>(type: "INTEGER", nullable: false),
                     event_type = table.Column<int>(type: "INTEGER", nullable: false),
                     port_id = table.Column<long>(type: "INTEGER", nullable: false),
-                    arrival = table.Column<DateTime>(type: "DATETIME", nullable: false)
+                    date = table.Column<DateTime>(type: "DATETIME", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -337,9 +442,9 @@ namespace ShippingRecorder.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_VESSEL_imo",
+                name: "IX_VESSEL_identifier",
                 table: "VESSEL",
-                column: "imo",
+                column: "identifier",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -352,6 +457,11 @@ namespace ShippingRecorder.Data.Migrations
                 name: "IX_VOYAGE_operator_id",
                 table: "VOYAGE",
                 column: "operator_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VOYAGE_vessel_id",
+                table: "VOYAGE",
+                column: "vessel_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VOYAGE_EVENT_port_id",
@@ -368,13 +478,34 @@ namespace ShippingRecorder.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "FlagStatistics");
+
+            migrationBuilder.DropTable(
+                name: "JOB_STATUS");
+
+            migrationBuilder.DropTable(
+                name: "LocationStatistics");
+
+            migrationBuilder.DropTable(
+                name: "MyVoyages");
+
+            migrationBuilder.DropTable(
+                name: "OperatorStatistics");
+
+            migrationBuilder.DropTable(
                 name: "REGISTRATION_HISTORY");
 
             migrationBuilder.DropTable(
                 name: "SIGHTING");
 
             migrationBuilder.DropTable(
+                name: "SightingsByMonth");
+
+            migrationBuilder.DropTable(
                 name: "USER");
+
+            migrationBuilder.DropTable(
+                name: "VesselTypeStatistics");
 
             migrationBuilder.DropTable(
                 name: "VOYAGE_EVENT");
@@ -384,9 +515,6 @@ namespace ShippingRecorder.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "LOCATION");
-
-            migrationBuilder.DropTable(
-                name: "VESSEL");
 
             migrationBuilder.DropTable(
                 name: "PORT");
@@ -399,6 +527,9 @@ namespace ShippingRecorder.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "OPERATOR");
+
+            migrationBuilder.DropTable(
+                name: "VESSEL");
         }
     }
 }

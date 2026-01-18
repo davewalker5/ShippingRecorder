@@ -46,7 +46,7 @@ namespace ShippingRecorder.Tests.Extensions
         public void ValidateFailureThrowsExceptionNumericTest()
         {
             int? i = null;
-            Assert.Throws<InvalidIMOException>(() => i.ValidateIntegerAndThrow<InvalidIMOException>(1, int.MaxValue, false));
+            Assert.Throws<InvalidVesselIdentifierException>(() => i.ValidateIntegerAndThrow<InvalidVesselIdentifierException>(1, int.MaxValue, false));
         }
     }
 }

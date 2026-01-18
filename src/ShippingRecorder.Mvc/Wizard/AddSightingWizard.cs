@@ -112,7 +112,7 @@ namespace ShippingRecorder.Mvc.Wizard
                         LocationId = sighting.LocationId,
                         VoyageId = sighting.VoyageId ?? 0,
                         VoyageName = sighting.Voyage?.ToString() ?? "",
-                        IMO = sighting.Vessel.IMO
+                        Identifier = sighting.Vessel.Identifier
                     };
                 }
                 else
@@ -155,11 +155,11 @@ namespace ShippingRecorder.Mvc.Wizard
             {
                 _logger.LogDebug($"Creating new vessel details model");
 
-                // Not cached, so create a new one, using the cached sighting details model to supply the vessel IMO
+                // Not cached, so create a new one, using the cached sighting details model to supply the vessel identifier
                 key = _cache.GetCacheKey(SightingDetailsKeyPrefix, userName);
                 SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
                 model = new VesselDetailsViewModel();
-                model.Vessel.IMO = sighting.IMO;
+                model.Vessel.Identifier = sighting.Identifier;
 
                 // Load vessel types, countries and operators
                 model.VesselTypes = await _vesselTypeListGenerator.Create();
@@ -168,8 +168,8 @@ namespace ShippingRecorder.Mvc.Wizard
             }
 
             // See if this is an existing vessel
-            _logger.LogDebug($"Retrieving vessel with IMO {model.Vessel.IMO}");
-            Vessel vessel = await _vesselClient.GetAsync(model.Vessel.IMO);
+            _logger.LogDebug($"Retrieving vessel with  {model.Vessel.Identifier}");
+            Vessel vessel = await _vesselClient.GetAsync(model.Vessel.Identifier);
             _logger.LogDebug($"Retrieved vessel: {vessel}");
 
             if (vessel != null)
@@ -182,7 +182,7 @@ namespace ShippingRecorder.Mvc.Wizard
                 model.Editable = false;
 
                 // Retrieve the most recent sighting of this vessel
-                model.MostRecentSighting = await _sightingClient.GetMostRecentVesselSightingAsync(vessel.IMO);
+                model.MostRecentSighting = await _sightingClient.GetMostRecentVesselSightingAsync(vessel.Identifier);
             }
 
             _logger.LogDebug($"Resolved vessel details model: {model}");
@@ -349,7 +349,8 @@ namespace ShippingRecorder.Mvc.Wizard
 
                     // Create the vessel
                     vessel = await _vesselClient.AddAsync(
-                        details.Vessel.IMO,
+                        details.Vessel.Identifier,
+                        details.Vessel.IsIMO,
                         details.Vessel.Built,
                         details.Vessel.Draught,
                         details.Vessel.Length,

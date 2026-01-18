@@ -28,9 +28,9 @@ namespace ShippingRecorder.Tests.Db
             var context = ShippingRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new ShippingRecorderFactory(context, new MockFileLogger());
             _operatorId = (await _factory.Operators.AddAsync("P&O Ferries")).Id;
-            _vesselId = (await _factory.Vessels.AddAsync("9226906", null, null, null, null)).Id;
+            _vesselId = (await _factory.Vessels.AddAsync("9226906", true, null, null, null, null)).Id;
             _secondOperatorId = (await _factory.Operators.AddAsync("Royal Caribbean International")).Id;
-            _secondVesselId = (await _factory.Vessels.AddAsync("9744001", null, null, null, null)).Id;
+            _secondVesselId = (await _factory.Vessels.AddAsync("9744001", true, null, null, null, null)).Id;
             _ = await _factory.Voyages.AddAsync(_operatorId, _vesselId, Number);
         }
 

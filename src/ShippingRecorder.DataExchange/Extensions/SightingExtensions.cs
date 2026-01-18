@@ -16,7 +16,7 @@ namespace ShippingRecorder.DataExchange.Extensions
                 {
                     Date = sighting.Date,
                     Location = sighting.Location.Name,
-                    IMO = sighting.Vessel.IMO,
+                    Identifier = sighting.Vessel.Identifier,
                     VoyageNumber = sighting.Voyage?.Number,
                     IsMyVoyage = sighting.IsMyVoyage
                 };

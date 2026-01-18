@@ -15,7 +15,8 @@ namespace ShippingRecorder.DataExchange.Extensions
         public static ExportableVessel ToExportable(this Vessel vessel)
             => new()
             {
-                IMO = vessel.IMO,
+                Identifier = vessel.Identifier,
+                IsIMO = vessel.IsIMO,
                 Built = vessel.Built,
                 Draught = vessel.Draught,
                 Length = vessel.Length,

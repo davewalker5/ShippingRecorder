@@ -15,7 +15,7 @@ namespace ShippingRecorder.Tests.Import
     [TestClass]
     public class VesselImporterTest
     {
-        private const string IMO = "8420878";
+        private const string VesselIdentifier = "8420878";
         private const int Built = 2005;
         private const int Length = 285;
         private const int Beam = 32;
@@ -58,7 +58,7 @@ namespace ShippingRecorder.Tests.Import
             _  = await _factory.VesselTypes.AddAsync(Type);
             _  = await _factory.Operators.AddAsync(Operator);
 
-            var record = $@"""{IMO}"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
+            var record = $@"""{VesselIdentifier}"",""True"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -71,7 +71,7 @@ namespace ShippingRecorder.Tests.Import
 
             var vessels = await _factory.Vessels.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
             Assert.HasCount(1, vessels);
-            Assert.AreEqual(IMO, vessels.First().IMO);
+            Assert.AreEqual(VesselIdentifier, vessels.First().Identifier);
         }
 
         [TestMethod]
@@ -84,14 +84,14 @@ namespace ShippingRecorder.Tests.Import
         }
 
         [TestMethod]
-        public async Task InvalidIMOTest()
+        public async Task InvalidIdentifierTest()
         {
             _  = await _factory.Countries.AddAsync(Flag, "Bermuda");
             _  = await _factory.VesselTypes.AddAsync(Type);
             _  = await _factory.Operators.AddAsync(Operator);
-            _ = await _factory.Vessels.AddAsync(IMO, Built, Draught, Length, Beam);
+            _ = await _factory.Vessels.AddAsync(VesselIdentifier, true, Built, Draught, Length, Beam);
 
-            var record = $@"""{IMO}"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
+            var record = $@"""{VesselIdentifier}"",""True"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             var importer = new VesselImporter(_factory, ExportableVessel.CsvRecordPattern);
@@ -104,7 +104,7 @@ namespace ShippingRecorder.Tests.Import
             _  = await _factory.Countries.AddAsync(Flag, "Bermuda");
             _  = await _factory.Operators.AddAsync(Operator);
 
-            var record = $@"""{IMO}"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
+            var record = $@"""{VesselIdentifier}"",""True"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             var importer = new VesselImporter(_factory, ExportableVessel.CsvRecordPattern);
@@ -117,7 +117,7 @@ namespace ShippingRecorder.Tests.Import
             _  = await _factory.VesselTypes.AddAsync(Type);
             _  = await _factory.Operators.AddAsync(Operator);
 
-            var record = $@"""{IMO}"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
+            var record = $@"""{VesselIdentifier}"",""True"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             var importer = new VesselImporter(_factory, ExportableVessel.CsvRecordPattern);
@@ -130,7 +130,7 @@ namespace ShippingRecorder.Tests.Import
             _  = await _factory.Countries.AddAsync(Flag, "Bermuda");
             _  = await _factory.VesselTypes.AddAsync(Type);
 
-            var record = $@"""{IMO}"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
+            var record = $@"""{VesselIdentifier}"",""True"",""{Built}"",""{Draught}"",""{Length}"",""{Beam}"",""{Tonnage}"",""{Passengers}"",""{Crew}"",""{Decks}"",""{Cabins}"",""{Name}"",""{Callsign}"",""{MMSI}"",""{Type}"",""{Flag}"",""{Operator}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             var importer = new VesselImporter(_factory, ExportableVessel.CsvRecordPattern);

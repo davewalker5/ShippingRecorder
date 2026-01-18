@@ -27,7 +27,7 @@
 
         <table class="table">
             <tr>
-                <th>IMO</th>
+                <th>Identifier</th>
                 <th>Name</th>
                 <th>Built</th>
                 <th>Draught</th>
@@ -39,7 +39,7 @@
             {
                 var vesselName = vessel?.ActiveRegistrationHistory?.Name ?? "";
                 <tr>
-                    <td valign="middle">@vessel.IMO</td>
+                    <td valign="middle">@vessel.Identifier</td>
                     <td valign="middle">@vesselName</td>
                     <td valign="middle">@vessel.Built</td>
                     <td valign="middle">@vessel.Draught</td>

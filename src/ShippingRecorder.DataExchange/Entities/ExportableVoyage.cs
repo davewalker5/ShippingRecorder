@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using ShippingRecorder.BusinessLogic.Extensions;
 using ShippingRecorder.DataExchange.Attributes;
 
@@ -10,6 +9,7 @@ namespace ShippingRecorder.DataExchange.Entities
     public class ExportableVoyage : ExportableEntityBase
     {
         /// <summary>
+        /// Vessel Identifier
         /// Operator
         /// Number
         /// Event Type
@@ -18,8 +18,8 @@ namespace ShippingRecorder.DataExchange.Entities
         /// </summary>
         public const string CsvRecordPattern = @"^""\d{7}"",(?:""(?!\s*"")[\s\S]*"",){3}""[A-Za-z]{2}[A-Za-z0-9]{3}"",""[0-9]{2}-[A-Za-z]{3}-[0-9]{4}"".?$";
 
-        [Export("IMO", 1)]
-        public string IMO { get; set; }
+        [Export("Identifier", 1)]
+        public string Identifier { get; set; }
 
         [Export("Operator", 1)]
         public string Operator { get; set; }
@@ -41,7 +41,7 @@ namespace ShippingRecorder.DataExchange.Entities
             string[] words = record.Split(["\",\""], StringSplitOptions.None);
             return new ExportableVoyage
             {
-                IMO = words[0].Replace("\"", "").Trim().CleanCode(),
+                Identifier = words[0].Replace("\"", "").Trim().CleanCode(),
                 Operator = words[1].Replace("\"", "").Trim().TitleCase(),
                 Number = words[2].Replace("\"", "").Trim().CleanCode(),
                 EventType = words[3].Replace("\"", "").Trim(),

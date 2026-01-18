@@ -13,7 +13,7 @@
     <table class="table">
         <tr>
             <th>Location</th>
-            <th>IMO</th>
+            <th>Identifier</th>
             <th>Name</th>
             <th>Date</th>
             <th>Voyage</th>
@@ -27,7 +27,7 @@
             <tr>
                 <td valign="middle">@sighting.Location.Name</td>
                 <td valign="middle">
-                    @sighting.Vessel.IMO
+                    @sighting.Vessel.Identifier
                     <a class="btn btn-lg" href="javascript:LoadModalContent(@sighting.VesselId, '/Vessels/ShowVesselDetails')">
                         <i class="fas fa-info-circle"></i>
                     </a>
