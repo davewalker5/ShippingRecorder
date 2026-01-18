@@ -41,14 +41,14 @@ namespace ShippingRecorder.Client.ApiClient
         }
 
         /// <summary>
-        /// Return the vessel with the specified IMO
+        /// Return the vessel with the specified identifier
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
         /// <returns></returns>
-        public async Task<Vessel> GetAsync(string imo)
+        public async Task<Vessel> GetAsync(string identifier)
         {
             var baseRoute = Settings.ApiRoutes.First(r => r.Name == RouteKey).Route;
-            var route = $"{baseRoute}/imo/{imo}";
+            var route = $"{baseRoute}/identifier/{identifier}";
             var json = await SendDirectAsync(route, null, HttpMethod.Get);
             var vessel = Deserialize<Vessel>(json);
             return vessel;
@@ -57,17 +57,19 @@ namespace ShippingRecorder.Client.ApiClient
         /// <summary>
         /// Add a new vessel to the database
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
+        /// <param name="isIMO"></param>
         /// <param name="built"></param>
         /// <param name="draught"></param>
         /// <param name="length"></param>
         /// <param name="beam"></param>
         /// <returns></returns>
-        public async Task<Vessel> AddAsync(string imo, int? built, decimal? draught, int? length, int? beam)
+        public async Task<Vessel> AddAsync(string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam)
         {
             dynamic template = new
             {
-                IMO = imo,
+                Identifier = identifier,
+                IsIMO = isIMO,
                 Built = built,
                 Draught = draught,
                 Length = length,
@@ -85,18 +87,20 @@ namespace ShippingRecorder.Client.ApiClient
         /// Update an existing vessel
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
+        /// <param name="isIMO"></param>
         /// <param name="built"></param>
         /// <param name="draught"></param>
         /// <param name="length"></param>
         /// <param name="beam"></param>
         /// <returns></returns>
-        public async Task<Vessel> UpdateAsync(long id, string imo, int? built, decimal? draught, int? length, int? beam)
+        public async Task<Vessel> UpdateAsync(long id, string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam)
         {
             dynamic template = new
             {
                 Id = id,
-                IMO = imo,
+                Identifier = identifier,
+                IsIMO = isIMO,
                 Built = built,
                 Draught = draught,
                 Length = length,

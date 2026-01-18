@@ -4,17 +4,17 @@ using System.Diagnostics.CodeAnalysis;
 namespace ShippingRecorder.Entities.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class InvalidIMOException : Exception
+    public class InvalidVesselIdentifierException : Exception
     {
-        public InvalidIMOException()
+        public InvalidVesselIdentifierException()
         {
         }
 
-        public InvalidIMOException(string message) : base(message)
+        public InvalidVesselIdentifierException(string message) : base(message)
         {
         }
 
-        public InvalidIMOException(string message, Exception inner) : base(message, inner)
+        public InvalidVesselIdentifierException(string message, Exception inner) : base(message, inner)
         {
         }
     }

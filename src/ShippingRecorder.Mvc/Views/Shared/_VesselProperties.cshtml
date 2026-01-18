@@ -3,18 +3,20 @@
 
 @{
     var htmlAttributes = HtmlAttributesBuilder.IntegerAttributes(Model.Editable);
+    Dictionary<string, object> identifierAttributes = HtmlAttributesBuilder.FormControlAttributes(Model.Editable);
     var draughtAttributes = HtmlAttributesBuilder.DecimalAttributes(Model.Editable);
 }
 
 @Html.HiddenFor(m => m.Vessel.Id)
+@Html.HiddenFor(m => m.Vessel.IsIMO)
 
 <div class="row">
     <div class="col">
-        <strong>@Html.LabelFor(m => m.Vessel.IMO)</strong>
+        <strong>@Html.LabelFor(m => m.Vessel.Identifier)</strong>
         <div class="input-group">
-            @Html.TextBoxFor(m => m.Vessel.IMO, htmlAttributes)
+            @Html.TextBoxFor(m => m.Vessel.Identifier, identifierAttributes)
         </div>
-        <span>@Html.ValidationMessageFor(m => m.Vessel.IMO, "", new { @class = "text-danger" })</span>
+        <span>@Html.ValidationMessageFor(m => m.Vessel.Identifier, "", new { @class = "text-danger" })</span>
     </div>
     <div class="col">
         <strong>@Html.LabelFor(m => m.Vessel.Built)</strong>

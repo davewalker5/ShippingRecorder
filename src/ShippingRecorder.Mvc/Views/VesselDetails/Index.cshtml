@@ -10,7 +10,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Vessel.Id)
-        @Html.HiddenFor(m => m.Vessel.IMO)
+        @Html.HiddenFor(m => m.Vessel.Identifier)
         @Html.HiddenFor(m => m.Registration.Id)
 
         <div class="row">
@@ -25,7 +25,7 @@
             @await Html.PartialAsync("_SightingSummary",
             new SightingSummaryViewModel()
             {
-                Message = $"Most Recent Sighting of {Model.MostRecentSighting.Vessel.IMO}",
+                Message = $"Most Recent Sighting of {Model.MostRecentSighting.Vessel.Identifier}",
                 Sighting = Model.MostRecentSighting
             });
         }

@@ -9,7 +9,8 @@ namespace ShippingRecorder.DataExchange.Entities
     public class ExportableVessel : ExportableEntityBase
     {
         /// <summary>
-        /// IMO
+        /// Identifier
+        /// Identifier is an IMO
         /// Year built (may be blank)
         /// Maximum draught (may be blank)
         /// Length (may be blank)
@@ -26,54 +27,57 @@ namespace ShippingRecorder.DataExchange.Entities
         /// Flag (Country Code)
         /// Operator Name
         /// </summary>
-        public const string CsvRecordPattern = @"^""\d{7}"",""\d*"",""[0-9.]*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""[^""]+"",""[^""\s]+"",""\d{9}"",""[^""]+"",""[A-Za-z0-9]{2}"",""[^""]+"".?$";
+        public const string CsvRecordPattern = @"^""\d{7}"",""True|False"",""\d*"",""[0-9.]*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""\d*"",""[^""]+"",""[^""\s]+"",""\d{9}"",""[^""]+"",""[A-Za-z0-9]{2}"",""[^""]+"".?$";
 
-        [Export("IMO", 1)]
-        public string IMO { get; set; }
+        [Export("Identifier", 1)]
+        public string Identifier { get; set; }
 
-        [Export("Year Built", 2)]
+        [Export("Is IMO", 2)]
+        public bool IsIMO { get; set; }
+
+        [Export("Year Built", 3)]
         public int? Built { get; set; }
 
-        [Export("Draught", 3)]
+        [Export("Draught", 4)]
         public decimal? Draught { get; set; }
 
-        [Export("Length", 4)]
+        [Export("Length", 5)]
         public int? Length { get; set; }
 
-        [Export("Beam", 5)]
+        [Export("Beam", 6)]
         public int? Beam { get; set; }
 
-        [Export("Tonnage", 6)]
+        [Export("Tonnage", 7)]
         public int? Tonnage { get; set; }
 
-        [Export("Passengers", 7)]
+        [Export("Passengers", 8)]
         public int? Passengers { get; set; }
 
-        [Export("Crew", 8)]
+        [Export("Crew", 9)]
         public int? Crew { get; set; }
 
-        [Export("Decks", 9)]
+        [Export("Decks", 10)]
         public int? Decks { get; set; }
 
-        [Export("Cabins", 10)]
+        [Export("Cabins", 11)]
         public int? Cabins { get; set; }
 
-        [Export("Name", 11)]
+        [Export("Name", 12)]
         public string Name { get; set; }
 
-        [Export("Callsign", 12)]
+        [Export("Callsign", 13)]
         public string Callsign { get; set; }
 
-        [Export("MMSI", 13)]
+        [Export("MMSI", 14)]
         public string MMSI { get; set; }
 
-        [Export("Type", 14)]
+        [Export("Type", 15)]
         public string VesselType { get; set; }
 
-        [Export("Flag", 15)]
+        [Export("Flag", 16)]
         public string Flag { get; set; }
 
-        [Export("Operator", 16)]
+        [Export("Operator", 17)]
         public string Operator { get; set; }
 
         public static ExportableVessel FromCsv(string record)
@@ -81,22 +85,23 @@ namespace ShippingRecorder.DataExchange.Entities
             string[] words = record.Split(["\",\""], StringSplitOptions.None);
             return new ExportableVessel
             {
-                IMO = words[0].Replace("\"", "").Trim().CleanCode(),
-                Built = ExtractInteger(words[1].Replace("\"", "").Trim()),
-                Draught = ExtractDecimal(words[2].Replace("\"", "").Trim()),
-                Length = ExtractInteger(words[3].Replace("\"", "").Trim()),
-                Beam = ExtractInteger(words[4].Replace("\"", "").Trim()),
-                Tonnage = ExtractInteger(words[5].Replace("\"", "").Trim()),
-                Passengers = ExtractInteger(words[6].Replace("\"", "").Trim()),
-                Crew = ExtractInteger(words[7].Replace("\"", "").Trim()),
-                Decks = ExtractInteger(words[8].Replace("\"", "").Trim()),
-                Cabins = ExtractInteger(words[9].Replace("\"", "").Trim()),
-                Name = words[10].Replace("\"", "").Trim(),
-                Callsign = words[11].Replace("\"", "").Trim().CleanCode(),
-                MMSI = words[12].Replace("\"", "").Trim().CleanCode(),
-                VesselType = words[13].Replace("\"", "").Trim().TitleCase(),
-                Flag = words[14].Replace("\"", "").Trim().CleanCode(),
-                Operator = words[15].Replace("\"", "").Trim().TitleCase()
+                Identifier = words[0].Replace("\"", "").Trim().CleanCode(),
+                IsIMO = words[1].Replace("\"", "").Trim().Equals("True", StringComparison.OrdinalIgnoreCase),
+                Built = ExtractInteger(words[2].Replace("\"", "").Trim()),
+                Draught = ExtractDecimal(words[3].Replace("\"", "").Trim()),
+                Length = ExtractInteger(words[4].Replace("\"", "").Trim()),
+                Beam = ExtractInteger(words[5].Replace("\"", "").Trim()),
+                Tonnage = ExtractInteger(words[6].Replace("\"", "").Trim()),
+                Passengers = ExtractInteger(words[7].Replace("\"", "").Trim()),
+                Crew = ExtractInteger(words[8].Replace("\"", "").Trim()),
+                Decks = ExtractInteger(words[9].Replace("\"", "").Trim()),
+                Cabins = ExtractInteger(words[10].Replace("\"", "").Trim()),
+                Name = words[11].Replace("\"", "").Trim(),
+                Callsign = words[12].Replace("\"", "").Trim().CleanCode(),
+                MMSI = words[13].Replace("\"", "").Trim().CleanCode(),
+                VesselType = words[14].Replace("\"", "").Trim().TitleCase(),
+                Flag = words[15].Replace("\"", "").Trim().CleanCode(),
+                Operator = words[16].Replace("\"", "").Trim().TitleCase()
             };
         }
 

@@ -30,7 +30,7 @@
             var vesselName = voyage.Vessel.ActiveRegistrationHistory?.Name ?? "";
             if (string.IsNullOrEmpty(vesselName))
             {
-                vesselName = voyage.Vessel.IMO;
+                vesselName = voyage.Vessel.Identifier;
             }
 
             VoyageEvent firstEvent = voyage.FirstEvent();

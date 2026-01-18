@@ -19,11 +19,12 @@ namespace ShippingRecorder.Entities.Db
         [Key]
         public long Id { get; set; }
 
-        [DisplayName("IMO")]
-        [StringLength(7, MinimumLength = 7, ErrorMessage = "IMO must be 7 digits long")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "IMO must contain digits only")]
-        [Required(ErrorMessage = "You must provide an IMO")]
-        public string IMO { get; set; }
+        [DisplayName("Identifier")]
+        [Required(ErrorMessage = "You must provide a vessel identifier")]
+        public string Identifier { get; set; }
+
+        [DisplayName("Is IMO")]
+        public bool IsIMO { get; set; } = true;
 
         [DisplayName("Built")]
         [YearRange(1900)]

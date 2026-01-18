@@ -110,19 +110,15 @@ namespace ShippingRecorder.Data
 
             modelBuilder.Entity<Vessel>(entity =>
             {
-                entity.ToTable("VESSEL", tb =>
-                {
-                    tb.HasCheckConstraint("CK_IMO_Length", "length(imo) = 7");
-                    tb.HasCheckConstraint("CK_IMO_Numeric", "imo GLOB '[0-9]*'");
-                });
-
+                entity.ToTable("VESSEL");
                 entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-                entity.Property(e => e.IMO).IsRequired().HasColumnName("imo").HasMaxLength(7);
+                entity.Property(e => e.Identifier).IsRequired().HasColumnName("identifier");
+                entity.Property(e => e.IsIMO).HasColumnName("is_imo");
                 entity.Property(e => e.Built).HasColumnName("built");
                 entity.Property(e => e.Draught).HasColumnName("draught");
                 entity.Property(e => e.Length).HasColumnName("length");
                 entity.Property(e => e.Beam).HasColumnName("beam");
-                entity.HasIndex(e => e.IMO).IsUnique();
+                entity.HasIndex(e => e.Identifier).IsUnique();
 
                 entity.HasMany(e => e.RegistrationHistory).WithOne().HasForeignKey(h => h.VesselId).OnDelete(DeleteBehavior.Restrict);
             });

@@ -55,16 +55,16 @@ namespace ShippingRecorder.Api.Controllers
         }
         
         [HttpGet]
-        [Route("recent/imo/{imo}")]
-        public async Task<ActionResult<Sighting>> GetMostRecentVesselSightingAsync(string imo)
+        [Route("recent/identifier/{identifier}")]
+        public async Task<ActionResult<Sighting>> GetMostRecentVesselSightingAsync(string identifier)
         {
-            LogMessage(Severity.Debug, $"Retrieving most recent sighting for vessel {imo}");
+            LogMessage(Severity.Debug, $"Retrieving most recent sighting for vessel {identifier}");
 
-            Sighting sighting = await Factory.Sightings.GetMostRecentAsync(x => x.Vessel.IMO == imo);
+            Sighting sighting = await Factory.Sightings.GetMostRecentAsync(x => x.Vessel.Identifier == identifier);
 
             if (sighting == null)
             {
-                LogMessage(Severity.Debug, $"Sighting for vessel {imo} not found");
+                LogMessage(Severity.Debug, $"Sighting for vessel {identifier} not found");
                 return NoContent();
             }
 

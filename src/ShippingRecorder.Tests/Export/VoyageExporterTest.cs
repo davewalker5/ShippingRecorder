@@ -41,7 +41,7 @@ namespace ShippingRecorder.Tests.Export
         public void ConvertSingleObjectToExportable()
         {
             var exportable = _voyage.ToExportable();
-            Assert.AreEqual(_voyage.Vessel.IMO, exportable.First().IMO);
+            Assert.AreEqual(_voyage.Vessel.Identifier, exportable.First().Identifier);
             Assert.AreEqual(_voyage.Operator.Name, exportable.First().Operator);
             Assert.AreEqual(_voyage.Number, exportable.First().Number);
             Assert.AreEqual(_voyage.Events.First().EventType.ToString(), exportable.First().EventType);
@@ -54,7 +54,7 @@ namespace ShippingRecorder.Tests.Export
         {
             List<Voyage> vessels = [_voyage];
             var exportable = vessels.ToExportable();
-            Assert.AreEqual(_voyage.Vessel.IMO, exportable.First().IMO);
+            Assert.AreEqual(_voyage.Vessel.Identifier, exportable.First().Identifier);
             Assert.AreEqual(_voyage.Operator.Name, exportable.First().Operator);
             Assert.AreEqual(_voyage.Number, exportable.First().Number);
             Assert.AreEqual(_voyage.Events.First().EventType.ToString(), exportable.First().EventType);
@@ -66,9 +66,9 @@ namespace ShippingRecorder.Tests.Export
         [TestMethod]
         public void FromCsvRecordTest()
         {
-            var record = $@"""{_voyage.Vessel.IMO}"",""{_voyage.Operator.Name}"",""{_voyage.Number}"",""{_voyage.Events.First().EventType}"",""{_voyage.Events.First().Port.Code}"",""{_voyage.Events.First().Date.ToString(ExportableVoyage.DateFormat)}""";
+            var record = $@"""{_voyage.Vessel.Identifier}"",""{_voyage.Operator.Name}"",""{_voyage.Number}"",""{_voyage.Events.First().EventType}"",""{_voyage.Events.First().Port.Code}"",""{_voyage.Events.First().Date.ToString(ExportableVoyage.DateFormat)}""";
             var exportable = ExportableVoyage.FromCsv(record);
-            Assert.AreEqual(_voyage.Vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_voyage.Vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_voyage.Operator.Name, exportable.Operator);
             Assert.AreEqual(_voyage.Number, exportable.Number);
             Assert.AreEqual(_voyage.Events.First().EventType.ToString(), exportable.EventType);
@@ -102,7 +102,7 @@ namespace ShippingRecorder.Tests.Export
             Assert.HasCount(2, records);
 
             var exportable = ExportableVoyage.FromCsv(records[1]);
-            Assert.AreEqual(_voyage.Vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_voyage.Vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_voyage.Operator.Name, exportable.Operator);
             Assert.AreEqual(_voyage.Number, exportable.Number);
             Assert.AreEqual(_voyage.Events.First().EventType.ToString(), exportable.EventType);

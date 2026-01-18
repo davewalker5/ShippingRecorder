@@ -21,11 +21,11 @@ namespace ShippingRecorder.Mvc.Models
         [DisplayName("New Location")]
         public string NewLocation { get; set; }
 
-        [DisplayName("Vessel IMO")]
-        [StringLength(7, MinimumLength = 7, ErrorMessage = "IMO must be 7 digits long")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "IMO must contain digits only")]
-        [Required(ErrorMessage = "You must provide a vessel IMO")]
-        public string IMO { get; set; }
+        [DisplayName("Vessel Identifier")]
+        [StringLength(7, MinimumLength = 7, ErrorMessage = "Vessel identifier must be 7 digits long")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Vessel identifier must contain digits only")]
+        [Required(ErrorMessage = "You must provide a vessel identifier")]
+        public string Identifier { get; set; }
 
         [DisplayName("Voyage")]
         public long VoyageId { get; set; }

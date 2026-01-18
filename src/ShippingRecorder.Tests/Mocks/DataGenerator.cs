@@ -226,7 +226,8 @@ namespace ShippingRecorder.Tests.Mocks
             var vessel = new Vessel
             {
                 Id = RandomId(),
-                IMO = RandomInt(0, 9999999).ToString("0000000"),
+                Identifier = RandomInt(0, 9999999).ToString("0000000"),
+                IsIMO = true,
                 Built = 1950 + RandomInt(0, DateTime.Today.Year - 1950),
                 Draught = RandomDecimal(2M, 10M),
                 Length = RandomInt(5, 300),

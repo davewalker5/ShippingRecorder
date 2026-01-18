@@ -46,7 +46,7 @@ namespace ShippingRecorder.BusinessLogic.Database
                         .ThenInclude(h => h.Flag)
                     .Include(x => x.RegistrationHistory)
                         .ThenInclude(h => h.Operator)
-                    .OrderBy(x => x.IMO)
+                    .OrderBy(x => x.Identifier)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .AsAsyncEnumerable();
@@ -54,31 +54,40 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// <summary>
         /// Add a vessel
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
+        /// <param name="isIMO"></param>
         /// <param name="built"></param>
         /// <param name="draught"></param>
         /// <param name="length"></param>
         /// <param name="beam"></param>
         /// <returns></returns>
-        public async Task<Vessel> AddAsync(string imo, int? built, decimal? draught, int? length, int? beam)
+        public async Task<Vessel> AddAsync(string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam)
         {
-            imo = imo.CleanCode();
-            _factory.Logger.LogMessage(Severity.Debug, $"Adding vessel: IMO = {imo}, Built = {built}, Draught = {draught}, Length = {length}, Beam = {beam}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding vessel: Identifier = {identifier}, Built = {built}, Draught = {draught}, Length = {length}, Beam = {beam}");
 
             // Validate the parameters
-            imo.ValidateNumericAndThrow<InvalidIMOException>(7, 7);
+            if (isIMO)
+            {
+                identifier = identifier.CleanCode();
+                identifier.ValidateNumericAndThrow<InvalidVesselIdentifierException>(7, 7);
+            }
+            else
+            {
+                identifier = identifier.Clean().ToUpper();
+            }
+
             built.ValidateIntegerAndThrow<InvalidYearBuiltException>(Vessel.EarliestYearBuilt, DateTime.Today.Year, true);
             draught.ValidateDecimalAndThrow<InvalidDraughtException>(Vessel.MinimumDraught, decimal.MaxValue, true);
             length.ValidateIntegerAndThrow<InvalidLengthException>(Vessel.MinimumLength, int.MaxValue, true);
             beam.ValidateIntegerAndThrow<InvalidBeamException>(Vessel.MinimumBeam, int.MaxValue, true);
 
             // Check the vessel doesn't already exist
-            await CheckVesselIsNotADuplicate(imo, 0);
+            await CheckVesselIsNotADuplicate(identifier, 0);
 
             // Add the vessel and save changes
             var vessel = new Vessel
             {
-                IMO = imo,
+                Identifier = identifier,
                 Built = built,
                 Draught = draught,
                 Length = length,
@@ -98,19 +107,20 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// <summary>
         /// Add a vessel, if it doesn't already exist
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
+        /// <param name="isIMO"></param>
         /// <param name="built"></param>
         /// <param name="draught"></param>
         /// <param name="length"></param>
         /// <param name="beam"></param>
         /// <returns></returns>
-        public async Task<Vessel> AddIfNotExistsAsync(string imo, int? built, decimal? draught, int? length, int? beam)
+        public async Task<Vessel> AddIfNotExistsAsync(string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam)
         {
-            imo = imo.CleanCode();
-            var vessel = await GetAsync(x => x.IMO == imo);
+            identifier = isIMO ? identifier.CleanCode() : identifier.Clean().ToUpper();
+            var vessel = await GetAsync(x => x.Identifier == identifier);
             if (vessel == null)
             {
-                vessel = await AddAsync(imo, built, draught, length, beam);
+                vessel = await AddAsync(identifier, isIMO, built, draught, length, beam);
             }
             return vessel;
         }
@@ -119,20 +129,29 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// Update a vessel
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
+        /// <param name="isIMO"></param>
         /// <param name="built"></param>
         /// <param name="draught"></param>
         /// <param name="length"></param>
         /// <param name="beam"></param>
         /// <returns></returns>
         /// <exception cref="VesselNotFoundException"></exception>
-        public async Task<Vessel> UpdateAsync(long id, string imo, int? built, decimal? draught, int? length, int? beam)
+        public async Task<Vessel> UpdateAsync(long id, string identifier, bool isIMO, int? built, decimal? draught, int? length, int? beam)
         {
-            imo = imo.CleanCode();
-            _factory.Logger.LogMessage(Severity.Debug, $"Updating vessel: ID = {id}, IMO = {imo}, Built = {built}, Draught = {draught}, Length = {length}, Beam = {beam}");
+            identifier = identifier.CleanCode();
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating vessel: ID = {id}, Identifier = {identifier}, Built = {built}, Draught = {draught}, Length = {length}, Beam = {beam}");
 
-            // Validate the IMO
-            imo.ValidateNumericAndThrow<InvalidIMOException>(7, 7);
+            // Validate the identifier
+            if (isIMO)
+            {
+                identifier = identifier.CleanCode();
+                identifier.ValidateNumericAndThrow<InvalidVesselIdentifierException>(7, 7);
+            }
+            else
+            {
+                identifier = identifier.Clean().ToUpper();
+            }
 
             // Retrieve the vessel
             var vessel = await Context.Vessels.FirstOrDefaultAsync(x => x.Id == id);
@@ -143,10 +162,10 @@ namespace ShippingRecorder.BusinessLogic.Database
             }
 
             // Check the vessel doesn't already exist
-            await CheckVesselIsNotADuplicate(imo, id);
+            await CheckVesselIsNotADuplicate(identifier, id);
 
             // Update the vessel properties and save changes
-            vessel.IMO = imo;
+            vessel.Identifier = identifier;
             vessel.Built = built;
             vessel.Draught = draught;
             vessel.Length = length;
@@ -187,15 +206,15 @@ namespace ShippingRecorder.BusinessLogic.Database
         /// <summary>
         /// Raise an exception if an attempt is made to add/update a duplicate vessel
         /// </summary>
-        /// <param imo="imo"></param>
+        /// <param name="identifier"></param>
         /// <param name="id"></param>
         /// <exception cref="VesselExistsException"></exception>
-        private async Task CheckVesselIsNotADuplicate(string imo, long id)
+        private async Task CheckVesselIsNotADuplicate(string identifier, long id)
         {
-            var vessel = await Context.Vessels.FirstOrDefaultAsync(x => x.IMO == imo);
+            var vessel = await Context.Vessels.FirstOrDefaultAsync(x => x.Identifier == identifier);
             if ((vessel != null) && (vessel.Id != id))
             {
-                var message = $"Vessel {imo} already exists";
+                var message = $"Vessel {identifier} already exists";
                 throw new VesselExistsException(message);
             }
         }

@@ -1,6 +1,6 @@
 SELECT  s.Date,
         l.Name AS "Location",
-        v.IMO,
+        v.Identifier,
         rh.Name AS "Vessel",
         v.Id AS "VesselId"
 FROM SIGHTING s

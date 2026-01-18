@@ -158,7 +158,7 @@ namespace ShippingRecorder.Tests.Client
         public async Task ImportFromFileTest()
         {
             var voyage = DataGenerator.CreateVoyage();
-            var record = $@"""{voyage.Vessel.IMO}"",""{voyage.Operator.Name}"",""{voyage.Number}"",""{voyage.Events.First().EventType}"",""{voyage.Events.First().Port.Code}"",""{voyage.Events.First().Date.ToString(ExportableVoyage.DateFormat)}""";
+            var record = $@"""{voyage.Vessel.Identifier}"",""{voyage.Operator.Name}"",""{voyage.Number}"",""{voyage.Events.First().EventType}"",""{voyage.Events.First().Port.Code}"",""{voyage.Events.First().Date.ToString(ExportableVoyage.DateFormat)}""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
             _httpClient.AddResponse("");

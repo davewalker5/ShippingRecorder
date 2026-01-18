@@ -35,7 +35,7 @@ namespace ShippingRecorder.Tests.Export
         public void ConvertSingleObjectToExportable()
         {
             var exportable = _vessel.ToExportable();
-            Assert.AreEqual(_vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_vessel.Built, exportable.Built);
             Assert.AreEqual(_vessel.Draught, exportable.Draught);
             Assert.AreEqual(_vessel.Length, exportable.Length);
@@ -58,7 +58,7 @@ namespace ShippingRecorder.Tests.Export
         {
             List<Vessel> vessels = [_vessel];
             var exportable = vessels.ToExportable();
-            Assert.AreEqual(_vessel.IMO, exportable.First().IMO);
+            Assert.AreEqual(_vessel.Identifier, exportable.First().Identifier);
             Assert.AreEqual(_vessel.Built, exportable.First().Built);
             Assert.AreEqual(_vessel.Draught, exportable.First().Draught);
             Assert.AreEqual(_vessel.Length, exportable.First().Length);
@@ -79,9 +79,9 @@ namespace ShippingRecorder.Tests.Export
         [TestMethod]
         public void FromCsvRecordTest()
         {
-            var record = $@"""{_vessel.IMO}"",""{_vessel.Built}"",""{_vessel.Draught}"",""{_vessel.Length}"",""{_vessel.Beam}"",""{_vessel.ActiveRegistrationHistory.Tonnage}"",""{_vessel.ActiveRegistrationHistory.Passengers}"",""{_vessel.ActiveRegistrationHistory.Crew}"",""{_vessel.ActiveRegistrationHistory.Decks}"",""{_vessel.ActiveRegistrationHistory.Cabins}"",""{_vessel.ActiveRegistrationHistory.Name}"",""{_vessel.ActiveRegistrationHistory.Callsign}"",""{_vessel.ActiveRegistrationHistory.MMSI}"",""{_vessel.ActiveRegistrationHistory.VesselType.Name}"",""{_vessel.ActiveRegistrationHistory.Flag.Code}"",""{_vessel.ActiveRegistrationHistory.Operator.Name}""";
+            var record = $@"""{_vessel.Identifier}"",""True"",""{_vessel.Built}"",""{_vessel.Draught}"",""{_vessel.Length}"",""{_vessel.Beam}"",""{_vessel.ActiveRegistrationHistory.Tonnage}"",""{_vessel.ActiveRegistrationHistory.Passengers}"",""{_vessel.ActiveRegistrationHistory.Crew}"",""{_vessel.ActiveRegistrationHistory.Decks}"",""{_vessel.ActiveRegistrationHistory.Cabins}"",""{_vessel.ActiveRegistrationHistory.Name}"",""{_vessel.ActiveRegistrationHistory.Callsign}"",""{_vessel.ActiveRegistrationHistory.MMSI}"",""{_vessel.ActiveRegistrationHistory.VesselType.Name}"",""{_vessel.ActiveRegistrationHistory.Flag.Code}"",""{_vessel.ActiveRegistrationHistory.Operator.Name}""";
             var exportable = ExportableVessel.FromCsv(record);
-            Assert.AreEqual(_vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_vessel.Built, exportable.Built);
             Assert.AreEqual(_vessel.Draught, exportable.Draught);
             Assert.AreEqual(_vessel.Length, exportable.Length);
@@ -126,7 +126,7 @@ namespace ShippingRecorder.Tests.Export
             Assert.HasCount(2, records);
 
             var exportable = ExportableVessel.FromCsv(records[1]);
-            Assert.AreEqual(_vessel.IMO, exportable.IMO);
+            Assert.AreEqual(_vessel.Identifier, exportable.Identifier);
             Assert.AreEqual(_vessel.Built, exportable.Built);
             Assert.AreEqual(_vessel.Draught, exportable.Draught);
             Assert.AreEqual(_vessel.Length, exportable.Length);

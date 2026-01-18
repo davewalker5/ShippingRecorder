@@ -81,7 +81,7 @@ namespace ShippingRecorder.Mvc.Controllers
                 {
                     // Retrieve the aircraft with the specified registration number
                     // then, if we have a valid aircraft, retrieve its sightings
-                    Vessel vessel = await _vesselClient.GetAsync(model.IMO);
+                    Vessel vessel = await _vesselClient.GetAsync(model.Identifier);
                     if (vessel != null)
                     {
                         sightings = await _sightingClient.ListSightingsByVesselAsync(vessel.Id, page, _settings.SearchPageSize);

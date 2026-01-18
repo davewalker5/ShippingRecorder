@@ -15,7 +15,7 @@
             <tr>
                 <th>Last Seen</th>
                 <th>Location</th>
-                <th>IMO</th>
+                <th>Identifier</th>
                 <th>Name</th>
                 <th>Voyage</th>
                 <th>My Voyage</th>
@@ -25,7 +25,7 @@
             <tr>
                 <td>@Model.Sighting.Date.ToShortDateString()</td>
                 <td>@Model.Sighting.Location.Name</td>
-                <td>@Model.Sighting.Vessel.IMO</td>
+                <td>@Model.Sighting.Vessel.Identifier</td>
                 <td>@vesselName</td>
                 <td>@Model.Sighting.Voyage?.Number</td>
                 <td align="center">

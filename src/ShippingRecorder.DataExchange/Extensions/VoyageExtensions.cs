@@ -17,7 +17,7 @@ namespace ShippingRecorder.DataExchange.Extensions
             .Select(e => new ExportableVoyage
             {
                 Operator = voyage.Operator.Name,
-                IMO = voyage.Vessel.IMO,
+                Identifier = voyage.Vessel.Identifier,
                 Number = voyage.Number,
                 EventType = e.EventType.ToString(),
                 Port = e.Port.Code,

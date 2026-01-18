@@ -49,7 +49,7 @@ namespace ShippingRecorder.DataExchange.Import
         protected override void Validate(ExportableVoyage voyage, int recordCount)
         {
             ValidateField<string>(x => CheckOperatorExists(x), voyage.Operator,  "Operator", recordCount);
-            ValidateField<string>(x => CheckVesselExists(x), voyage.IMO,  "IMO", recordCount);
+            ValidateField<string>(x => CheckVesselExists(x), voyage.Identifier,  "Identifier", recordCount);
             ValidateField<string>(x => CheckPortExists(x), voyage.Port,  "Port", recordCount);
             ValidateField<string>(x => Enum.TryParse<VoyageEventType>(x, out _), voyage.EventType, "EventType", recordCount);
             ValidateField<string>(x => CheckDateFormat(x), voyage.Date, "Date", recordCount);
@@ -65,7 +65,7 @@ namespace ShippingRecorder.DataExchange.Import
         {
             // Load/create the voyage
             var op = _operators.First(x => x.Name == voyage.Operator);
-            var vessel = _vessels.First(x => x.IMO == voyage.IMO);
+            var vessel = _vessels.First(x => x.Identifier == voyage.Identifier);
             var imported = await _factory.Voyages.GetAsync(x => (x.OperatorId == op.Id) && (x.VesselId == vessel.Id) && (x.Number == voyage.Number));
             imported ??= await _factory.Voyages.AddAsync(op.Id, vessel.Id, voyage.Number);
 
@@ -87,10 +87,10 @@ namespace ShippingRecorder.DataExchange.Import
         /// <summary>
         /// Check a vessel exists
         /// </summary>
-        /// <param name="imo"></param>
+        /// <param name="identifier"></param>
         /// <returns></returns>
-        private bool CheckVesselExists(string imo)
-            => _vessels.FirstOrDefault(x => x.IMO == imo) != null;
+        private bool CheckVesselExists(string identifier)
+            => _vessels.FirstOrDefault(x => x.Identifier == identifier) != null;
 
         /// <summary>
         /// Check a port exists

@@ -9,7 +9,7 @@ namespace ShippingRecorder.Mvc.Models
         public void Clear()
         {
             Vessel.Id = 0;
-            Vessel.IMO = "";
+            Vessel.Identifier = "";
             Vessel.Built = null;
             Vessel.Draught = null;
             Vessel.Length = null;

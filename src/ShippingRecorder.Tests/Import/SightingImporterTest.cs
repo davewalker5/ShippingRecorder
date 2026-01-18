@@ -43,11 +43,11 @@ namespace ShippingRecorder.Tests.Import
             var vessel = DataGenerator.CreateVessel();
 
             location = await _factory.Locations.AddAsync(location.Name);
-            vessel = await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            vessel = await _factory.Vessels.AddAsync(vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
 
             var importer = new SightingImporter(_factory, ExportableSighting.CsvRecordPattern);
 
-            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.IMO}"","""",""False""";
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.Identifier}"","""",""False""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -77,12 +77,12 @@ namespace ShippingRecorder.Tests.Import
 
             location = await _factory.Locations.AddAsync(location.Name);
             op = await _factory.Operators.AddAsync(op.Name);
-            vessel = await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            vessel = await _factory.Vessels.AddAsync(vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
             voyage = await _factory.Voyages.AddAsync(op.Id, vessel.Id, voyage.Number);
 
             var importer = new SightingImporter(_factory, ExportableSighting.CsvRecordPattern);
 
-            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.IMO}"",""{voyage.Number}"",""False""";
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.Identifier}"",""{voyage.Number}"",""False""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -107,11 +107,11 @@ namespace ShippingRecorder.Tests.Import
             var date = DateTime.Today;
             var vessel = DataGenerator.CreateVessel();
 
-            vessel = await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            vessel = await _factory.Vessels.AddAsync(vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
 
             var importer = new SightingImporter(_factory, ExportableSighting.CsvRecordPattern);
 
-            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""Missing"",""{vessel.IMO}"","""",""False""";
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""Missing"",""{vessel.Identifier}"","""",""False""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -144,11 +144,11 @@ namespace ShippingRecorder.Tests.Import
             var voyage = DataGenerator.CreateVoyage();
 
             location = await _factory.Locations.AddAsync(location.Name);
-            vessel = await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            vessel = await _factory.Vessels.AddAsync(vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
 
             var importer = new SightingImporter(_factory, ExportableSighting.CsvRecordPattern);
 
-            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.IMO}"",""{voyage.Number}"",""False""";
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.Identifier}"",""{voyage.Number}"",""False""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 
@@ -163,11 +163,11 @@ namespace ShippingRecorder.Tests.Import
             var vessel = DataGenerator.CreateVessel();
 
             location = await _factory.Locations.AddAsync(location.Name);
-            vessel = await _factory.Vessels.AddAsync(vessel.IMO, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
+            vessel = await _factory.Vessels.AddAsync(vessel.Identifier, true, vessel.Built, vessel.Draught, vessel.Length, vessel.Beam);
 
             var importer = new SightingImporter(_factory, ExportableSighting.CsvRecordPattern);
 
-            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.IMO}"","""",""False""";
+            var record = $@"""{date.ToString(ExportableSighting.DateFormat)}"",""{location.Name}"",""{vessel.Identifier}"","""",""False""";
             _filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
             File.WriteAllLines(_filePath, ["", record]);
 

@@ -45,8 +45,8 @@ namespace ShippingRecorder.Entities.Db
         public string Callsign { get; set; }
 
         [DisplayName("MMSI")]
-        [StringLength(9, MinimumLength = 9, ErrorMessage = "IMO must be 7 digits long")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "IMO must contain digits only")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "MMSI must be 7 digits long")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "MMSI must contain digits only")]
         [Required(ErrorMessage = "You must provide an MMSI")]
         public string MMSI { get; set; }
 
