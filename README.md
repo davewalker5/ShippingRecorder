@@ -21,7 +21,7 @@ The application maintains details of:
 - Operators
 - Ports
 - Vessels
-  - IMO
+  - IMO or other vessel identifier
   - Physical characteristics
   - Registration history
     - Operator
@@ -81,3 +81,4 @@ To file issues or suggestions, please use the [Issues](https://github.com/davewa
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
