@@ -57,9 +57,6 @@ namespace ShippingRecorder.Mvc
 
             services.AddControllersWithViews();
 
-            // Configure automapper
-            services.AddAutoMapper(typeof(Startup));
-
             // Set up the configuration reader
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
