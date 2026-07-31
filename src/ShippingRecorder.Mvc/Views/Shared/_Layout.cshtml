@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Shiping Recorder</title>
+    <title>@ViewData["Title"] - Shipping Recorder</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
@@ -13,37 +13,43 @@
     <script src="~/lib/jquery-confirm/jquery-confirm.js" type="text/javascript"></script>
 </head>
 <body>
-    <div style="width: 90%; margin: 0 auto;">
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Shipping Recorder</a>
+    <div class="app-shell">
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="app-container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Shipping Recorder home">
+                        <span class="brand-mark" aria-hidden="true"><i class="fas fa-ship"></i></span>
+                        <span class="brand-copy">
+                            <strong>Shipping Recorder</strong>
+                            <small>Personal vessel log</small>
+                        </span>
+                    </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                        <ul class="navbar-nav">
+                    <div class="navbar-collapse collapse">
+                        <ul class="navbar-nav ml-auto">
                             @if (User?.Identity?.IsAuthenticated == true)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Log Sighting</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Log Sighting</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="sightingSearchMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Sighting Search
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="sightingSearchMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByVessel" asp-action="Index">Sightings By Vessel</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByLocation" asp-action="Index">Sightings By Location</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByDate" asp-action="Index">Sightings By Date</a>
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="reportsMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Reports
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="reportsMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="LocationStatistics" asp-action="Index">Location Statistics</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="OperatorStatistics" asp-action="Index">Operator Statistics</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="VesselTypeStatistics" asp-action="Index">Vessel Type Statistics</a>
@@ -54,10 +60,10 @@
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="maintenanceMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Data Maintenance
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="maintenanceMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="Countries" asp-action="Index">Countries</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Locations" asp-action="Index">Locations</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Operators" asp-action="Index">Operators</a>
@@ -68,23 +74,23 @@
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="jobsMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Jobs
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="jobsMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Export" asp-action="Index">Export</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="JobStatus" asp-action="Index">Job Status</a>
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LogOut">Log Out</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="LogOut">Log Out</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Log In</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Index">Log In</a>
                                 </li>
                             }
                         </ul>
@@ -92,16 +98,23 @@
                 </div>
             </nav>
         </header>
-        <div class="container-fluid">
-            <main role="main" class="pb-3">
+        <div class="app-container app-content">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">Shipping Recorder</p>
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+            </div>
+            <main role="main">
                 @RenderBody()
                 @await Html.PartialAsync("_AjaxModalDialog")
             </main>
         </div>
 
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                Shipping Recorder @ViewData["Version"] &copy; 2025-2026 - David Walker
+        <footer class="app-footer">
+            <div class="app-container footer-content">
+                <span><i class="fas fa-ship" aria-hidden="true"></i> Shipping Recorder @ViewData["Version"]</span>
+                <span>&copy; 2025-2026 David Walker</span>
             </div>
         </footer>
     </div>
