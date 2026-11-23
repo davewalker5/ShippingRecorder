@@ -160,6 +160,11 @@ namespace ShippingRecorder.Mvc.Wizard
                 SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
                 model = new VesselDetailsViewModel();
                 model.Vessel.Identifier = sighting.Identifier;
+                model.Vessel.IsIMO = sighting.Identifier.Length == 7;
+                if (sighting.Identifier.Length == 9)
+                {
+                    model.Registration.MMSI = sighting.Identifier;
+                }
 
                 // Load vessel types, countries and operators
                 model.VesselTypes = await _vesselTypeListGenerator.Create();

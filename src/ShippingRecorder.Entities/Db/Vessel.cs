@@ -12,7 +12,7 @@ namespace ShippingRecorder.Entities.Db
     public class Vessel : ShippingRecorderEntityBase
     {
         public const int EarliestYearBuilt = 1900;
-        public const decimal MinimumDraught = 2;
+        public const int MinimumDraught = 1;
         public const int MinimumLength = 5;
         public const int MinimumBeam = 2;
 
@@ -31,7 +31,7 @@ namespace ShippingRecorder.Entities.Db
         public int? Built { get; set; }
 
         [DisplayName("Draught")]
-        [DecimalRange(1)]
+        [DecimalRange(MinimumDraught)]
         public decimal? Draught { get; set; }
 
         [DisplayName("Length")]
