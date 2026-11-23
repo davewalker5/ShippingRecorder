@@ -21,9 +21,8 @@ namespace ShippingRecorder.Mvc.Models
         [DisplayName("New Location")]
         public string NewLocation { get; set; }
 
-        [DisplayName("Vessel Identifier")]
-        [StringLength(7, MinimumLength = 7, ErrorMessage = "Vessel identifier must be 7 digits long")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Vessel identifier must contain digits only")]
+        [DisplayName("IMO or MMSI")]
+        [RegularExpression(@"^(?:[0-9]{7}|[0-9]{9})$", ErrorMessage = "Enter a 7-digit IMO or a 9-digit MMSI")]
         [Required(ErrorMessage = "You must provide a vessel identifier")]
         public string Identifier { get; set; }
 

@@ -49,6 +49,18 @@ namespace ShippingRecorder.Tests.Db
             => await Assert.ThrowsAsync<InvalidVesselIdentifierException>(() => _factory.Vessels.AddAsync($"{VesselIdentifier}0", true, null, null, null, null));
 
         [TestMethod]
+        public async Task AddNonImoVesselWithShallowDraughtTestAsync()
+        {
+            const string identifier = "232013568";
+            await _factory.Vessels.AddAsync(identifier, false, 2018, 1.46M, 18, 5);
+
+            var vessel = await _factory.Vessels.GetAsync(x => x.Identifier == identifier);
+            Assert.IsNotNull(vessel);
+            Assert.IsFalse(vessel.IsIMO);
+            Assert.AreEqual(1.46M, vessel.Draught);
+        }
+
+        [TestMethod]
         public async Task AddAndGetTestAsync()
         {
             var entity = await _factory.Vessels.GetAsync(e => e.Identifier == VesselIdentifier);

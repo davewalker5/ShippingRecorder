@@ -24,6 +24,8 @@
             <br />
         }
 
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
         @await Html.PartialAsync("Vessel", Model);
     }
 </div>

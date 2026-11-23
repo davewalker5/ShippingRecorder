@@ -60,6 +60,12 @@ namespace ShippingRecorder.Api.Controllers
 
             Vessel vessel = await Factory.Vessels.GetAsync(m => m.Identifier == identifier);
 
+            if (vessel == null && identifier.Length == 9 && identifier.All(c => c >= '0' && c <= '9'))
+            {
+                vessel = await Factory.Vessels.GetAsync(m =>
+                    m.RegistrationHistory.Any(r => r.IsActive && r.MMSI == identifier));
+            }
+
             if (vessel == null)
             {
                 LogMessage(Severity.Debug, $"Vessel with identifier {identifier} not found");

@@ -162,24 +162,31 @@ namespace ShippingRecorder.Mvc.Controllers
                     model.Vessel.Length,
                     model.Vessel.Beam);
 
-                await _registrationClient.AddAsync(
-                    vessel.Id,
-                    model.Registration.VesselTypeId,
-                    model.Registration.FlagId,
-                    model.Registration.OperatorId,
-                    model.Registration.Date,
-                    model.Registration.Name,
-                    model.Registration.Callsign,
-                    model.Registration.MMSI,
-                    model.Registration.Tonnage,
-                    model.Registration.Passengers,
-                    model.Registration.Crew,
-                    model.Registration.Decks,
-                    model.Registration.Cabins);
-    
-                ModelState.Clear();
-                model.Clear();
-                model.Message = $"Vessel '{vessel.Identifier}' added successfully";
+                if (vessel == null)
+                {
+                    ModelState.AddModelError(string.Empty, "The vessel could not be saved.");
+                }
+                else
+                {
+                    await _registrationClient.AddAsync(
+                        vessel.Id,
+                        model.Registration.VesselTypeId,
+                        model.Registration.FlagId,
+                        model.Registration.OperatorId,
+                        model.Registration.Date,
+                        model.Registration.Name,
+                        model.Registration.Callsign,
+                        model.Registration.MMSI,
+                        model.Registration.Tonnage,
+                        model.Registration.Passengers,
+                        model.Registration.Crew,
+                        model.Registration.Decks,
+                        model.Registration.Cabins);
+
+                    ModelState.Clear();
+                    model.Clear();
+                    model.Message = $"Vessel '{vessel.Identifier}' added successfully";
+                }
             }
             else
             {
